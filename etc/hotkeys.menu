@@ -1,0 +1,6 @@
+terminal	F1
+volume up	XF86AudioRaiseVolume
+volume down	XF86AudioLowerVolume
+volume mute	XF86AudioMute
+display up	XF86MonBrightnessUp
+display down	XF86MonBrightnessDown

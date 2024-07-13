@@ -1,0 +1,110 @@
+#
+# Default twm configuration file; needs to be kept small to conserve string
+# space in systems whose compilers don't handle medium-sized strings.
+#
+# Sites should tailor this file, providing any extra title buttons, menus, etc.
+# that may be appropriate for their environment.  For example, if most of the
+# users were accustomed to uwm, the defaults could be set up not to decorate
+# any windows and to use meta-keys.
+#
+
+NoGrabServer
+RestartPreviousState
+DecorateTransients
+BorderWidth 3
+OpaqueMove
+RandomPlacement
+TitleFont "-adobe-helvetica-bold-r-normal--*-120-*-*-*-*-*-*"
+ResizeFont "-adobe-helvetica-bold-r-normal--*-120-*-*-*-*-*-*"
+MenuFont "-adobe-helvetica-bold-r-normal--*-120-*-*-*-*-*-*"
+IconFont "-adobe-helvetica-bold-r-normal--*-100-*-*-*-*-*-*"
+IconManagerFont "-adobe-helvetica-bold-r-normal--*-100-*-*-*"
+#ClientBorderWidth
+
+Color
+{
+    BorderColor "$FOREGROUND_COLOR"
+    DefaultBackground "$BACKGROUND_COLOR"
+    DefaultForeground "$FOREGROUND_COLOR"
+    TitleBackground "$BACKGROUND_COLOR"
+    TitleForeground "$FOREGROUND_COLOR"
+    MenuBackground "$MENU_BACKGROUND_COLOR"
+    MenuForeground "$MENU_FOREGROUND_COLOR"
+    MenuBorderColor "$FOREGROUND_COLOR"
+    MenuTitleBackground "$BACKGROUND_COLOR"
+    MenuTitleForeground "$FOREGROUND_COLOR"
+    IconBackground "rgb:2/a/9"
+    IconForeground "gray85"
+    IconBorderColor "gray85"
+    IconManagerBackground "rgb:2/a/9"
+    IconManagerForeground "gray85"
+}
+
+#
+# Define some useful functions for motion-based actions.
+#
+MoveDelta 3
+Function "move-or-lower" { f.move f.deltastop f.lower }
+Function "move-or-raise" { f.unfocus f.focus f.move f.deltastop f.raise }
+Function "move-or-iconify" { f.move f.deltastop f.iconify }
+Function "focus-and-raise" { f.unfocus f.focus f.raise }
+
+#
+# Set some useful bindings.  Sort of uwm-ish, sort of simple-button-ish
+#
+Button1 = : root : f.menu "main"
+Button3 = : root : f.menu "windowops"
+Button3 = : title : f.menu "windowops"
+
+Button1 = m : window|icon : f.function "move-or-lower"
+Button2 = m : window|icon : f.iconify
+Button3 = m : window|icon : f.function "move-or-raise"
+
+Button1 = : title : f.function "move-or-raise"
+Button2 = : title : f.raiselower
+
+Button1 = : icon : f.function "move-or-iconify"
+Button2 = : icon : f.iconify
+
+Button1 = : iconmgr : f.function "focus-and-raise"
+Button2 = : iconmgr : f.iconify
+
+#
+# And a menus with the usual things
+#
+menu "main"
+{
+		"Main Menu"		f.title
+    `menu2twm $TWDE_HOME/etc/windowmanager.menu`
+		""			f.nop
+		"Show Icon Manager"	f.showiconmgr
+		"Hide Icon Manager"	f.hideiconmgr
+		"Windows"			f.menu "TwmWindows"
+		""			f.nop
+		"Exit"			f.menu "Quit-Verify"
+}
+
+menu "Quit-Verify"
+{
+		"Quit Desktop?"	f.title
+		"Reload"	f.restart
+		"Restart"	f.exec "windowmanager restart"
+		"Quit"	f.quit
+}
+
+menu "windowops"
+{
+		"Window Ops"		f.title
+		"Iconify"		f.iconify
+		"Resize"		f.resize
+		"Move"			f.move
+		"Raise"			f.raise
+		"Lower"			f.lower
+		"Full Screen"			f.fullzoom
+		"a"			f.leftzoom
+		""			f.nop
+		"Focus"			f.focus
+		"Unfocus"		f.unfocus
+		""			f.nop
+		"Close"		f.delete
+}

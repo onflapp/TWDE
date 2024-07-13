@@ -1,0 +1,23 @@
+#!/bin/perl
+
+%KEYS=();
+
+open(IN, "xev -name XCAPTURE_KEY -event keyboard |");
+system("xdotool search XCAPTURE_KEY windowfocus");
+
+while(<IN>) {
+  chomp();
+  if ($_ =~ /state 0x(\d+), .*keysym.*, (.*?)\)/) {
+    $k = $2;
+    $v = $KEYS{$k};
+    print("$k == $v\n");
+    if ($v ne "") {
+      last;
+    }
+    else {
+      $KEYS{$k} = $k;
+    }
+  }
+}
+close(IN);
+print("1\n");

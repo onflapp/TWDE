@@ -1,0 +1,66 @@
+#!/bin/bash
+
+trap restart_xk USR1
+trap stop_xk INT TERM
+
+STATUS="running"
+PIDFILE="/tmp/$UID-xk.pid"
+
+function restart_xk() {
+  STATUS="restarting"
+  kill $XK_PID
+}
+
+function stop_xk() {
+  STATUS="stopped"
+  kill $XK_PID
+}
+
+function cleanup() {
+  rm "$PIDFILE"
+}
+
+function make_xk_config() {
+  while IFS= read -r LINE ;do
+    IFS=$'\t';V=(${LINE});IFS=
+    EXEC="${V[0]}"
+    KEYS="${V[1]}"
+    echo -e "\"$EXEC\"\n  $KEYS"
+  done < "$1" > "$2"
+}
+
+function main_loop() {
+  echo "creating config"
+  CFG="$TWDE_HOME/etc/hotkeys.menu"
+  DEST="$TWDE_HOME/var/xbindkeys"
+
+  make_xk_config "$CFG" "$DEST"
+
+  xbindkeys -n -f "$DEST" &
+  XK_PID="$!"
+  echo "running xbindkeys $XK_PID"
+  wait "$XK_PID"
+  
+  if [ "$STATUS" = "restarting" ];then
+    echo "restarting"
+    STATUS="running"
+  elif [ $? -ne 0 ];then
+    exit
+  fi
+}
+
+if [ "$1" = "restart" ];then
+  PID=`cat $PIDFILE`
+  kill -USR1 "$PID"
+  exit 0
+elif [ -f "$PIDFILE" ];then
+  echo "running already"
+  exit 1
+else
+  trap cleanup EXIT
+  echo "$$" > "$PIDFILE"
+  while [ "$STATUS" = "running" ];do
+    sleep 0.5
+    main_loop
+  done
+fi

@@ -1,0 +1,53 @@
+#!/bin/bash
+
+trap restart_twm USR1
+trap stop_twm INT TERM
+
+STATUS="running"
+PIDFILE="/tmp/$UID-wm.pid"
+
+function restart_twm() {
+  STATUS="restarting"
+  kill $WM_PID
+}
+
+function stop_twm() {
+  STATUS="stopped"
+  kill $WM_PID
+}
+
+function cleanup() {
+  rm "$PIDFILE"
+}
+
+function main_loop() {
+  echo "creating config"
+  CFG="$TWDE_HOME/var/twmrc"
+  prepareconf $TWDE_HOME/etc/windowmanager.conf "$TWDE_HOME/lib/twmrc" "$CFG"
+  twm -f "$CFG" &
+
+  WM_PID="$!"
+  echo "running WM $WM_PID"
+  wait "$WM_PID"
+  
+  if [ "$STATUS" = "restarting" ];then
+    echo "restarting"
+    STATUS="running"
+  elif [ $? -ne 0 ];then
+    exit
+  fi
+}
+
+if [ "$1" = "restart" ];then
+  PID=`cat $PIDFILE`
+  kill -USR1 "$PID"
+  exit 0
+else
+  trap cleanup EXIT
+  echo "$$" > "$PIDFILE"
+  while [ "$STATUS" = "running" ];do
+    sleep 0.5
+    desktop
+    main_loop
+  done
+fi

@@ -1,0 +1,7 @@
+#!/bin/bash
+
+source <(xdotool getwindowfocus getwindowgeometry --shell)
+echo "$WIDTH"
+
+xdotool windowsize $WINDOW $WIDTH 100%
+xdotool windowmove $WINDOW $X 0

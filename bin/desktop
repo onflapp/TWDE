@@ -1,0 +1,7 @@
+#!/bin/bash
+
+. "$TWDE_HOME/etc/theme.conf"
+
+if [ -n "$DESKTOP_COLOR" ];then
+  xsetroot -solid "$DESKTOP_COLOR"
+fi

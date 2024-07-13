@@ -1,0 +1,14 @@
+#!/bin/bash
+
+CFG="$1"
+SRC="$2"
+DEST="$3"
+
+. "$CFG"
+
+while IFS= read -r LINE ;do
+  L="${LINE//\"/\\\"}"
+  eval "R=\"$L\""
+  echo "$R"
+done < "$SRC" > "$DEST"
+

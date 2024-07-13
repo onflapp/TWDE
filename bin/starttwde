@@ -1,0 +1,29 @@
+#!/bin/bash
+
+RC="$HOME/.twderc"
+
+if [ -f "$RC" ];then
+  . "$RC"
+  export TWDE_HOME
+fi
+if ! [ -x "$TWDE_HOME/bin/windowmanager" ];then
+  echo "window manager not found, is TWDE_HOME set properly?"
+  exec xterm
+fi
+
+export TWDE_LOG="/tmp/$UID-desktop.log"
+export PATH="$TWDE_HOME/bin:$TWDE_HOME/libexec:$PATH"
+
+function init() {
+  mkdir -p "$TWDE_HOME/var" 2>/dev/null
+}
+
+function process() {
+  init
+  keyboard
+  mouse
+  hotkeys&
+  windowmanager
+}
+
+process > $TWDE_LOG

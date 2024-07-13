@@ -1,0 +1,21 @@
+#!/bin/perl
+
+sub get_val {
+  my ($f) = @_;
+  my $rv = "";
+  open(IN, "$f");
+  while(<IN>) {
+    chomp();
+    $rv = $_;
+  }
+  close(IN);
+  return $rv;
+}
+
+$FULL=get_val("/sys/class/power_supply/BAT0/charge_full");
+$NOW=get_val("/sys/class/power_supply/BAT0/charge_now");
+
+$PER=int($NOW/$FULL*100);
+
+print("$PER%\n");
+

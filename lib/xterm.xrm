@@ -1,0 +1,10 @@
+xterm*cursorColor: OrangeRed
+xterm*cursorBlink: true
+xterm*cursorOffTime: 600
+xterm*cursorOnTime: 600
+xterm*geometry: 110x34
+xterm*highlightColor: gray20
+xterm*metaSendsEscape: true
+xterm*background: $BACKGROUND_COLOR
+xterm*foreground: $FOREGROUND_COLOR
+!xterm*loginShell: true
