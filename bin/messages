@@ -1,0 +1,11 @@
+#!/bin/bash
+MESSAGE_LOG="/tmp/$UID-messages.log"
+
+. $TWDE_HOME/lib/func.sh
+
+if [ -n "$1" ];then
+  echo "$1" >> $MESSAGE_LOG
+else
+  resize_xterm 400 30
+  tail -f $MESSAGE_LOG
+fi

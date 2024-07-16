@@ -1,0 +1,7 @@
+#!/bin/bash
+
+VAL=`timedatectl list-timezones | fzf`
+
+if [ -n "$VAL" ];then
+  storeconf "$TWDE_HOME/etc/environment.conf" "TZ" "$VAL"
+fi

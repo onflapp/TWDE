@@ -1,0 +1,23 @@
+#!/bin/bash
+
+CFG="$1"
+NAME="$2"
+VAL="$3"
+
+if [ -z "$VAL" ];then
+  exit 1
+elif [ -f "$CFG" ];then
+  DEST="/tmp/$$-temp.cfg"
+  PAT="^$NAME="
+
+  while IFS= read -r LINE ;do
+    if [[ "$LINE" =~ $PAT ]];then
+      echo "$NAME=\"$VAL\""
+    else
+      echo "$LINE"
+    fi
+  done < "$CFG" > "$DEST"
+  mv "$DEST" "$CFG"
+else
+  echo "$NAME=\"$VAL\"" > "$CFG"
+fi

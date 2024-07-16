@@ -1,0 +1,3 @@
+#!/bin/bash
+
+exec xterm -fg red -e "sudo $SHELL -l"

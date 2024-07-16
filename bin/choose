@@ -1,0 +1,8 @@
+#!/bin/bash
+
+IN="/tmp/$$.choose_in.tmp"
+OUT="/tmp/$$.choose_out.tmp"
+
+cat > $IN
+xterm -name TWDEWidget -e "fzf < $IN > $OUT"
+cat $OUT

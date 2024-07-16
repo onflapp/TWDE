@@ -1,0 +1,18 @@
+#!/bin/bash
+
+function print_property() {
+}
+
+if [ "$1" = "set" ];then
+  NAME="_TWDE_$2"
+  VAL="$3"
+
+  xprop -f "$NAME" 8s -set "$NAME" "$VAL"
+elif [ "$1" = "get" ];then
+  if [ -z "$2" ];then
+    xprop | print_property "_TWDE_"
+  else
+    NAME="_TWDE_$2"
+    xprop "_TWDE_$NAME" | print_property
+  fi
+fi

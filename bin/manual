@@ -1,0 +1,18 @@
+#!/bin/bash
+
+. $TWDE_HOME/lib/func.sh
+
+read -t "0.1" WORD
+
+if [ -z "$WORD" ] && [ -n "$1" ];then
+  WORD="$1"
+fi
+
+CFG="$TWDE_HOME/var/terminal.xrm"
+prepareconf $TWDE_HOME/etc/terminal.conf "$TWDE_HOME/lib/xterm.xrm" "$CFG"
+xrdb -merge "$CFG"
+
+. $TWDE_HOME/etc/manual.conf
+
+exec xterm -bg "$BACKGROUND_COLOR" -fg "$FOREGROUND_COLOR" \
+    -class TWDETerm -e "man_info_lookup.sh $WORD" &

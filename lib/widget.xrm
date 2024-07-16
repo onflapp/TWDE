@@ -1,0 +1,7 @@
+TWDEWidget*cursorColor: $DESKTOP_COLOR
+TWDEWidget*cursorBlink: false
+TWDEWidget*highlightColor: gray20
+TWDEWidget*metaSendsEscape: true
+TWDEWidget*allowWindowOps: true
+TWDEWidget*background: $DESKTOP_COLOR
+TWDEWidget*foreground: gray
