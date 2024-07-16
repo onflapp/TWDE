@@ -111,6 +111,8 @@ menu "windowops"
 		"Focus"			f.focus
 		"Unfocus"		f.unfocus
 		""			f.nop
+		"Paste Selection"		f.exec "xdotool click 2"
+		""			f.nop
 		"Close"		f.delete
 }
 
