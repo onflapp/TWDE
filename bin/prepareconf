@@ -4,7 +4,9 @@ CFG="$1"
 SRC="$2"
 DEST="$3"
 
-. "$CFG"
+if [ -f "$CFG" ];then
+  . "$CFG"
+fi
 
 while IFS= read -r LINE ;do
   L="${LINE//\"/\\\"}"

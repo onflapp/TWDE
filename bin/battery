@@ -12,10 +12,21 @@ sub get_val {
   return $rv;
 }
 
-$FULL=get_val("/sys/class/power_supply/BAT0/charge_full");
-$NOW=get_val("/sys/class/power_supply/BAT0/charge_now");
+sub display {
+  $FULL = get_val("/sys/class/power_supply/BAT0/charge_full");
+  $FULL = get_val("/sys/class/power_supply/BAT0/energy_full") if ($FULL eq "");
 
-$PER=int($NOW/$FULL*100);
+  $NOW = get_val("/sys/class/power_supply/BAT0/charge_now");
+  $NOW = get_val("/sys/class/power_supply/BAT0/energy_now") if ($NOW eq "");
 
-print("$PER%\n");
+  $PER = int($NOW/$FULL*100);
 
+  print("\e[2J");
+  print("$PER%\n");
+}
+
+print("\e[4;64;64t");
+while (1) {
+  display();
+  sleep(2);
+}

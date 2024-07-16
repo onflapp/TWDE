@@ -1,5 +1,5 @@
 [Desktop Entry]
 Encoding=UTF-8
 Type=XSession
-Exec=starttwde
+Exec=$TWDE_HOME/starttwde
 Name=TWDE

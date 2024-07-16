@@ -1,3 +1,11 @@
 #!/bin/bash
 
-exec xterm
+CFG="$TWDE_HOME/var/terminal.xrm"
+prepareconf $TWDE_HOME/etc/terminal.conf "$TWDE_HOME/lib/xterm.xrm" "$CFG"
+xrdb -merge "$CFG"
+
+if [ -n "$1" ];then
+  exec xterm -class TWDETerm -e "$@" &
+else
+  exec xterm -class TWDETerm &
+fi

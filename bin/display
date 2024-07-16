@@ -1,7 +1,24 @@
 #!/bin/bash
 
-if [ "$1" = "up" ];then
-  xbacklight -inc 10
-elif [ "$1" = "down" ];then
-  xbacklight -dec 10
-fi
+. $TWDE_HOME/lib/func.sh
+
+function do_xbacklight() {
+  if [ "$1" = "up" ];then
+    xbacklight -inc 10
+  elif [ "$1" = "down" ];then
+    xbacklight -dec 10
+  fi
+}
+
+function do_udev() {
+  if [ "$1" = "up" ];then
+    brightnessctl -q s +10%
+  elif [ "$1" = "down" ];then
+    brightnessctl -q s 10%-
+  fi
+
+  NOW=`brightnessctl | regexp '\((\d+)%\)' 'Brightness %s%%' '$1'`
+  messages "$NOW"
+}
+
+do_udev "$1"

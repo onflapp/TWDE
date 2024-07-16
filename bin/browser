@@ -1,3 +1,13 @@
-#!/bin/sh
+#!/bin/bash
 
-exec chromium 2>/dev/null
+. $TWDE_HOME/etc/browser.conf
+. $TWDE_HOME/lib/func.sh
+
+read -t "0.1" WORD
+
+if [ -z "$WORD" ];then
+  exec chromium "$HOME_URL" 2>/dev/null >/dev/null &
+else
+  WORD=`encode_url "$WORD"`
+  exec chromium "$SEARCH_URL$WORD" 2>/dev/null >/dev/null &
+fi

@@ -6,6 +6,7 @@ if [ -f "$RC" ];then
   . "$RC"
   export TWDE_HOME
 fi
+
 if ! [ -x "$TWDE_HOME/bin/windowmanager" ];then
   echo "window manager not found, is TWDE_HOME set properly?"
   exec xterm

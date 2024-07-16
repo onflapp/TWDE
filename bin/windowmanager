@@ -24,6 +24,12 @@ function main_loop() {
   echo "creating config"
   CFG="$TWDE_HOME/var/twmrc"
   prepareconf $TWDE_HOME/etc/windowmanager.conf "$TWDE_HOME/lib/twmrc" "$CFG"
+  
+  if [ -f "$TWDE_HOME/etc/environment.conf" ];then
+    . $TWDE_HOME/etc/environment.conf
+    export TZ
+  fi
+
   twm -f "$CFG" &
 
   WM_PID="$!"

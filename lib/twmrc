@@ -11,28 +11,34 @@
 NoGrabServer
 RestartPreviousState
 DecorateTransients
-BorderWidth 3
+BorderWidth 2
 OpaqueMove
 RandomPlacement
-TitleFont "-adobe-helvetica-bold-r-normal--*-120-*-*-*-*-*-*"
-ResizeFont "-adobe-helvetica-bold-r-normal--*-120-*-*-*-*-*-*"
-MenuFont "-adobe-helvetica-bold-r-normal--*-120-*-*-*-*-*-*"
-IconFont "-adobe-helvetica-bold-r-normal--*-100-*-*-*-*-*-*"
-IconManagerFont "-adobe-helvetica-bold-r-normal--*-100-*-*-*"
+NoTitleHighlight
+TitleButtonBorderWidth 1
+TitlePadding 4
+#TitleFont "-adobe-helvetica-bold-r-normal--*-100-*-*-*-*-*-*"
+TitleFont "6x12"
+ResizeFont "6x12"
+MenuFont "6x12"
+IconFont "6x12"
+IconManagerFont "6x12"
 #ClientBorderWidth
 
 Color
 {
-    BorderColor "$FOREGROUND_COLOR"
+    BorderColor "$BORDER_COLOR" {
+      "TWDEWidget" "darkgreen"
+    }
     DefaultBackground "$BACKGROUND_COLOR"
     DefaultForeground "$FOREGROUND_COLOR"
     TitleBackground "$BACKGROUND_COLOR"
     TitleForeground "$FOREGROUND_COLOR"
     MenuBackground "$MENU_BACKGROUND_COLOR"
     MenuForeground "$MENU_FOREGROUND_COLOR"
-    MenuBorderColor "$FOREGROUND_COLOR"
+    MenuBorderColor "$MENU_BORDER_COLOR"
     MenuTitleBackground "$BACKGROUND_COLOR"
-    MenuTitleForeground "$FOREGROUND_COLOR"
+    MenuTitleForeground "$ACTIVE_COLOR"
     IconBackground "rgb:2/a/9"
     IconForeground "gray85"
     IconBorderColor "gray85"
@@ -45,7 +51,7 @@ Color
 #
 MoveDelta 3
 Function "move-or-lower" { f.move f.deltastop f.lower }
-Function "move-or-raise" { f.unfocus f.focus f.move f.deltastop f.raise }
+Function "move-or-raise" { f.move f.deltastop f.raise }
 Function "move-or-iconify" { f.move f.deltastop f.iconify }
 Function "focus-and-raise" { f.unfocus f.focus f.raise }
 
@@ -101,10 +107,24 @@ menu "windowops"
 		"Raise"			f.raise
 		"Lower"			f.lower
 		"Full Screen"			f.fullzoom
-		"a"			f.leftzoom
 		""			f.nop
 		"Focus"			f.focus
 		"Unfocus"		f.unfocus
 		""			f.nop
 		"Close"		f.delete
+}
+
+NoHighlight
+{
+  "TWDEWidget"
+}
+
+NoStackMode
+{
+  "TWDEWidget"
+}
+
+NoTitle 
+{
+  "TWDEWidget"
 }

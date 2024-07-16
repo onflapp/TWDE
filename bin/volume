@@ -1,12 +1,20 @@
 #!/bin/bash
 
+. $TWDE_HOME/lib/func.sh
+
 if [ "$1" = "up" ];then
   pactl -- set-sink-volume 0 +10%
+
+  NOW=`pactl -- get-sink-volume 0 | regexp '\/\s+(\d+)%\s+\/' 'Volume %s%%' '$1'`
+  messages "$NOW"
 elif [ "$1" = "down" ];then
   pactl -- set-sink-volume 0 -10%
+
+  NOW=`pactl -- get-sink-volume 0 | regexp '\/\s+(\d+)%\s+\/' 'Volume %s%%' '$1'`
+  messages "$NOW"
 elif [ "$1" = "mute" ];then
   pactl -- set-sink-mute 0 toggle
+
+  NOW=`pactl -- get-sink-mute 0`
+  messages "$NOW"
 fi
-
-
-pactl -- get-sink-volume 0
