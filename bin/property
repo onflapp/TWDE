@@ -1,18 +1,41 @@
 #!/bin/bash
 
 function print_property() {
+  if [ -z "$1" ];then
+    PAT="^.*\\(STRING\\) = \\\"(.*)\\\""
+    while IFS= read -r LINE ;do
+      if [[ "$LINE" =~ $PAT ]];then
+        echo "${BASH_REMATCH[1]}"
+      fi
+    done
+  else
+    PAT="^$1(.*?)\\(STRING\\) = \\\"(.*)\\\""
+    while IFS= read -r LINE ;do
+      if [[ "$LINE" =~ $PAT ]];then
+        echo "${BASH_REMATCH[1]}=${BASH_REMATCH[2]}"
+      fi
+    done
+  fi
 }
 
 if [ "$1" = "set" ];then
   NAME="_TWDE_$2"
   VAL="$3"
-
-  xprop -f "$NAME" 8s -set "$NAME" "$VAL"
-elif [ "$1" = "get" ];then
-  if [ -z "$2" ];then
-    xprop | print_property "_TWDE_"
-  else
-    NAME="_TWDE_$2"
-    xprop "_TWDE_$NAME" | print_property
+  if [ -n "$4" ];then
+    WID="-id $4"
   fi
+
+  xprop -f "$NAME" 8s -set "$NAME" "$VAL" $WID
+elif [ "$1" = "get" ];then
+  if [ -n "$3" ];then
+    WID="-id $3"
+  fi
+
+  xprop "_TWDE_$2" $WID | print_property
+elif [ "$1" = "list" ];then
+  if [ -n "$2" ];then
+    WID="-id $2"
+  fi
+
+  xprop $WID | print_property "_TWDE_"
 fi

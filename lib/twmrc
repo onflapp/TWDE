@@ -111,7 +111,7 @@ menu "windowops"
 		"Focus"			f.focus
 		"Unfocus"		f.unfocus
 		""			f.nop
-		"Paste Selection"		f.exec "(sleep 0.3;xdotool click 2)&"
+    `menu2twm $TWDE_HOME/etc/windowops.menu`
 		""			f.nop
 		"Close"		f.delete
 }

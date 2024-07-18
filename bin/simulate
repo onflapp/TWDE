@@ -1,0 +1,10 @@
+#!/bin/bash
+
+function xdo() {
+  sleep 0.3
+  xdotool $@
+}
+
+if [ "$1" = "click" ];then
+  xdo "click" "$2" &
+fi

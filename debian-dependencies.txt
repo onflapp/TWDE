@@ -1,2 +1,4 @@
 twm
 xbindkeys
+xclip
+fzf

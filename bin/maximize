@@ -1,7 +1,11 @@
 #!/bin/bash
 
+#SIZE=`property get ORIGINAL_SIZE`
+
 source <(xdotool getwindowfocus getwindowgeometry --shell)
 echo "$WIDTH"
 
-xdotool windowsize $WINDOW $WIDTH 100%
-xdotool windowmove $WINDOW $X 0
+#property set "ORIGINAL_SIZE" "$X $Y $WIDTH $HEIGHT"
+
+#xdotool windowsize $WINDOW $WIDTH 100%
+#xdotool windowmove $WINDOW $X 0

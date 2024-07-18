@@ -1,4 +1,8 @@
 #!/bin/bash
 
-xclip -o -selection
-echo -n "" | xclip -i
+. $TWDE_HOME/lib/func.sh
+
+xclip=`locate_command xclip`
+
+$xclip -o -selection
+echo -n "" | $xclip -i
