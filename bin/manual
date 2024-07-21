@@ -14,5 +14,5 @@ xrdb -merge "$CFG"
 
 . $TWDE_HOME/etc/manual.conf
 
-exec xterm -bg "$BACKGROUND_COLOR" -fg "$FOREGROUND_COLOR" \
+exec xterm -geometry "${WIDTH}x${HEIGHT}" -bg "$BACKGROUND_COLOR" -fg "$FOREGROUND_COLOR" \
     -class TWDETerm -e "man_info_lookup.sh $WORD" &

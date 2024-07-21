@@ -1,4 +1,4 @@
-terminal	F1
+selection | manual 	F1
 volume up	XF86AudioRaiseVolume
 volume down	XF86AudioLowerVolume
 volume mute	XF86AudioMute
