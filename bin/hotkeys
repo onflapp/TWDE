@@ -23,8 +23,8 @@ function cleanup() {
 function make_xk_config() {
   while IFS= read -r LINE ;do
     IFS=$'\t';V=(${LINE});IFS=
-    EXEC="${V[0]}"
-    KEYS="${V[1]}"
+    KEYS="${V[0]}"
+    EXEC="${V[1]}"
     echo -e "\"$EXEC\"\n  $KEYS"
   done < "$1" > "$2"
 }
@@ -53,8 +53,13 @@ if [ "$1" = "restart" ];then
   PID=`cat $PIDFILE`
   kill -USR1 "$PID"
   exit 0
+elif [ "$1" = "stop" ];then
+  PID=`cat $PIDFILE`
+  kill "$PID"
+  exit 0
 elif [ -f "$PIDFILE" ];then
   echo "running already"
+  echo "restart|stop"
   exit 1
 else
   trap cleanup EXIT

@@ -30,3 +30,14 @@ function encode_url() {
     esac
   done
 }
+
+function xroot_size() {
+  xwininfo -root | while read -r LINE;do
+    if [[ "$LINE" =~ Width:\ (.*) ]];then
+      echo "WIDTH=${BASH_REMATCH[1]}"
+    fi
+    if [[ "$LINE" =~ Height:\ (.*) ]];then
+      echo "HEIGHT=${BASH_REMATCH[1]}"
+    fi
+  done
+}

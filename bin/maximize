@@ -1,11 +1,25 @@
 #!/bin/bash
 
-#SIZE=`property get ORIGINAL_SIZE`
+. $TWDE_HOME/lib/func.sh
 
-source <(xdotool getwindowfocus getwindowgeometry --shell)
-echo "$WIDTH"
+source <(xroot_size)
+ROOT_WIDTH=$WIDTH
+ROOT_HEIGHT=$HEIGHT
 
-#property set "ORIGINAL_SIZE" "$X $Y $WIDTH $HEIGHT"
+WINDOW=`xdotool getwindowfocus`
 
-#xdotool windowsize $WINDOW $WIDTH 100%
-#xdotool windowmove $WINDOW $X 0
+source <(property get ORIGINAL_SIZE $WINDOW)
+if [ -z "$X" ];then
+  source <(xdotool getwindowgeometry --shell $WINDOW)
+
+  Y=$((Y - 40))
+  property set "ORIGINAL_SIZE" "X=$X;Y=$Y;WIDTH=$WIDTH;HEIGHT=$HEIGHT" $WINDOW
+
+  xdotool windowsize $WINDOW $WIDTH $((ROOT_HEIGHT - 23))
+  xdotool windowmove $WINDOW $X 2
+else
+  property set "ORIGINAL_SIZE" "" $WINDOW
+
+  xdotool windowsize $WINDOW $WIDTH $HEIGHT
+  xdotool windowmove $WINDOW $X $Y
+fi

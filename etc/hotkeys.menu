@@ -1,6 +1,6 @@
-selection | manual 	F1
-volume up	XF86AudioRaiseVolume
-volume down	XF86AudioLowerVolume
-volume mute	XF86AudioMute
-display up	XF86MonBrightnessUp
-display down	XF86MonBrightnessDown
+F1	selection | manual
+XF86AudioRaiseVolume	volume up
+XF86AudioLowerVolume	volume down
+XF86AudioMute	volume mute
+XF86MonBrightnessUp	display up
+XF86MonBrightnessDown	display down

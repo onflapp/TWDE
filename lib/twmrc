@@ -106,6 +106,7 @@ menu "windowops"
 		"Move"			f.move
 		"Raise"			f.raise
 		"Lower"			f.lower
+		"Maximize"			f.exec "async maximize"
 		"Full Screen"			f.fullzoom
 		""			f.nop
 		"Focus"			f.focus
