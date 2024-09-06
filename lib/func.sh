@@ -4,7 +4,7 @@ function regexp() {
 }
 
 function resize_xterm() {
-  echo -e "\e[4;$2;$1t"
+  echo -ne "\e[4;$2;$1t"
 }
 
 function locate_command() {
@@ -40,4 +40,52 @@ function xroot_size() {
       echo "HEIGHT=${BASH_REMATCH[1]}"
     fi
   done
+}
+
+function cursor_on() {
+  echo -ne "\e[?25h"
+}
+
+function cursor_off() {
+  echo -ne "\e[?25l"
+}
+
+function mouse_on() {
+  echo -ne "\e[?1002h\e[?25l"
+}
+
+function mouse_off() {
+  echo -ne "\e[?1002l"
+}
+
+function read_char() {
+  read -sn 1 CHAR
+  CHAR_CODE=`printf "%d" \'$CHAR `
+  MOUSE_COLUMN=""
+  MOUSE_ROW=""
+  MOUSE_TYPE=""
+
+  if [ "$CHAR_CODE" -eq 27 ];then
+    read -sn 1 CH
+    if [ "$CH" = "[" ];then
+      read -sn 1 CH
+      if [ "$CH" = "M" ];then
+        read -sn 1 CH
+        CH=`printf "%d" \'$CH `
+        if [ $CH -eq 0 ];then
+          MOUSE_EVENT="down"
+        else
+          MOUSE_EVENT="up"
+        fi
+
+        read -sn 1 CH
+        CH=`printf "%d" \'$CH `
+        MOUSE_COLUMN=$(( CH - 32 ))
+
+        read -sn 1 CH
+        CH=`printf "%d" \'$CH `
+        MOUSE_ROW=$(( CH - 32 ))
+      fi
+    fi
+  fi
 }

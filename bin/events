@@ -1,9 +1,11 @@
 #!/bin/perl
 
-$FOCUS_LOOP=0;
+use Time::HiRes qw(time);
+
+$EVENT_TS=0;
 
 sub window_events {
-  open(WIN, "xev -root -event substructure |");
+  open(WIN, "xev -root -event substructure -event focus |");
 
   $LAST_EVENT="";
 
@@ -12,35 +14,44 @@ sub window_events {
     if ($_ =~ /^MapNotify/ || $_ =~ /^DestroyNotify/) {
       $LAST_EVENT = $_;
     }
+    elsif ($_ =~ /^FocusIn/) {
+      $LAST_EVENT = $_;
+    }
     elsif ($LAST_EVENT ne "") {
       if ($_ eq "") {
         $LAST_EVENT = "";
       }
       else {
-        print("$LAST_EVENT\n");
-        print("$_\n");
-
-        focus_events();
+        process_event("$LAST_EVENT $_");
       }
     }
   }
   close(WIN);
 }
 
-sub focus_events {
-  if ($FOCUS_LOOP > 0) {
-    print("kill previous $FOCUS_LOOP\n");
-    kill($FOCUS_LOOP);
+sub process_event {
+  my ($e) = @_;
+  my $t = time();
+  my $d = $t - $EVENT_TS;
+
+  if ($e =~ /NotifyPointerRoot/ && $d > 0.1) {
+    focus_event();
+  }
+  elsif ($e =~ /NotifyNonlinearVirtual/ && $d > 0.1) {
+    focus_event();
   }
 
-  $FOCUS_LOOP = open(FIN, "xdotool search --onlyvisible . behave %@ focus getwindowname |");
-  if (fork() == 0) {
-    while(<FIN>) {
-      chomp();
-      print("X:$_\n");
-    }
-    close(FIN);
+  $EVENT_TS = $t;
+}
+
+sub focus_event {
+  open(FIN, "xdotool getmouselocation |");
+  while(<FIN>) {
+    chomp();
+    print("x:$_\n");
   }
+  close(FIN);
+
 }
 
 window_events();

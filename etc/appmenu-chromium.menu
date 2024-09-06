@@ -1,0 +1,2 @@
+new tab	simulate key Ctrl+T
+testB	simulate enter "ls -lrt"

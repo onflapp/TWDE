@@ -1,0 +1,20 @@
+#!/bin/bash
+
+EVENT="$1"
+COMMAND=""
+IFS_OLD="$IFS"
+
+while IFS= read -r LINE ;do
+  IFS=$'\t';V=(${LINE});IFS=
+  NAME="${V[0]}"
+  EXEC="${V[1]}"
+  if [ "$NAME" = "$EVENT" ];then
+    COMMAND="$EXEC"
+  fi
+done < "$TWDE_HOME/etc/events.menu"
+
+IFS="$IFS_OLD"
+
+if [ -n "$COMMAND" ];then
+  (sleep 0.1;exec $COMMAND)&
+fi

@@ -18,11 +18,11 @@ NoTitleHighlight
 TitleButtonBorderWidth 1
 TitlePadding 4
 #TitleFont "-adobe-helvetica-bold-r-normal--*-100-*-*-*-*-*-*"
-TitleFont "6x12"
-ResizeFont "6x12"
-MenuFont "6x12"
-IconFont "6x12"
-IconManagerFont "6x12"
+TitleFont "$FONT"
+ResizeFont "$FONT"
+MenuFont "$FONT"
+IconFont "$FONT"
+IconManagerFont "$FONT"
 #ClientBorderWidth
 
 Color
@@ -54,6 +54,7 @@ Function "move-or-lower" { f.move f.deltastop f.lower }
 Function "move-or-raise" { f.move f.deltastop f.raise }
 Function "move-or-iconify" { f.move f.deltastop f.iconify }
 Function "focus-and-raise" { f.unfocus f.focus f.raise }
+Function "move-or-focus-and-raise" { f.unfocus f.focus f.raise f.exec "event activate" f.move f.deltastop }
 
 #
 # Set some useful bindings.  Sort of uwm-ish, sort of simple-button-ish
@@ -66,7 +67,7 @@ Button1 = m : window|icon : f.function "move-or-lower"
 Button2 = m : window|icon : f.iconify
 Button3 = m : window|icon : f.function "move-or-raise"
 
-Button1 = : title : f.function "move-or-raise"
+Button1 = : title : f.function "move-or-focus-and-raise"
 Button2 = : title : f.raiselower
 
 Button1 = : icon : f.function "move-or-iconify"
@@ -117,17 +118,23 @@ menu "windowops"
 		"Close"		f.delete
 }
 
+LeftTitleButton "bitmapname" = f.menu "windowops"
+RightTitleButton "bitmapname" = f.lower
+
 NoHighlight
 {
-  "TWDEWidget"
+  "TWDEWidget",
+  "TWDEMenu"
 }
 
 NoStackMode
 {
-  "TWDEWidget"
+  "TWDEWidget",
+  "TWDEMenu"
 }
 
 NoTitle 
 {
-  "TWDEWidget"
+  "TWDEWidget",
+  "TWDEMenu"
 }

@@ -1,10 +1,25 @@
 #!/bin/bash
 
-function xdo() {
-  sleep 0.3
-  xdotool $@
-}
-
 if [ "$1" = "click" ];then
-  xdo "click" "$2" &
+  (sleep 0.1; xdotool "click" "$2")&
+  exit
+fi
+
+if [ "$1" = "type" ];then
+  shift
+  (sleep 0.1; xdotool "type" "$@")&
+  exit
+fi
+
+if [ "$1" = "key" ];then
+  shift
+  (sleep 0.1; xdotool "key" "$@")&
+  exit
+fi
+
+if [ "$1" = "enter" ];then
+  shift
+  echo "[$@]"
+  (sleep 0.1; xdotool "type" $@; xdotool key "Return")&
+  exit
 fi

@@ -25,7 +25,11 @@ if [ "$1" = "set" ];then
     WID="-id $4"
   fi
 
-  xprop -f "$NAME" 8s -set "$NAME" "$VAL" $WID
+  if [ -n "$VAL" ];then
+    xprop -f "$NAME" 8s -set "$NAME" "$VAL" $WID
+  else
+    xprop -remove "$NAME" $WID
+  fi
 elif [ "$1" = "get" ];then
   if [ -n "$3" ];then
     WID="-id $3"

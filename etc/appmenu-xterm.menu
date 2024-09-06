@@ -1,0 +1,2 @@
+testA	simulate enter ls
+testB	simulate enter "ls -lrt"

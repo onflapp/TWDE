@@ -1,0 +1,112 @@
+#!/bin/bash
+
+. /home/oflorian/src/TWDE/lib/func.sh
+
+function current_name() {
+  local IFS_OLD="$IFS"
+  local WID=`xdotool getwindowfocus`
+  local PAT="^WM_CLASS\\(STRING\\) = \\\"(.*)\\\","
+  xprop -id $WID | while IFS= read -r LINE ;do
+    if [[ "$LINE" =~ $PAT ]];then
+      echo "${BASH_REMATCH[1]}"
+    fi
+  done
+
+  IFS="$IFS_OLD"
+}
+
+function show_menu() {
+  local N="$TWDE_HOME/etc/$1"
+  if [ -f "$N" ];then
+    if [ "$N" != "$CURRENT_MENU" ];then
+      CURRENT_MENU="$N"
+      clear
+      echo -e "\e[4;32m    $NAME      \e[0m"
+      read_menu
+    fi
+    return 0
+  else
+    return 1
+  fi
+}
+
+function refresh() {
+  return
+}
+
+function read_menu() {
+  local IFS_OLD="$IFS"
+
+  while IFS= read -r LINE ;do
+    IFS=$'\t';V=(${LINE});IFS=
+    NAME="${V[0]}"
+    echo "$NAME"
+  done < "$CURRENT_MENU"
+
+  IFS="$IFS_OLD"
+}
+
+function exec_menu() {
+  local IFS_OLD="$IFS"
+  local N=$1
+  local C=1
+  local COMMAND=""
+
+  while IFS= read -r LINE ;do
+    IFS=$'\t';V=(${LINE});IFS=
+    NAME="${V[0]}"
+    EXEC="${V[1]}"
+    if [ $N -eq $C ];then
+      COMMAND="$EXEC"
+    fi
+    C=$(( $C + 1 ))
+  done < "$CURRENT_MENU"
+
+  IFS="$IFS_OLD"
+
+  if [ -n "$COMMAND" ];then
+    echo "[$COMMAND]"
+    (sleep 0.1;exec $COMMAND)&
+  fi
+}
+
+function process() {
+  trap refresh USR1
+  echo "$$" > /tmp/appmenu.pid
+
+  while [ 1 ];do
+    NAME=`current_name`
+    #xdotool windowraise $WINDOWID
+    show_menu "appmenu-$NAME.menu" || show_menu "appmenu.menu"
+    
+    mouse_on
+    read_char
+    if [ "$MOUSE_EVENT" = "down" ];then
+      exec_menu "$(( MOUSE_ROW - 1 ))"
+      read_char
+      mouse_off
+    fi
+  done
+}
+
+if [ "$1" = "refresh" ];then
+  PID=`cat /tmp/appmenu.pid`
+  if [ -n "$PID" ];then
+    kill -USR1 $PID
+  fi
+  exit
+fi
+
+if [ "$1" = "process" ];then
+  cursor_off
+  process
+  exit
+fi
+
+. $TWDE_HOME/etc/windowmanager.conf
+
+xterm -geometry 20x20 \
+  -bg $MENU_BACKGROUND_COLOR \
+  -fg $MENU_FOREGROUND_COLOR \
+  -fn $FONT \
+  -class TWDEMenu -e $0 "process"
