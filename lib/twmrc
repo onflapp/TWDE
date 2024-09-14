@@ -118,8 +118,8 @@ menu "windowops"
 		"Close"		f.delete
 }
 
-LeftTitleButton "bitmapname" = f.menu "windowops"
-RightTitleButton "bitmapname" = f.lower
+LeftTitleButton "$TWDE_HOME/lib/left.xbm" = f.menu "windowops"
+RightTitleButton "$TWDE_HOME/lib/right.xbm" = f.lower
 
 NoHighlight
 {
