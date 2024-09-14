@@ -1,3 +1,5 @@
 #!/bin/sh
 
-echo "configure keyboard"
+echo "configure mouse"
+
+synclient TapButton1=0 TapButton2=0 TapButton3=0 TapAndDragGesture=0 VertTwoFingerScroll=0

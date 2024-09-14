@@ -9,3 +9,5 @@ TWDETerm*allowWindowOps: true
 TWDETerm*background: $BACKGROUND_COLOR
 TWDETerm*foreground: $FOREGROUND_COLOR
 !TWDETerm*loginShell: true
+TWDETerm*locale: true
+TWDETerm*utf8: 1
