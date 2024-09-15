@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 trap restart_twm USR1
 trap stop_twm INT TERM
@@ -23,7 +23,9 @@ function cleanup() {
 function main_loop() {
   echo "creating config"
   CFG="$TWDE_HOME/var/twmrc"
-  prepareconf $TWDE_HOME/etc/windowmanager.conf "$TWDE_HOME/lib/twmrc" "$CFG"
+  prepareconf "$TWDE_HOME/lib/twmrc" \
+    $TWDE_HOME/etc/theme.conf \
+    $TWDE_HOME/etc/windowmanager.conf > "$CFG"
   
   if [ -f "$TWDE_HOME/etc/environment.conf" ];then
     . $TWDE_HOME/etc/environment.conf

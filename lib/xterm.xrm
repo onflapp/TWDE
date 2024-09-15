@@ -1,9 +1,10 @@
-TWDETerm*cursorColor: OrangeRed
+TWDETerm*cursorColor: $CURSOR_COLOR
+TWDETerm*pointerColor: $CURSOR_COLOR
 TWDETerm*cursorBlink: true
 TWDETerm*cursorOffTime: 600
 TWDETerm*cursorOnTime: 600
-TWDETerm*geometry: 110x34
-TWDETerm*highlightColor: gray20
+TWDETerm*geometry: $SIZE
+TWDETerm*highlightColor: $SELECTION_COLOR
 TWDETerm*metaSendsEscape: true
 TWDETerm*allowWindowOps: true
 TWDETerm*background: $BACKGROUND_COLOR
@@ -11,3 +12,21 @@ TWDETerm*foreground: $FOREGROUND_COLOR
 !TWDETerm*loginShell: true
 TWDETerm*locale: true
 TWDETerm*utf8: 1
+
+!!! colors
+TWDETerm*color0:     black
+TWDETerm*color1:     red3
+TWDETerm*color2:     green3
+TWDETerm*color3:     gold1
+TWDETerm*color4:     blue3
+TWDETerm*color5:     magenta4
+TWDETerm*color6:     cyan3
+TWDETerm*color7:     gray
+TWDETerm*color8:     gray30
+TWDETerm*color9:     red
+TWDETerm*color10:    green
+TWDETerm*color11:    yellow
+TWDETerm*color12:    blue
+TWDETerm*color13:    magenta3
+TWDETerm*color14:    cyan
+TWDETerm*color15:    white

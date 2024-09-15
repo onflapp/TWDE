@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 . $TWDE_HOME/lib/func.sh
 
@@ -9,10 +9,13 @@ if [ -z "$WORD" ] && [ -n "$1" ];then
 fi
 
 CFG="$TWDE_HOME/var/terminal.xrm"
-prepareconf $TWDE_HOME/etc/terminal.conf "$TWDE_HOME/lib/xterm.xrm" "$CFG"
+prepareconf "$TWDE_HOME/lib/xterm.xrm" \
+  $TWDE_HOME/etc/theme.conf \
+  $TWDE_HOME/etc/terminal.conf > $CFG
+
 xrdb -merge "$CFG"
 
 . $TWDE_HOME/etc/manual.conf
 
 exec xterm -geometry "${WIDTH}x${HEIGHT}" -bg "$BACKGROUND_COLOR" -fg "$FOREGROUND_COLOR" \
-    -class TWDETerm -e "man_info_lookup.sh $WORD" &
+    -name TWDETerm -class TWDETerm -e "man_info_lookup.sh $WORD" &

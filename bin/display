@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 . $TWDE_HOME/lib/func.sh
 
@@ -8,6 +8,9 @@ function do_xbacklight() {
   elif [ "$1" = "down" ];then
     xbacklight -dec 10
   fi
+
+  NOW=`xbacklight | regexp '^(\d+)' 'Brightness %s%%' '$1'`
+  messages "$NOW"
 }
 
 function do_udev() {
@@ -21,4 +24,6 @@ function do_udev() {
   messages "$NOW"
 }
 
-do_udev "$1"
+#do_udev "$1"
+
+do_xbacklight "$1"

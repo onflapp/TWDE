@@ -2,6 +2,11 @@
 
 . $TWDE_HOME/lib/func.sh
 
+if [ -z "$1" ];then
+  echo "volume up|down|mute"
+  exit 1
+fi
+
 if [ "$1" = "up" ];then
   pactl -- set-sink-volume 0 +10%
 

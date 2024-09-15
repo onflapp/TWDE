@@ -1,16 +1,24 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-CFG="$1"
-SRC="$2"
-DEST="$3"
+function usage() {
+  echo "prepareconf [template] [config...]"
+  exit 1
+}
 
-if [ -f "$CFG" ];then
-  . "$CFG"
-fi
+SRC="$1"
+CFG="$2"
+
+[ -z "$CFG" ] && usage
+
+shift
+for CFG in $@ ;do
+  if [ -f "$CFG" ];then
+    . "$CFG"
+  fi
+done
 
 while IFS= read -r LINE ;do
   L="${LINE//\"/\\\"}"
   eval "R=\"$L\""
   echo "$R"
-done < "$SRC" > "$DEST"
-
+done < "$SRC"
