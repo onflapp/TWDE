@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 trap restart_xk USR1
 trap stop_xk INT TERM

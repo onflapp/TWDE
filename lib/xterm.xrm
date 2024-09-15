@@ -15,12 +15,12 @@ TWDETerm*utf8: 1
 
 !!! colors
 TWDETerm*color0:     black
-TWDETerm*color1:     red3
-TWDETerm*color2:     green3
+TWDETerm*color1:     red1
+TWDETerm*color2:     green
 TWDETerm*color3:     gold1
-TWDETerm*color4:     blue3
-TWDETerm*color5:     magenta4
-TWDETerm*color6:     cyan3
+TWDETerm*color4:     blue
+TWDETerm*color5:     magenta2
+TWDETerm*color6:     cyan1
 TWDETerm*color7:     gray
 TWDETerm*color8:     gray30
 TWDETerm*color9:     red

@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+function make_ge_config() {
+  while IFS= read -r LINE ;do
+    IFS=$'\t';V=(${LINE});IFS=
+    KEYS="${V[0]}"
+    EXEC="${V[1]}"
+    echo -e "\"$EXEC\"\n  $KEYS"
+  done < "$1" > "$2"
+}
+
+function main_loop() {
+  IFS_OLD="$IFS"
+  $TWDE_HOME/libexec/gesture_helper | while IFS= read -r LINE ;do
+    if [ "$LINE" = "SCROLL_UP" ];then
+      xdotool click 5
+    fi
+    if [ "$LINE" = "SCROLL_DOWN" ];then
+      xdotool click 4
+    fi
+  done
+}
+
+main_loop

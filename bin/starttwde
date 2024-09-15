@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 RC="$HOME/.twderc"
 
@@ -23,6 +23,7 @@ function process() {
   init
   keyboard
   mouse
+  gestures&
   hotkeys&
   windowmanager
 }

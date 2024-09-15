@@ -63,12 +63,12 @@ Button1 = : root : f.menu "main"
 Button3 = : root : f.menu "windowops"
 Button3 = : title : f.menu "windowops"
 
-Button1 = m : window|icon : f.function "move-or-lower"
+Button1 = m : window|icon : f.function "focus-and-raise"
 Button2 = m : window|icon : f.iconify
-Button3 = m : window|icon : f.function "move-or-raise"
+Button3 = m : window|icon : f.function "move-or-lower"
+Button3 = m : title : f.raiselower
 
 Button1 = : title : f.function "move-or-focus-and-raise"
-Button2 = : title : f.raiselower
 
 Button1 = : icon : f.function "move-or-iconify"
 Button2 = : icon : f.iconify
