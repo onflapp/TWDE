@@ -1,7 +1,9 @@
 #!/bin/bash
 
 CFG="$TWDE_HOME/var/widget.xrm"
-prepareconf $TWDE_HOME/etc/theme.conf "$TWDE_HOME/lib/widget.xrm" "$CFG"
+prepareconf "$TWDE_HOME/lib/widget.xrm" \
+  $TWDE_HOME/etc/theme.conf > "$CFG"
+
 xrdb -merge "$CFG"
 
-exec xterm -class TWDEWidget -e "$@" &
+exec xterm -name TWDEWidget -class TWDEWidget -e "$@" &

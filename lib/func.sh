@@ -55,7 +55,7 @@ function mouse_on() {
 }
 
 function mouse_off() {
-  echo -ne "\e[?1002l"
+  echo -ne "\e[?1002l\e[?25h"
 }
 
 function read_char() {
@@ -73,9 +73,11 @@ function read_char() {
         read -sn 1 CH
         CH=`printf "%d" \'$CH `
         if [ $CH -eq 0 ];then
-          MOUSE_EVENT="down"
-        else
-          MOUSE_EVENT="up"
+          MOUSE_EVENT="button_down"
+        elif [ $CH -eq 97 ];then
+          MOUSE_EVENT="scroll_down"
+        elif [ $CH -eq 96 ];then
+          MOUSE_EVENT="scroll_up"
         fi
 
         read -sn 1 CH
@@ -85,6 +87,7 @@ function read_char() {
         read -sn 1 CH
         CH=`printf "%d" \'$CH `
         MOUSE_ROW=$(( CH - 32 ))
+
       fi
     fi
   fi

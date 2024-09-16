@@ -1,25 +1,72 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+function usage() {
+  echo "volume up|down|mute"
+  exit 1
+}
+
+function control() {
+  if [ "$1" = "up" ];then
+    pactl -- set-sink-volume 0 +10%
+  elif [ "$1" = "down" ];then
+    pactl -- set-sink-volume 0 -10%
+  elif [ "$1" = "mute" ];then
+    pactl -- set-sink-mute 0 toggle
+
+    #NOW=`pactl -- get-sink-mute 0`
+  fi
+  read_volume
+}
+
+function read_volume() {
+  VOLUME=`pactl -- get-sink-volume 0 | regexp '\/\s+(\d+)%\s+\/' '%s' '$1'`
+}
+
+function cleanup() {
+  mouse_off
+  exit 1
+}
+
+function display() {
+  clear
+  echo -ne "[   up   ]\n"
+  echo -ne "    $VOLUME%\n"
+  echo -ne "[  down  ]"
+}
+
+function widget_mode() {
+  trap cleanup INT
+
+  read_volume
+  resize_xterm 64 48
+
+  while [ 1 ];do
+    display
+    mouse_on
+    read_char
+    if   [ "$MOUSE_EVENT" = "scroll_down" ];then
+      control "down"
+    elif [ "$MOUSE_EVENT" = "scroll_up" ];then
+      control "up"
+    elif [ "$MOUSE_EVENT" = "button_down" ];then
+      read_char #read mouse up
+
+      if [ $MOUSE_ROW -eq 1 ];then
+        control "up"
+      elif [ $MOUSE_ROW -eq 2 ];then
+        control "mute"
+      elif [ $MOUSE_ROW -eq 3 ];then
+        control "down"
+      fi
+
+    fi
+    mouse_off
+  done
+}
+
+[ -z "$1" ] && usage
 
 . $TWDE_HOME/lib/func.sh
 
-if [ -z "$1" ];then
-  echo "volume up|down|mute"
-  exit 1
-fi
-
-if [ "$1" = "up" ];then
-  pactl -- set-sink-volume 0 +10%
-
-  NOW=`pactl -- get-sink-volume 0 | regexp '\/\s+(\d+)%\s+\/' 'Volume %s%%' '$1'`
-  messages "$NOW"
-elif [ "$1" = "down" ];then
-  pactl -- set-sink-volume 0 -10%
-
-  NOW=`pactl -- get-sink-volume 0 | regexp '\/\s+(\d+)%\s+\/' 'Volume %s%%' '$1'`
-  messages "$NOW"
-elif [ "$1" = "mute" ];then
-  pactl -- set-sink-mute 0 toggle
-
-  NOW=`pactl -- get-sink-mute 0`
-  messages "$NOW"
-fi
+widget_mode
+#control

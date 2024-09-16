@@ -10,8 +10,9 @@ TWDETerm*allowWindowOps: true
 TWDETerm*background: $BACKGROUND_COLOR
 TWDETerm*foreground: $FOREGROUND_COLOR
 !TWDETerm*loginShell: true
-TWDETerm*locale: true
+!TWDETerm*locale: true
 TWDETerm*utf8: 1
+TWDETerm*vt100.charClass: 45-47:48,126:48
 
 !!! colors
 TWDETerm*color0:     black
@@ -19,7 +20,7 @@ TWDETerm*color1:     red1
 TWDETerm*color2:     green
 TWDETerm*color3:     gold1
 TWDETerm*color4:     blue
-TWDETerm*color5:     magenta2
+TWDETerm*color5:     magenta3
 TWDETerm*color6:     cyan1
 TWDETerm*color7:     gray
 TWDETerm*color8:     gray30
@@ -27,6 +28,6 @@ TWDETerm*color9:     red
 TWDETerm*color10:    green
 TWDETerm*color11:    yellow
 TWDETerm*color12:    blue
-TWDETerm*color13:    magenta3
+TWDETerm*color13:    magenta2
 TWDETerm*color14:    cyan
 TWDETerm*color15:    white

@@ -1,7 +1,9 @@
 TWDEWidget*cursorColor: $DESKTOP_COLOR
+TWDEWidget*pointerColor: white
 TWDEWidget*cursorBlink: false
 TWDEWidget*highlightColor: gray20
 TWDEWidget*metaSendsEscape: true
 TWDEWidget*allowWindowOps: true
 TWDEWidget*background: $DESKTOP_COLOR
-TWDEWidget*foreground: gray
+TWDEWidget*foreground: forestgreen
+TWDEWidget*pointerShape: sb_left_arrow

@@ -28,7 +28,7 @@ IconManagerFont "$FONT"
 Color
 {
     BorderColor "$BORDER_COLOR" {
-      "TWDEWidget" "darkgreen"
+      "TWDEWidget" "forestgreen"
     }
     DefaultBackground "$BACKGROUND_COLOR"
     DefaultForeground "$FOREGROUND_COLOR"
@@ -40,10 +40,10 @@ Color
     MenuTitleBackground "$BACKGROUND_COLOR"
     MenuTitleForeground "$ACTIVE_COLOR"
     IconBackground "$DESKTOP_COLOR"
-    IconForeground "gray"
-    IconBorderColor "gray85"
-    IconManagerBackground "rgb:2/a/9"
-    IconManagerForeground "gray85"
+    IconForeground "forestgreen"
+    IconBorderColor "forestgreen"
+    IconManagerBackground "$MENU_BACKGROUND_COLOR"
+    IconManagerForeground "$MENU_FOREGROUND_COLOR"
 }
 
 #

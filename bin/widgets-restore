@@ -1,0 +1,12 @@
+#!/bin/sh
+
+for DD in /tmp/*.cfg ;do
+	GEOMETRY=""
+	NAME=""
+	. $DD
+
+	if [ -n "$NAME" ] && [ -n "$GEOMETRY" ];then
+		export GEOMETRY
+		widget "$NAME" &
+	fi
+done

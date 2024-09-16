@@ -1,0 +1,53 @@
+#!/usr/bin/env perl
+
+sub saveconfig {
+	my ($name, $geo) = @_;
+	open(OUT, "> /tmp/$name.cfg");
+	print(OUT "GEOMETRY=\"$geo\"\n");
+	print(OUT "NAME=\"$name\"\n");
+	close(OUT);
+}
+
+sub wininfo {
+	my ($WINID) = @_;
+	my $GEO="";
+	open(WIN, "xwininfo -id $WINID |");
+	while(<WIN>) {
+		chomp();
+		if (m/^  \-geometry (.*?)$/) {
+			$GEO=$1;
+		}
+	}
+	close(WIN);
+	return $GEO;
+}
+
+sub list_widgets {
+	my $WINID="";
+	my $COMMAND="";
+	my $CLASS="";
+	open(IN, "xlsclients -l |");
+	while(<IN>) {
+		chomp();
+		if (m/^Window (.*?):$/) {
+			$WINID=$1;
+		}
+		elsif (m/^  Command:  (.*?)$/) {
+			$COMMAND=$1;
+		}
+		elsif (m/^  Instance\/Class:  (.*?)$/) {
+			$CLASS=$1;
+			if ($CLASS eq "xterm/Widget" && $COMMAND =~ m/\-e (.*?)$/) {
+				$CMD=$1;
+				$GEO=wininfo($WINID);
+
+				print("$GEO $CMD\n");
+				saveconfig($CMD, $GEO);
+			}
+		}
+
+	}
+	close(IN);
+}
+
+list_widgets();

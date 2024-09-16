@@ -5,3 +5,4 @@
 if [ -n "$DESKTOP_COLOR" ];then
   xsetroot -solid "$DESKTOP_COLOR"
 fi
+xsetroot -cursor_name sb_left_arrow

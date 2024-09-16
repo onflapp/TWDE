@@ -1,32 +1,39 @@
-#!/bin/perl
+#!/usr/bin/env bash
 
-sub get_val {
-  my ($f) = @_;
-  my $rv = "";
-  open(IN, "$f");
-  while(<IN>) {
-    chomp();
-    $rv = $_;
-  }
-  close(IN);
-  return $rv;
+function read_values() {
+  if [ -f /sys/class/power_supply/BAT0/charge_full ];then
+    FULL=`cat /sys/class/power_supply/BAT0/charge_full`
+  elif [ -f /sys/class/power_supply/BAT0/energy_full ];then
+    FULL=`cat /sys/class/power_supply/BAT0/energy_full`
+  fi
+
+  if [ -f /sys/class/power_supply/BAT0/charge_now ];then
+    NOW=`cat /sys/class/power_supply/BAT0/charge_now`
+  elif [ -f /sys/class/power_supply/BAT0/energy_now ];then
+    NOW=`cat /sys/class/power_supply/BAT0/energy_now`
+  fi
+
+  if [ -f /sys/class/power_supply/BAT0/status ];then
+    STAT=`cat /sys/class/power_supply/BAT0/status`
+  fi
+
+  VAL=$(( 100 * NOW / FULL ))
 }
 
-sub display {
-  $FULL = get_val("/sys/class/power_supply/BAT0/charge_full");
-  $FULL = get_val("/sys/class/power_supply/BAT0/energy_full") if ($FULL eq "");
-
-  $NOW = get_val("/sys/class/power_supply/BAT0/charge_now");
-  $NOW = get_val("/sys/class/power_supply/BAT0/energy_now") if ($NOW eq "");
-
-  $PER = int($NOW/$FULL*100);
-
-  print("\e[2J");
-  print("$PER%\n");
+function display() {
+  clear
+  echo -ne "$STAT\n"
+  echo -ne "$VAL%"
 }
 
-print("\e[4;64;64t");
-while (1) {
-  display();
-  sleep(2);
+function widget_mode() {
+  while [ 1 ];do
+    read_values
+    display
+    sleep 10
+  done
 }
+
+. $TWDE_HOME/lib/func.sh
+
+widget_mode
