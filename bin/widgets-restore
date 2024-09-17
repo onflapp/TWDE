@@ -1,12 +1,14 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
-for DD in /tmp/*.cfg ;do
+CFG_BASE="$TWDE_HOME/var"
+
+for DD in $CFG_BASE/*.cfg ;do
 	GEOMETRY=""
-	NAME=""
+	COMMAND=""
 	. $DD
 
-	if [ -n "$NAME" ] && [ -n "$GEOMETRY" ];then
+	if [ -n "$COMMAND" ] && [ -n "$GEOMETRY" ];then
 		export GEOMETRY
-		widget "$NAME" &
+		widget "$COMMAND" &
 	fi
 done

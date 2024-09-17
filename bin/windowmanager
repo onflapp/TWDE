@@ -17,7 +17,25 @@ function stop_twm() {
 }
 
 function cleanup() {
+  widgets-save
   rm "$PIDFILE"
+}
+
+function restore_widgets() {
+  if [ -n "$WIDGETS_RESTORED" ];then
+    return
+  fi
+
+  sleep 0.1
+  echo "restoring all widgets"
+  widgets-restore
+
+  WIDGETS_RESTORED="yes"
+}
+
+function save_widgets() {
+  echo "saving all widgets"
+  widgets-save
 }
 
 function main_loop() {
@@ -33,11 +51,14 @@ function main_loop() {
   fi
 
   twm -f "$CFG" &
+  restore_widgets
 
   WM_PID="$!"
   echo "running WM $WM_PID"
   wait "$WM_PID"
   
+  save_widgets
+
   if [ "$STATUS" = "restarting" ];then
     echo "restarting"
     STATUS="running"
@@ -53,6 +74,7 @@ if [ "$1" = "restart" ];then
 else
   trap cleanup EXIT
   echo "$$" > "$PIDFILE"
+  
   while [ "$STATUS" = "running" ];do
     sleep 0.5
     desktop

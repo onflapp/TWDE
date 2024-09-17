@@ -1,3 +1,16 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 echo "configure keyboard"
+
+. $TWDE_HOME/etc/keyboard.conf
+
+export SWAP_FN FN_MODE SWAP_ALT_CMD
+$TWDE_HOME/libexec/keyboard_helper >/dev/null
+
+if [ -f "$HOME/.Xmodmap" ];then
+  xmodmap $HOME/.Xmodmap
+fi
+
+if [ -n "$REPEAT_DELAY" ] && [ -n "$REPEAT_RATE" ];then
+  xset r rate $REPEAT_DELAY $REPEAT_RATE
+fi

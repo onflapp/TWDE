@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+
+. $TWDE_HOME/lib/func.sh
+
+function display() {
+  local IFS_OLD="$IFS"
+
+  clear
+  while IFS= read -r LINE ;do
+    IFS=$'\t';V=(${LINE});IFS=
+    NAME="${V[0]}"
+    echo "$NAME"
+  done < "$CURRENT_MENU"
+
+  IFS="$IFS_OLD"
+}
+
+function exec_menu() {
+  local IFS_OLD="$IFS"
+  local N=$1
+  local C=1
+  local COMMAND=""
+
+  while IFS= read -r LINE ;do
+    IFS=$'\t';V=(${LINE});IFS=
+    NAME="${V[0]}"
+    EXEC="${V[1]}"
+    if [ $N -eq $C ];then
+      COMMAND="$EXEC"
+    fi
+    C=$(( $C + 1 ))
+  done < "$CURRENT_MENU"
+
+  IFS="$IFS_OLD"
+
+  if [ -n "$COMMAND" ];then
+    echo "[$COMMAND]"
+    (sleep 0.1;exec $COMMAND)&
+  fi
+}
+
+function process() {
+  trap refresh USR1
+
+  while [ 1 ];do
+    display
+    mouse_on
+    read_char
+    if [ "$MOUSE_EVENT" = "button_down" ];then
+      exec_menu "$(( MOUSE_ROW ))"
+      read_char
+      mouse_off
+    fi
+  done
+}
+
+CURRENT_MENU="$1"
+process

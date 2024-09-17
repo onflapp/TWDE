@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-. /home/oflorian/src/TWDE/lib/func.sh
+. $TWDE_HOME/lib/func.sh
 
 function current_name() {
   local IFS_OLD="$IFS"

@@ -63,10 +63,8 @@ Button1 = : root : f.menu "main"
 Button3 = : root : f.menu "windowops"
 Button3 = : title : f.menu "windowops"
 
-Button1 = m : window|icon : f.function "focus-and-raise"
+Button1 = m : window|icon : f.function "move-or-lower"
 Button2 = m : window|icon : f.iconify
-Button3 = m : window|icon : f.function "move-or-lower"
-Button3 = m : title : f.raiselower
 
 Button1 = : title : f.function "move-or-focus-and-raise"
 
@@ -120,6 +118,12 @@ menu "windowops"
 
 LeftTitleButton "$TWDE_HOME/lib/left.xbm" = f.menu "windowops"
 RightTitleButton "$TWDE_HOME/lib/right.xbm" = f.lower
+
+IconManagerDontShow
+{
+  "TWDEWidget",
+  "TWDEMenu"
+}
 
 NoHighlight
 {

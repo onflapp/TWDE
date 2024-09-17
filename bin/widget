@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 CFG="$TWDE_HOME/var/widget.xrm"
 prepareconf "$TWDE_HOME/lib/widget.xrm" \
@@ -6,4 +6,8 @@ prepareconf "$TWDE_HOME/lib/widget.xrm" \
 
 xrdb -merge "$CFG"
 
-exec xterm -name TWDEWidget -class TWDEWidget -e "$@" &
+if [ -n "$GEOMETRY" ];then
+  LOC="-geometry $GEOMETRY"
+fi
+
+exec xterm $LOC -name TWDEWidget -class TWDEWidget -e "$@" &
