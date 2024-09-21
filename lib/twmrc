@@ -17,12 +17,11 @@ RandomPlacement
 NoTitleHighlight
 TitleButtonBorderWidth 1
 TitlePadding 4
-#TitleFont "-adobe-helvetica-bold-r-normal--*-100-*-*-*-*-*-*"
-TitleFont "$FONT"
-ResizeFont "$FONT"
-MenuFont "$FONT"
-IconFont "$FONT"
-IconManagerFont "$FONT"
+TitleFont "$APP_FONT"
+ResizeFont "$APP_FONT"
+MenuFont "$APP_FONT"
+IconFont "$APP_FONT"
+IconManagerFont "$APP_FONT"
 #ClientBorderWidth
 
 Color
@@ -66,7 +65,7 @@ Button3 = : title : f.menu "windowops"
 Button1 = m : window|icon : f.function "move-or-lower"
 Button2 = m : window|icon : f.iconify
 
-Button1 = : title : f.function "move-or-focus-and-raise"
+Button1 = : title : f.function "move-or-raise"
 
 Button1 = : icon : f.function "move-or-iconify"
 Button2 = : icon : f.iconify
@@ -121,24 +120,24 @@ RightTitleButton "$TWDE_HOME/lib/right.xbm" = f.lower
 
 IconManagerDontShow
 {
-  "TWDEWidget",
+  "TWDEWidget"
   "TWDEMenu"
 }
 
 NoHighlight
 {
-  "TWDEWidget",
+  "TWDEWidget"
   "TWDEMenu"
 }
 
 NoStackMode
 {
-  "TWDEWidget",
+  "TWDEWidget"
   "TWDEMenu"
 }
 
 NoTitle 
 {
-  "TWDEWidget",
+  "TWDEWidget"
   "TWDEMenu"
 }

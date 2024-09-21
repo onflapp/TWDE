@@ -22,11 +22,23 @@ function read_values() {
 
 function display() {
   clear
-  echo -ne "$STAT\n"
+  if   [ "$VAL" = "100" ];then
+    echo -e "FULL"
+  elif [ "$STAT" = "Discharging" ];then
+    echo -e "BAT"
+  elif [ "$STAT" = "Charging" ];then
+    echo -e "POWER"
+  else
+    echo -e "---"
+  fi
+
   echo -ne "$VAL%"
 }
 
 function widget_mode() {
+  cursor_off
+  resize_xterm 64 48
+
   while [ 1 ];do
     read_values
     display

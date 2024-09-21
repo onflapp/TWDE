@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+CFG="$TWDE_HOME/var/dialog.xrm"
+prepareconf "$TWDE_HOME/lib/dialog.xrm" \
+  $TWDE_HOME/etc/theme.conf > "$CFG"
+
+xrdb -merge "$CFG"
+
+exec xterm $LOC -name TWDEDialog -class TWDEDialog -e "$@" &

@@ -9,6 +9,8 @@ for DD in $CFG_BASE/*.cfg ;do
 
 	if [ -n "$COMMAND" ] && [ -n "$GEOMETRY" ];then
 		export GEOMETRY
+		sleep 0.1
 		widget "$COMMAND" &
+		wait $!
 	fi
 done

@@ -1,0 +1,30 @@
+#!/bin/bash
+
+[ -z "$REQUEST" ] && exec hsh $0
+
+. $TWDE_HOME/etc/keyboard.conf
+
+cat << EOF
+<html>
+<head><title>test</title></head>
+<body>
+  <h1>Hello ${REQUEST_valA}</h1>
+  <form arction="/apply">
+    <h3>Repeat Delay: </h3>
+    <input name="valA">$REPEAT_DELAY</input>
+
+    <h3>Repeat Rate: </h3>
+    <input name="valB">$REPEAT_RATE</input>
+
+    <h3>Repeat Rate: </h3>
+    <input name="valC" type="checkbox">$REPEAT_RATE</input>
+
+    <hr>
+    <center>
+      <button>[ Cancel ]</button>
+      <button>[ Submit ]</button>
+    </center>
+  </form>
+</body>
+</html>
+EOF

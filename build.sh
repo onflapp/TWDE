@@ -3,8 +3,10 @@
 cd src
 make install
 
-chown root:root $TWDE_HOME/libexec/gesture_helper
-chmod 4775 $TWDE_HOME/libexec/gesture_helper
+cp gesture_helper ../libexec
+chown root:root ../libexec/gesture_helper
+chmod 4775      ../libexec/gesture_helper
 
-chown root:root $TWDE_HOME/libexec/keyboard_helper
-chmod 4775 $TWDE_HOME/libexec/keyboard_helper
+cp keyboard_helper ../libexec
+chown root:root ../libexec/keyboard_helper
+chmod 4775      ../libexec/keyboard_helper

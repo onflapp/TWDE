@@ -1,26 +1,21 @@
 #!/usr/bin/env bash
 
-function setup() {
-  VAL=`timedatectl list-timezones | fzf`
-
-  if [ -n "$VAL" ];then
-    storeconf "$TWDE_HOME/etc/environment.conf" "TZ" "$VAL"
-  fi
-}
-
 function display() {
-	date
-	echo "---"
-	cal
+	T=`date +%R`
+	D=`date +%x`
+
+  clear
+	echo -ne "$T\n"
+  echo -ne "---\n"
+  echo -ne "$D"
 }
 
 function widget_mode() {
   cursor_off
-  resize_xterm 64 48
+  resize_xterm 80 48
 
   while [ 1 ];do
-    OUT=`display`
-    echo -e "\e[2J$OUT"
+    display
     sleep 30
   done
 }

@@ -4,6 +4,7 @@ gesture_helper: gesture_helper.c
 keyboard_helper: keyboard_helper.c
 	gcc keyboard_helper.c -o keyboard_helper
 
-install: gesture_helper keyboard_helper
-	cp ./gesture_helper ${TWDE_HOME}/libexec
-	cp ./keyboard_helper ${TWDE_HOME}/libexec
+events_helper: events_helper.c
+	gcc events_helper.c -lX11 -o events_helper
+
+all: gesture_helper keyboard_helper events_helper

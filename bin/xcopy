@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+. $TWDE_HOME/lib/func.sh
+
+xclip=`locate_command xclip`
+T=/tmp/$$.copy.tmp
+
+cat > $T
+$xclip -i -selection clipboard $T
+rm $T

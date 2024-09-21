@@ -1,0 +1,313 @@
+#!/usr/bin/perl
+
+use Cwd;
+use IO::Socket;
+use Time::HiRes qw(usleep);
+use File::Path qw(make_path);
+use POSIX qw(strftime);
+
+$VERBOSE=0;
+$VERBOSE=1 if ($ENV{'DEBUG'});
+$HOME=$ENV{'HOME'};
+
+#### needed to clean dead child processes
+$SIG{CHLD} = 'IGNORE';
+$SIG{PIPE} = 'IGNORE';
+$SIG{INT} = *cleanup;
+$SIG{TERM} = *close_all;
+
+sub DEBUG {
+	print (STDERR "@_\n") if ($VERBOSE);
+}
+
+sub cleanup {
+	exit 0;
+}
+
+sub close_all {
+  DEBUG("shutdown $SERVER_PID");
+  close($server);
+
+  kill(15, $SERVER_PID);
+}
+
+sub make_args {
+  my $path = "";
+  my $i = index($REQUEST, "?");
+ 
+  if ($i > 0) {
+    $path = URLDecode(substr($REQUEST, 0, $i));
+    my $n = "";
+    my $v = "";
+    my $q = substr($REQUEST, $i + 1);
+    my @a = split('&', $q);
+    foreach(@a) {
+      $v = $_;
+      $i = index($v, "=");
+      if ($i > 0) {
+        $n = substr($v, 0, $i);
+        $v = URLDecode(substr($v, $i + 1));
+        if ($n ne "") {
+          DEBUG("arg: $n=$v");
+          $ENV{"REQUEST_$n"} = $v;
+        }
+      }
+    }
+  }
+  else {
+    $path = URLDecode($REQUEST);
+  }
+
+  $ENV{'REQUEST'} = $REQUEST;
+  $ENV{'REQUEST_PATH'} = $path;
+  $ENV{'REQUEST_FULL'} = $REQUEST_FULL;
+
+  return "";
+}
+
+sub GMTtime {
+	my $s = strftime ("%a, %e %b %Y %H:%M:%S", localtime);
+	return $s;
+}
+
+sub URLDecode {
+		my $theURL = $_[0];
+		$theURL =~ tr/+/ /;
+		$theURL =~ s/%([a-fA-F0-9]{2,2})/chr(hex($1))/eg;
+		$theURL =~ s/<!--(.|\n)*-->//g;
+		return $theURL;
+}
+
+sub URLEncode {
+	my $theURL = $_[0];
+	$theURL =~ s/([^\w\/\.\-\_:])/"%" . uc(sprintf("%2.2x",ord($1)))/eg;
+	return $theURL;
+}
+
+sub get_mime {
+	my ($f) = @_;
+	if ($f =~ /\.html$/ || $f =~ /\.htm$/) {
+		return "text/html";
+	}
+	elsif ($f =~ /\.css$/) {
+		return "text/css";
+	}
+	elsif ($f =~ /\.png$/) {
+		return "image/png";
+	}
+	elsif ($f =~ /\.jpg$/) {
+		return "image/jpeg";
+	}
+	elsif ($f =~ /\.svg$/) {
+		return "image/svg+xml";
+	}
+	elsif ($f =~ /.manifest/) {
+		return "text/application-manifest";
+	}
+	elsif ($f =~ /\.js$/) {
+		return "application/javascript";
+	}
+	else {
+		open (MIN, "file -i '$f' |");
+		my $l = <MIN>;
+		$l =~ m/\: (.*)$/;
+		$l = $1;
+		close (MIN);
+		
+		if ($l eq "") {
+			return "text/html";
+		}
+		else {
+			return $l;
+		}
+	}
+}
+
+sub read_line {
+	my $line = "";
+	my $buff = "";
+	my $rv = 1;
+
+	while ($rv) {
+		$rv = read ($client, $buff, 1);
+		$buff = "$buff";
+
+		if ($rv) {
+			$line .= $buff;
+			if (ord($buff) == 10) {
+				last;
+			}
+		}
+		elsif (length ($line) == 0) {
+			return -1;
+		}
+	}
+
+	if ($line eq "") {
+		return -1;
+	}
+	else {
+		$line =~ s/\n|\r//g;
+		return $line;
+	}
+}
+
+sub HANDLE_REQUEST {
+  my $txt = "";
+  my $args = make_args();
+
+  open(XIN, "$MAIN_SCRIPT $args |");
+  while(<XIN>) {
+    $txt .= $_;
+  }
+  close(XIN);
+
+  my $sz = length($txt);
+
+  HTTP_HEAD("text/html", $sz);
+  print($client $txt);
+}
+
+sub HTTP_NOT_FOUND {
+	print ($client "HTTP/1.1 404 Not Found\n");
+	print ($client "Date: " . GMTtime () . " GMT\n");
+	print ($client "Server: WServ/1\n");
+	print ($client "Connection: Close\n");
+
+	print ($client "\n");
+}
+
+sub HTTP_ERROR {
+	print ($client "HTTP/1.1 500 ERROR\n");
+	print ($client "Date: " . GMTtime () . " GMT\n");
+	print ($client "Server: WServ/1\n");
+	print ($client "Connection: Close\n");
+	print ($client "Content-Length: $size\n") if ($size ne "");
+
+	print ($client "\n");
+}
+
+sub HTTP_HEAD {
+	my ($mimetype, $size) = @_;
+	$mimetype = "text/plain" if ($mimetype eq "");
+
+	print ($client "HTTP/1.1 200 OK\n");
+	print ($client "Date: " . GMTtime () . " GMT\n");
+	print ($client "Server: WServ/1\n");
+	print ($client "Access-Control-Allow-Origin: *\n");
+	print ($client "Connection: Close\n");
+	print ($client "Content-Type: $mimetype\n");
+	print ($client "Content-Length: $size\n") if ($size ne "");
+
+	print ($client "\n");
+}
+
+sub launch_browser {
+  DEBUG("my pid:$$, server pid:$SERVER_PID");
+
+  system("elinks http://localhost:$PORT/");
+}
+
+sub launch_server {
+  $server = new IO::Socket::INET ( Listen    => 10,
+                                   Proto     => 'tcp',
+                                   Reuse     => 1,
+                                 );
+  die "Socket could not be created. Reason: $!\n" unless ($server);
+
+  $PORT = $server->sockport();
+
+  $SERVER_PID = fork();
+
+  if ($SERVER_PID != 0) {
+    DEBUG("server $SERVER_PID");
+    return;
+  }
+
+  DEBUG("listening on port: $PORT, pid $$\n");
+
+  $REQUEST_SIZE = 0;
+  $REQUEST_METHOD = "";
+  $REQUEST_FULL = "";
+  $REQUEST = "";
+
+  $server_running = 1;
+
+  while (($client = $server->accept()) && $server_running) {
+    if (fork () == 0) {
+      my $getq = "";
+      my $postd = "";
+      my $inhead = 1;
+      $client->autoflush(1);
+
+      while (($line = read_line()) != -1) {
+        $getq = $line if ($getq eq "");
+
+        if ($line =~ m/Content-Length: (\d+?)$/) {
+          $REQUEST_SIZE = $1;
+        }
+
+        DEBUG($line);
+
+        if ($inhead && $line eq "") {
+          @rq = split (' ', $getq);
+
+          $REQUEST_FULL = $getq;
+          $REQUEST_METHOD = $rq[0];
+          $REQUEST = $rq[1];
+
+          $inhead = 0;
+
+          DEBUG("REQUEST=[$REQUEST]");
+
+          if ($REQUEST_METHOD eq "GET" && $REQUEST eq "/favicon.ico") {
+            HTTP_NOT_FOUND();
+            last;
+          }
+          elsif ($REQUEST_METHOD eq "GET" && $REQUEST eq "/quit") {
+            HANDLE_REQUEST();
+
+            kill(15, $PID);
+            last;
+          }
+          elsif ($REQUEST_METHOD eq "GET") {
+            HANDLE_REQUEST();
+            last;
+          }
+          else {
+            HTTP_NOT_FOUND();
+            last;
+          }
+        }
+      }
+
+      close ($client);
+      exit;
+    }
+    else {
+      close ($client);
+      next;
+    }
+  }
+
+  close ($server);
+
+  DEBUG("server is done");
+  exit 0;
+}
+
+$MAIN_SCRIPT = $ARGV[0];
+$SERVER_PID = -1;
+$PORT = -1;
+$PID = $$;
+
+if ($MAIN_SCRIPT eq "") {
+  print(STDERR "hsh [script]\n");
+  exit 1;
+}
+
+launch_server();
+launch_browser();
+
+kill(15, -$$);
+exit 0;

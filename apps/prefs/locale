@@ -1,0 +1,45 @@
+#!/bin/bash
+
+[ -z "$REQUEST" ] && exec hsh $0
+
+. $TWDE_HOME/etc/keyboard.conf
+
+function list_timezones() {
+  echo "<select>"
+  for DD in `timedatectl list-timezones`;do
+    echo "<option>$DD</option>"
+  done
+  echo "</select>"
+}
+
+function list_locales() {
+  echo "<select>"
+  for DD in `localectl list-locales`;do
+    echo "<option>$DD</option>"
+  done
+  echo "</select>"
+}
+
+
+cat << EOF
+<html>
+<head><title>test</title></head>
+<body>
+  <h1>Hello ${REQUEST_valA}</h1>
+  <form arction="/apply">
+    <h3>Time Zone: </h3>
+    `list_timezones`
+
+    <h3>Locale: </h3>
+    `list_locales`
+
+    <hr>
+
+    <center>
+      <button>[ Cancel ]</button>
+      <button>[ Submit ]</button>
+    </center>
+  </form>
+</body>
+</html>
+EOF

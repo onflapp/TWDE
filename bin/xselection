@@ -1,0 +1,11 @@
+#!/bin/bash
+
+. $TWDE_HOME/lib/func.sh
+
+xclip=`locate_command xclip`
+T=/tmp/$$.selection.tmp
+
+$xclip -o -selection > $T
+#echo -n "" | $xclip -i
+cat $T
+rm $T

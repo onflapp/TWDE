@@ -1,0 +1,10 @@
+TWDEDialog*cursorColor: red
+TWDEDialog*pointerColor: white
+TWDEDialog*cursorBlink: false
+TWDEDialog*highlightColor: gray20
+TWDEDialog*metaSendsEscape: true
+TWDEDialog*allowWindowOps: true
+TWDEDialog*background: black
+TWDEDialog*foreground: gray
+TWDEDialog*font: $APP_FONT
+TWDEDialog*pointerShape: sb_left_arrow

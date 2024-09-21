@@ -26,7 +26,7 @@ function restore_widgets() {
     return
   fi
 
-  sleep 0.1
+  sleep 0.2
   echo "restoring all widgets"
   widgets-restore
 

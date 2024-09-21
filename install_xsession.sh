@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 if [ -z "$TWDE_HOME" ];then
   TWDE_HOME=`pwd`
@@ -11,10 +11,11 @@ echo ""
 T="/tmp/$$twde.desktop"
 
 export TWDE_HOME
-./bin/prepareconf - ./lib/TWDE.desktop "$T"
+$TWDE_HOME/bin/prepareconf ./lib/TWDE.desktop - > "$T"
 
 if ! [ -f "$HOME/.twderc" ];then
   echo "TWDE_HOME=$TWDE_HOME" > "$HOME/.twderc"
 fi
 
-sudo mv "$T" /usr/share/xsessions/TWDE.desktop
+mv "$T" /usr/share/xsessions/TWDE.desktop
+ln -s $TWDE_HOME/bin/starttwde /usr/bin/starttwde

@@ -4,5 +4,4 @@
 
 xclip=`locate_command xclip`
 
-$xclip -o -selection
-echo -n "" | $xclip -i
+$xclip -o -selection clipboard

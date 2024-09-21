@@ -1,0 +1,53 @@
+#!/bin/bash
+
+[ -z "$REQUEST" ] && exec hsh $0
+
+. $TWDE_HOME/etc/keyboard.conf
+
+function list_models() {
+  echo "<select>"
+  for DD in `localectl list-x11-keymap-models`;do
+    echo "<option>$DD</option>"
+  done
+  echo "</select>"
+}
+
+function list_layouts() {
+  echo "<select>"
+  for DD in `localectl list-x11-keymap-models`;do
+    echo "<option>$DD</option>"
+  done
+  echo "</select>"
+}
+
+
+cat << EOF
+<html>
+<head><title>test</title></head>
+<body>
+  <h1>Hello ${REQUEST_valA}</h1>
+  <form arction="/apply">
+    <h3>Repeat Delay: </h3>
+    <input name="valA">$REPEAT_DELAY</input>
+
+    <h3>Repeat Rate: </h3>
+    <input name="valB">$REPEAT_RATE</input>
+
+    <h3>Keyboard Model: </h3>
+    `list_models`
+    `list_layouts`
+
+    <h3>Repeat Rate: </h3>
+    <input name="valC" type="checkbox">$REPEAT_RATE</input>
+
+    <hr>
+    <center>
+      <button>[ Cancel ]</button>
+      <button>[ Submit ]</button>
+    </center>
+  </form>
+</body>
+</html>
+EOF
+
+# setxkbmap
