@@ -21,7 +21,8 @@ int write_val(char* path, char* val)
 int read_val(char* name, char* path) 
 {
   FILE* fl = fopen(path, "r");
-  char buff[1];
+  char buff[2];
+  memcpy(buff, "\0", sizeof(buff));
 
   if (fl) {
     fread(buff, 1, 1, fl);
