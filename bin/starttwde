@@ -1,31 +1,47 @@
 #!/usr/bin/env bash
 
-RC="$HOME/.twderc"
+function init_home() {
+  mkdir -p "$TWDE_HOME/var" 2>/dev/null
+}
 
-if [ -f "$RC" ];then
-  . "$RC"
-  export TWDE_HOME
-fi
+function init_exec() {
+  $TWDE_HOME/libexec/init.d/$1 $2
+}
 
-if ! [ -x "$TWDE_HOME/bin/windowmanager" ];then
-  echo "window manager not found, is TWDE_HOME set properly?"
-  exec xterm
+function process() {
+  echo "starting"
+  init_home
+
+  init_exec keyboard start
+  init_exec mouse start
+  init_exec display start
+  init_exec desktop start
+
+  #$D/gestures&
+  #hotkeys&
+
+  echo "about to launch windowmanager"
+  init_exec wm
+  echo "windowmanager exited"
+
+  echo "stopping"
+  init_exec display stop
+}
+
+if [ -z "$TWDE_HOME" ];then
+  B=`realpath "$0"`
+  B=`dirname "$B"`
+  B=`dirname "$B"`
+  export TWDE_HOME="$B"
 fi
 
 export TWDE_LOG="/tmp/$UID-desktop.log"
 export PATH="$TWDE_HOME/bin:$TWDE_HOME/libexec:$PATH"
 
-function init() {
-  mkdir -p "$TWDE_HOME/var" 2>/dev/null
-}
-
-function process() {
+if [ "x$1" == "x--safe-mode" ];then
   init
-  keyboard
-  mouse
-  gestures&
-  hotkeys&
-  windowmanager
-}
+  echo "safe mode"
+  exec xterm
+fi
 
 process > $TWDE_LOG

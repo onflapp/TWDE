@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+. "$TWDE_HOME/etc/theme.conf"
+
+function restore_screen() {
+  autorandr -l twde
+}
+
+function save_screen() {
+  autorandr --force -s twde
+}
+
+if [ "$1" = "start" ];then
+  restore_screen
+fi
+if [ "$1" = "stop" ];then
+  save_screen
+fi

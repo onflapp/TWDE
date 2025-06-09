@@ -6,7 +6,7 @@ use Time::HiRes qw(usleep);
 use File::Path qw(make_path);
 use POSIX qw(strftime);
 
-$VERBOSE=0;
+$VERBOSE=1;
 $VERBOSE=1 if ($ENV{'DEBUG'});
 $HOME=$ENV{'HOME'};
 
@@ -205,7 +205,7 @@ sub HTTP_HEAD {
 sub launch_browser {
   DEBUG("my pid:$$, server pid:$SERVER_PID");
 
-  system("elinks http://localhost:$PORT/");
+  system("elinks -localhost 1 -auto-submit 1 http://localhost:$PORT/");
 }
 
 sub launch_server {

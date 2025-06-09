@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+
+function show_batery_info() {
+  if [ -f /sys/class/power_supply/BAT0/charge_full ];then
+    FULL=`cat /sys/class/power_supply/BAT0/charge_full`
+  elif [ -f /sys/class/power_supply/BAT0/energy_full ];then
+    FULL=`cat /sys/class/power_supply/BAT0/energy_full`
+  fi
+
+  if [ -f /sys/class/power_supply/BAT0/charge_now ];then
+    NOW=`cat /sys/class/power_supply/BAT0/charge_now`
+  elif [ -f /sys/class/power_supply/BAT0/energy_now ];then
+    NOW=`cat /sys/class/power_supply/BAT0/energy_now`
+  fi
+
+  if [ -f /sys/class/power_supply/BAT0/status ];then
+    STAT=`cat /sys/class/power_supply/BAT0/status`
+  fi
+
+  VAL=$(( 100 * NOW / FULL ))
+
+  if   [ "$VAL" = "100" ];then
+    echo "status=FULL"
+  elif [ "$STAT" = "Discharging" ];then
+    echo "status=BAT"
+  elif [ "$STAT" = "Charging" ];then
+    echo "status=POWER"
+  fi
+
+  echo "value=$VAL%"
+}
+
+function usage() {
+  echo "power"
+  echo "power show_batery_info"
+
+  exit 1
+}
+
+if [ -z "$1" ];then
+  usage
+else
+  "$1" "$2" "$3" "$4"
+fi

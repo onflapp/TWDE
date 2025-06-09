@@ -1,0 +1,90 @@
+#!/usr/bin/env bash
+
+function list_screens() {
+  xrandr | while read -r line ;do
+    if [[ "$line" =~ ^(.*)\ connected\ (.*)$ ]];then
+      display_name="${BASH_REMATCH[1]}"
+      display_info="${BASH_REMATCH[2]}"
+      echo "$display_name"
+    fi
+  done
+}
+
+function show_screen() {
+  if [ "$2" = "resolutions" ];then
+    xrandr | while read -r line ;do
+      if [[ "$line" =~ ^(.*)\ connected\ (.*)$ ]];then
+        display_name="${BASH_REMATCH[1]}"
+      fi
+
+      if [ "$display_name" = "$1" ];then
+        if [[ "$line" =~ ^([0-9]+)x([0-9]+)  ]];then
+          w="${BASH_REMATCH[1]}"
+          h="${BASH_REMATCH[2]}"
+
+          echo "${w}x${h}"
+        fi
+      fi
+    done
+  fi
+}
+
+function place_screen() {
+  if [ "$2" = "right_of" ];then
+    primary="$3"
+    secondary="$1"
+    xrandr --output "$primary" --output "$secondary" --right-of "$primary"
+  fi
+  if [ "$2" = "left_of" ];then
+    primary="$3"
+    secondary="$1"
+    xrandr --output "$primary" --output "$secondary" --left-of "$primary"
+  fi
+}
+
+function place_screen() {
+  if [ "$2" = "right_of" ];then
+    primary="$3"
+    secondary="$1"
+    xrandr --output "$primary" --output "$secondary" --right-of "$primary"
+  fi
+  if [ "$2" = "left_of" ];then
+    primary="$3"
+    secondary="$1"
+    xrandr --output "$primary" --output "$secondary" --left-of "$primary"
+  fi
+}
+
+function turn_screen() {
+  if [ "$2" = "off" ];then
+    xrandr --output "$1" --off
+  fi
+  if [ "$2" = "on" ];then
+    xrandr --output "$1" --auto
+  fi
+}
+
+function change_screen() {
+  if [ "$2" = "brightness_to" ];then
+    xbacklight -set $3
+    #xrandr --output "$1" --brightness $3
+  fi
+}
+
+
+function usage() {
+  echo "display"
+  echo "display list_screens"
+  echo "display place_screen [screen1] right_of|left_of [screen2]"
+  echo "display turn_screen [screen] off|on"
+  echo "display show_screen [screen] resolutions"
+  echo "display change_screen [screen] brightness_to"
+
+  exit 1
+}
+
+if [ -z "$1" ];then
+  usage
+else
+  "$1" "$2" "$3" "$4"
+fi

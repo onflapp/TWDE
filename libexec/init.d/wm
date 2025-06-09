@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+if [ -z "$TWDE_HOME" ];then
+  echo "TWDE_HOME not set"
+  exit 1
+fi
+
+function make_cfg() {
+  prepareconf "$TWDE_HOME/lib/fvwmrc" \
+    $TWDE_HOME/etc/theme.conf \
+    $TWDE_HOME/etc/wm.conf > "$CFG"
+}
+
+function main_loop() {
+  echo "creating config"
+ 
+  if [ -f "$TWDE_HOME/etc/environment.conf" ];then
+    . $TWDE_HOME/etc/environment.conf
+    export TZ
+  fi
+
+  fvwm3 -f "$CFG"
+}
+
+CFG="$TWDE_HOME/var/fvwmrc"
+
+if [ "$1" = "reconfigure" ];then
+  make_cfg
+else
+  main_loop
+fi

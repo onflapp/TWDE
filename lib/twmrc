@@ -79,7 +79,7 @@ Button2 = : iconmgr : f.iconify
 menu "main"
 {
 		"Main Menu"		f.title
-    `menu2twm $TWDE_HOME/etc/windowmanager.menu`
+    `menu2twm $TWDE_HOME/etc/wm.menu`
 		""			f.nop
 		"Show Icon Manager"	f.showiconmgr
 		"Hide Icon Manager"	f.hideiconmgr

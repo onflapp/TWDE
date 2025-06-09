@@ -38,7 +38,7 @@ function widget_mode() {
   trap cleanup INT
 
   read_volume
-  resize_xterm 64 48
+  resize_xterm 64 64
 
   while [ 1 ];do
     display

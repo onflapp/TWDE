@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+D="$TWDE_HOME/libexec/system.d"
+
+if [ -z "$1" ];then
+  ls $D
+else
+  exec "$D/$1" $2 $3 $4 $5
+fi

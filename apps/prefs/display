@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+
+[ -z "$REQUEST" ] && exec hsh $0
+
+. $TWDE_HOME/etc/keyboard.conf
+
+function list_displays() {
+  d=""
+  xrandr | while read -r DD ;do
+    if [[ "$DD" =~ ^(.*)\ connected\  ]];then
+      [ -n "$d" ] && echo "</select>"
+
+      echo "<h3>$DD</h3>"
+      echo "<select name=\"display\">"
+      d="$DD"
+    fi
+
+    if [[ "$DD" =~ ^([0-9]+)x([0-9]+)  ]];then
+      w="${BASH_REMATCH[1]}"
+      h="${BASH_REMATCH[2]}"
+
+      echo "<option value=\"${w}x${h}\">${w}x${h}</option>"
+    fi
+
+  done
+  echo "</select>"
+}
+
+cat << EOF
+<html>
+<head><title>test</title></head>
+<body>
+  <h1>Hello ${REQUEST_display} ${REQUEST}</h1>
+  <form action="/apply">
+    `list_displays`
+    <hr>
+    <center>
+      <button name="cancel">[ Cancel ]</button>
+      <button name="apply">[ Submit ]</button>
+    </center>
+  </form>
+</body>
+</html>
+EOF
