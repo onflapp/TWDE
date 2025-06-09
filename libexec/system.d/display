@@ -65,6 +65,12 @@ function turn_screen() {
 }
 
 function change_screen() {
+  if [ "$2" = "resolution_to" ];then
+    xrandr --output "$1" --mode "$3"
+  fi
+  if [ "$2" = "scale_to" ];then
+    xrandr --output "$1" --auto --scale "$3"
+  fi
   if [ "$2" = "brightness_to" ];then
     brightnessctl s "$3%" >/dev/null
     #xbacklight -set $3
@@ -85,7 +91,9 @@ function usage() {
   echo "display place_screen [screen1] right_of|left_of [screen2]"
   echo "display turn_screen [screen] off|on"
   echo "display show_screen [screen] resolutions"
-  echo "display change_screen [screen] brightness_to [va]"
+  echo "display change_screen [screen] resolution_to [val]"
+  echo "display change_screen [screen] scale_to [val]"
+  echo "display change_screen [screen] brightness_to [val]"
   echo "display change_screen [screen] brightness_up | brightness_down"
 
   exit 1
