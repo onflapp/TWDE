@@ -108,7 +108,7 @@ Style * WindowShadeScrolls, WindowShadeSteps 10
 IgnoreModifiers L25
 
 # Decor Styles
-Style * BorderWidth 5, HandleWidth 5, MWMButtons, FvwmBorder, FirmBorder
+Style * BorderWidth 5, HandleWidth 5, MWMButtons, MWMBorder, FirmBorder
 Style * Colorset 1, HilightColorset 2
 Style * BorderColorset 3, HilightBorderColorset 4
 
@@ -146,12 +146,12 @@ Style FvwmIdent WindowListSkip
 #      14 - FvwmIconMan Iconified Button
 ###########
 Colorset 0  fg #ffffff, bg #003c3c, hi, sh, Plain, NoShape
-Colorset 1  fg #000000, bg #8f9f8f, hi, sh, Plain, NoShape
-Colorset 2  fg #ffffff, bg #003c3c, hi, sh, Plain, NoShape
-Colorset 3  fg black, bg #4d4d4d, hi #676767, sh #303030, Plain, NoShape
-Colorset 4  fg black, bg #2d2d2d, hi #474747, sh #101010, Plain, NoShape
-Colorset 5  fg #000000, bg #ffffff, hi, sh, Plain, NoShape
-Colorset 6  fg #ffffff, bg #2d2d2d, hi, sh, Plain, NoShape
+Colorset 1  fg #000000, bg $DESKTOP_COLOR, hi, sh, Plain, NoShape
+Colorset 2  fg green, bg black, hi, sh, Plain, NoShape
+Colorset 3  fg $DESKTOP_COLOR, bg darkolivegreen, hi $DESKTOP_COLOR, sh $DESKTOP_COLOR, Plain, NoShape
+Colorset 4  fg black, bg green, hi #474747, sh #101010, Plain, NoShape
+Colorset 5  fg green, bg black, hi, sh, Plain, NoShape
+Colorset 6  fg black, bg green, hi, sh, Plain, NoShape
 Colorset 7  fg grey30, bg #ffffff, hi, sh, Plain, NoShape
 Colorset 8  fg #ffffff, bg #003c3c, hi, sh, Plain, NoShape
 Colorset 10 fg #ffffff, bg #003c3c, hi #aaaaaa, sh #999999, Plain, NoShape
@@ -178,6 +178,7 @@ AddToMenu   MenuFvwmRoot "Main Menu" Title
 `menu2fvwm $TWDE_HOME/etc/wm.menu`
 + "" Nop
 + "Refresh" Refresh
++ "Reconfigure" Exec exec $TWDE_HOME/libexec/init.d/wm reconfigure
 + "Restart" Restart
 + "Quit" Quit
 
