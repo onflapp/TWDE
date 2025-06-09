@@ -44,4 +44,4 @@ if [ "x$1" == "x--safe-mode" ];then
   exec xterm
 fi
 
-process > $TWDE_LOG
+process > $TWDE_LOG 2>&1

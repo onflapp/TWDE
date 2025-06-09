@@ -13,12 +13,14 @@ function make_cfg() {
 
 function main_loop() {
   echo "creating config"
+  export APPS="$TWDE_HOME/apps"
  
   if [ -f "$TWDE_HOME/etc/environment.conf" ];then
     . $TWDE_HOME/etc/environment.conf
     export TZ
   fi
 
+  make_cfg
   fvwm3 -f "$CFG"
 }
 

@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+. $TWDE_HOME/etc/browser.conf
+. $TWDE_HOME/lib/func.sh
+
+CHROME=`type -p google-chrome`
+[ -z "$CHROME" ] && CHROME=`type -p chromium`
+[ -z "$CHROME" ] && CHROME=`type -p chromium-browser`
+[ -z "$CHROME" ] && CHROME=`type -p chrome`
+
+read -t "0.1" WORD
+
+if [ -z "$WORD" ];then
+  exec $CHROME "$HOME_URL" 2>/dev/null >/dev/null &
+else
+  WORD=`encode_url "$WORD"`
+  exec $CHROME "$SEARCH_URL$WORD" 2>/dev/null >/dev/null &
+fi
