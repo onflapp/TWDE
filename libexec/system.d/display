@@ -66,8 +66,15 @@ function turn_screen() {
 
 function change_screen() {
   if [ "$2" = "brightness_to" ];then
-    xbacklight -set $3
+    brightnessctl s "$3%" >/dev/null
+    #xbacklight -set $3
     #xrandr --output "$1" --brightness $3
+  fi
+  if [ "$2" = "brightness_up" ];then
+    brightnessctl s "+10%" >/dev/null
+  fi
+  if [ "$2" = "brightness_down" ];then
+    brightnessctl s "10%-" >/dev/null
   fi
 }
 
@@ -78,7 +85,8 @@ function usage() {
   echo "display place_screen [screen1] right_of|left_of [screen2]"
   echo "display turn_screen [screen] off|on"
   echo "display show_screen [screen] resolutions"
-  echo "display change_screen [screen] brightness_to"
+  echo "display change_screen [screen] brightness_to [va]"
+  echo "display change_screen [screen] brightness_up | brightness_down"
 
   exit 1
 }

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-function show_batery_info() {
+function show_battery_info() {
   if [ -f /sys/class/power_supply/BAT0/charge_full ];then
     FULL=`cat /sys/class/power_supply/BAT0/charge_full`
   elif [ -f /sys/class/power_supply/BAT0/energy_full ];then
@@ -32,7 +32,7 @@ function show_batery_info() {
 
 function usage() {
   echo "power"
-  echo "power show_batery_info"
+  echo "power show_battery_info"
 
   exit 1
 }

@@ -1,4 +1,6 @@
-twm
+fvwm3
 xbindkeys
+xdotool
 xclip
 fzf
+brightnessctl

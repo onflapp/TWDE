@@ -1,18 +1,5 @@
 #!/usr/bin/env bash
 
-function control() {
-  if [ "$1" = "up" ];then
-    pactl -- set-sink-volume 0 +10%
-  elif [ "$1" = "down" ];then
-    pactl -- set-sink-volume 0 -10%
-  elif [ "$1" = "mute" ];then
-    pactl -- set-sink-mute 0 toggle
-
-    #NOW=`pactl -- get-sink-mute 0`
-  fi
-  read_volume
-}
-
 function list_outputs() {
   pactl list short sinks | while read -r line ;do
     if [[ "$line" =~ ^([0-9]+)\	([^	]+) ]];then
@@ -27,6 +14,15 @@ function change_output() {
   [ "$dev_name" = "default" ] && dev_name="0"
   if [ "$2" = "volume_to" ];then
     pactl -- set-sink-volume "$dev_name" "$3%"
+  fi
+  if [ "$2" = "volume_up" ];then
+    pactl -- set-sink-volume "$dev_name" "+10%"
+  fi
+  if [ "$2" = "volume_down" ];then
+    pactl -- set-sink-volume "$dev_name" "-10%"
+  fi
+  if [ "$2" = "volume_mute" ];then
+    pactl -- set-sink-mute "$dev_name" "toggle"
   fi
 }
 
@@ -64,7 +60,8 @@ function play_sample() {
 function usage() {
   echo "audio"
   echo "audio list_outputs"
-  echo "audio change_output [out] volume_to"
+  echo "audio change_output [out] volume_to [val]"
+  echo "audio change_output [out] volume_up | volume_down | volume_mute"
   echo "audio make_output [out] default"
   echo "audio show_output [out] volume"
   echo "audio show_default_output"
