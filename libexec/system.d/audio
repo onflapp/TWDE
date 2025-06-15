@@ -16,10 +16,10 @@ function change_output() {
     pactl -- set-sink-volume "$dev_name" "$3%"
   fi
   if [ "$2" = "volume_up" ];then
-    pactl -- set-sink-volume "$dev_name" "+10%"
+    pactl -- set-sink-volume "$dev_name" "+5%"
   fi
   if [ "$2" = "volume_down" ];then
-    pactl -- set-sink-volume "$dev_name" "-10%"
+    pactl -- set-sink-volume "$dev_name" "-5%"
   fi
   if [ "$2" = "volume_mute" ];then
     pactl -- set-sink-mute "$dev_name" "toggle"

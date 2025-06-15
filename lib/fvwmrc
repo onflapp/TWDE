@@ -1,6 +1,6 @@
 DestroyFunc StartFunction
 AddToFunc   StartFunction
-#+ I Module FvwmButtons RightPanel
++ I Module FvwmMFL
 
 DestroyFunc RandRFunc
 AddToFunc   RandRFunc
