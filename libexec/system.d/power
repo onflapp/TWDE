@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+function suspend() {
+  systemctl suspend
+}
+
 function show_battery_info() {
   if [ -f /sys/class/power_supply/BAT0/charge_full ];then
     FULL=`cat /sys/class/power_supply/BAT0/charge_full`
@@ -33,6 +37,7 @@ function show_battery_info() {
 function usage() {
   echo "power"
   echo "power show_battery_info"
+  echo "power suspend"
 
   exit 1
 }

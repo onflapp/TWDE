@@ -10,5 +10,5 @@ xrdb -merge "$CFG"
 if [ -n "$1" ];then
   exec xterm -name TWDETerm -class TWDETerm -e "$@" &
 else
-  exec xterm -name TWDETerm -class TWDETerm &
+  exec xterm -ls -name TWDETerm -class TWDETerm &
 fi

@@ -1,29 +1,57 @@
 #!/usr/bin/env bash
 
-. $TWDE_HOME/lib/func.sh
+B=`realpath "$0"`
 
-function do_xbacklight() {
-  if [ "$1" = "up" ];then
-    xbacklight -inc 10
-  elif [ "$1" = "down" ];then
-    xbacklight -dec 10
-  fi
-
-  NOW=`xbacklight | regexp '^(\d+)' 'Brightness %s%%' '$1'`
-  messages "$NOW"
+function make_display_menu() {
+  for DD in `control display list_screens` ;do
+    echo "AddToMenu DynamicDisplayMenu \"$DD\" Exec control display turn_screen $DD on"
+  done
 }
 
-function do_udev() {
-  if [ "$1" = "up" ];then
-    brightnessctl -q s +10%
-  elif [ "$1" = "down" ];then
-    brightnessctl -q s 10%-
-  fi
 
-  NOW=`brightnessctl | regexp '\((\d+)%\)' 'Brightness %s%%' '$1'`
-  messages "$NOW"
+function init() {
+  cat << EOF
+DestroyMenu DynamicDisplayMenu
+AddToMenu DynamicDisplayMenu DynamicPopUpAction CreateDisplayMenu
+
+DestroyFunc CreateDisplayMenu
+AddToFunc CreateDisplayMenu
++ I DestroyMenu recreate DynamicDisplayMenu
++ I PipeRead '$B make_display_menu'
+EOF
 }
 
-#do_udev "$1"
+function display() {
+  cat << EOF
+*RightPanel: (3x1, Id DisplayInfo, Title "display" Action (Mouse 1) Menu DynamicDisplayMenu)
+*RightPanel: (1x1, Title "-", Action (Mouse 1) "Exec $B brightness_down", ActiveColorset 12, Frame 0)
+*RightPanel: (1x1, Title "+"  , Action (Mouse 1) "Exec $B brightness_up", ActiveColorset 12, Frame 0)
+*RightPanel: (1x1, Title "o", Action (Mouse 1) Scroll 0 3, ActiveColorset 12, Frame 0)
+EOF
+}
 
-do_xbacklight "$1"
+function start() {
+  echo "$B starting"
+  show_screen_info
+}
+
+function stop() {
+  echo "$B stopping"
+}
+
+function show_screen_info() {
+  V=`control display show_screen default brightness`
+  FvwmCommand "SendToModule RightPanel ChangeButton DisplayInfo Title \"dis:$V\""
+}
+
+function brightness_up() {
+  V=`control display change_screen default brightness_up`
+  FvwmCommand "SendToModule RightPanel ChangeButton DisplayInfo Title \"dis:$V\""
+}
+
+function brightness_down() {
+  V=`control display change_screen default brightness_down`
+  FvwmCommand "SendToModule RightPanel ChangeButton DisplayInfo Title \"dis:$V\""
+}
+
+$1 $2 $3 $4

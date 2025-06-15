@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-PID="/tmp/$UID-widget-datetime.pid"
+PID="/tmp/$UID-widget-power.pid"
 B=`realpath "$0"`
 
 function init() {
@@ -10,12 +10,8 @@ EOF
 
 function display() {
   cat << EOF
-*RightPanel: (3x1, Id DateTimeInfo, Title "DateTime")
+*RightPanel: (3x1, Id PowerInfo, Title "Power")
 EOF
-}
-
-function process() {
-  FvwmCommand "SendToModule RightPanel ChangeButton DateInfo Title \"$V\""
 }
 
 function start() {
@@ -31,8 +27,8 @@ function stop() {
 
 function process() {
   while [ 1 ];do
-    V=`date`
-    FvwmCommand "SendToModule RightPanel ChangeButton DateTimeInfo Title \"$V\""
+    source <(control power show_battery_info)
+    FvwmCommand "SendToModule RightPanel ChangeButton PowerInfo Title \"$status:$value\""
     sleep 10
   done
 }

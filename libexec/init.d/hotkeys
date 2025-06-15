@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-trap restart_xk USR1
-trap stop_xk INT TERM
-
 STATUS="running"
 PIDFILE="/tmp/$UID-xk.pid"
 
@@ -27,6 +24,17 @@ function make_xk_config() {
     EXEC="${V[1]}"
     echo -e "\"$EXEC\"\n  $KEYS"
   done < "$1" > "$2"
+}
+
+function process() {
+  trap restart_xk USR1
+  trap stop_xk INT TERM
+  trap cleanup EXIT
+
+  while [ "$STATUS" = "running" ];do
+    sleep 0.5
+    main_loop
+  done
 }
 
 function main_loop() {
@@ -55,17 +63,13 @@ if [ "$1" = "restart" ];then
   exit 0
 elif [ "$1" = "stop" ];then
   PID=`cat $PIDFILE`
-  kill "$PID"
+  kill "$PID" 2>/dev/null
   exit 0
 elif [ -f "$PIDFILE" ];then
   echo "running already"
   echo "restart|stop"
   exit 1
 else
-  trap cleanup EXIT
-  echo "$$" > "$PIDFILE"
-  while [ "$STATUS" = "running" ];do
-    sleep 0.5
-    main_loop
-  done
+  process&
+  echo "$!" > "$PIDFILE"
 fi

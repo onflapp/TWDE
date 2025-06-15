@@ -24,6 +24,7 @@ function change_output() {
   if [ "$2" = "volume_mute" ];then
     pactl -- set-sink-mute "$dev_name" "toggle"
   fi
+  show_output "$dev_name" "volume"
 }
 
 function make_output() {
@@ -40,16 +41,26 @@ function show_default_output() {
 
 function show_output() {
   dev_name="$1"
+
   [ -z "$dev_name" ] && dev_name="0"
   [ "$dev_name" = "default" ] && dev_name="0"
 
   if [ "$2" = "volume" ];then
-   pactl -- get-sink-volume "$dev_name" | while read -r line ;do
-    if [[ "$line" =~ ^Volume:.*\ ([0-9]+)% ]];then
-      dev_name="${BASH_REMATCH[1]}"
-      echo "$dev_name"
-    fi
-  done
+    pactl -- get-sink-mute "$dev_name" | while read -r line ;do
+      if [[ "$line" = "Mute: yes" ]];then
+        echo "-"
+        exit 1
+      fi
+    done
+
+    [ $? -eq 1 ] && return
+
+    pactl -- get-sink-volume "$dev_name" | while read -r line ;do
+      if [[ "$line" =~ ^Volume:.*\ ([0-9]+)% ]];then
+        val="${BASH_REMATCH[1]}"
+        echo "$val"
+      fi
+    done
   fi
 }
 

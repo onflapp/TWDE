@@ -14,6 +14,10 @@ TWDETerm*foreground: $FOREGROUND_COLOR
 TWDETerm*utf8: 1
 TWDETerm*vt100.charClass: 45-47:48,126:48
 
+TWDETerm*VT100*translations:    #override \n\
+    Ctrl <KeyPress> Insert: copy-selection(CLIPBOARD) \n\
+    Shift <KeyPress> Insert: insert-selection(CLIPBOARD)
+
 !!! colors
 TWDETerm*color0:     black
 TWDETerm*color1:     red1

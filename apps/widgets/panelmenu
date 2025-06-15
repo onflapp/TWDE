@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+B=`realpath "$0"`
+
+function init() {
+  cat << EOF
+EOF
+}
+
+function start() {
+  echo "$B starting"
+}
+
+function stop() {
+  echo "$B stopping"
+}
+
+function display() {
+  cat << EOF
+*RightPanel: (1x1, Title "M", Action (Mouse 1) Menu MenuFvwmRoot, ActiveColorset 12, Frame 0)
+*RightPanel: (1x1, Title "A", Action (Mouse 1) Menu MenuFvwmRoot, ActiveColorset 12, Frame 0)
+*RightPanel: (1x1, Title "X", Action (Mouse 1) Menu MenuFvwmRoot, ActiveColorset 12, Frame 0)
+EOF
+}
+
+$1 $2 $3 $4

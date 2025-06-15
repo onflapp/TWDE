@@ -1,5 +1,5 @@
-F1	selection | manual
-alt+v	simulate click 2
+F1	xselection | manual
+alt+v	xsimulate click 2
 alt+c	xselection | xcopy
 XF86AudioRaiseVolume	volume up
 XF86AudioLowerVolume	volume down

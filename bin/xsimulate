@@ -20,6 +20,6 @@ fi
 if [ "$1" = "enter" ];then
   shift
   echo "[$@]"
-  (sleep 0.1; xdotool "type" $@; xdotool key "Return")&
+  (sleep 0.1; xdotool "type" "$@"; xdotool key "Return")&
   exit
 fi

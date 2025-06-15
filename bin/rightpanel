@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+
+B=`realpath "$0"`
+
+function widgets() {
+  for DD in $WIDGETS ;do
+    $TWDE_HOME/apps/widgets/$DD $1
+  done
+}
+
+function display_panel() {
+  . $TWDE_HOME/etc/theme.conf
+  . $TWDE_HOME/etc/rightpanel.conf
+
+  FvwmCommand -c << EOF
+`widgets init`
+KillModule FvwmButtons RightPanel
+
+DestroyModuleConfig RightPanel:*
+*RightPanel: Geometry 100x100-0+0
+*RightPanel: Colorset 10
+*RightPanel: Columns 3
+*RightPanel: Rows 10
+*RightPanel: Frame 0
+*RightPanel: Font "$APP_FONT"
+`widgets display`
+
+Module FvwmButtons RightPanel
+EOF
+}
+
+function usage() {
+  echo "rightpanel start | stop"
+  exit 1
+}
+
+if [ "$1" = "start" ];then
+  display_panel
+  sleep 1
+  widgets start
+  exit 0
+fi
+
+if [ "$1" = "stop" ];then
+  widgets stop
+  FvwmCommand -c << EOF
+KillModule FvwmButtons RightPanel
+EOF
+  exit 0
+fi
+
+if [ -n "$1" ];then
+  $1 $2 $3 $4
+else
+  usage
+fi
