@@ -8,6 +8,12 @@ function init_exec() {
   $TWDE_HOME/libexec/init.d/$1 $2
 }
 
+function continue_init() {
+  env > /tmp/iiiii
+  echo "continue initialization in wm"
+  init_exec hotkeys start
+}
+
 function process() {
   echo "starting"
   init_home
@@ -17,16 +23,21 @@ function process() {
   init_exec display start
   init_exec desktop start
   init_exec gestures start
-  init_exec hotkeys start
 
   echo "about to launch windowmanager"
   init_exec wm
   echo "windowmanager exited"
 
   echo "stopping"
+  init_exec keyboard stop
   init_exec hotkeys stop
   init_exec display stop
 }
+
+if [ "x$1" == "x--continue-init" ];then
+  continue_init
+  exit
+fi
 
 if [ -z "$TWDE_HOME" ];then
   B=`realpath "$0"`

@@ -45,6 +45,7 @@ function place_screen() {
     secondary="$1"
     xrandr --output "$primary" --auto --output "$secondary" --auto --left-of "$primary"
   fi
+  save_screen_layout
 }
 
 function turn_screen() {
@@ -53,6 +54,26 @@ function turn_screen() {
   fi
   if [ "$2" = "on" ];then
     xrandr --output "$1" --auto
+  fi
+}
+
+function save_screen_layout() {
+  local N="layout"
+  for DD in `xrandr | regexp '^(.*) connected ' '%s\n' '$1' ` ;do
+    N="${N}_${DD}"
+  done
+  autorandr --force --save $N
+}
+
+function list_screen_layouts() {
+  autorandr --list | grep layout_
+}
+
+function restore_screen_layout() {
+  if [ -z "$1" ];then
+    autorandr --change
+  else
+    autorandr --load "$1"
   fi
 }
 
@@ -88,6 +109,8 @@ function usage() {
   echo "display change_screen [screen] scale_to [val]"
   echo "display change_screen [screen] brightness_to [val]"
   echo "display change_screen [screen] brightness_up | brightness_down"
+  echo "display save_screen_layout"
+  echo "display restore_screen_layout"
 
   exit 1
 }

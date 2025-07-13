@@ -1,25 +1,25 @@
 #!/bin/bash
 
 if [ "$1" = "click" ];then
-  (sleep 0.1; xdotool "click" --clearmodifiers "$2")&
+  (xdotool "click" --clearmodifiers "$2")&
   exit
 fi
 
 if [ "$1" = "type" ];then
   shift
-  (sleep 0.1; xdotool "type" "$@")&
+  (xdotool "type" --clearmodifiers "$@")&
   exit
 fi
 
 if [ "$1" = "key" ];then
   shift
-  (sleep 0.1; xdotool "key" "$@")&
+  (xdotool "key" --clearmodifiers "$@")&
   exit
 fi
 
 if [ "$1" = "enter" ];then
   shift
   echo "[$@]"
-  (sleep 0.1; xdotool "type" "$@"; xdotool key "Return")&
+  (xdotool "type" "$@"; xdotool key "Return")&
   exit
 fi

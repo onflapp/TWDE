@@ -1,10 +1,33 @@
 function regexp() {
   #echo "[$1][$2][$3]"
+  #regexp "^xxx(.*)" "%s" "$1"
   perl -n -e "/$1/ && printf \"$2\", \"$3\""
 }
 
 function resize_xterm() {
   echo -ne "\e[4;$2;$1t"
+}
+
+function epochtime() {
+  date +%s
+}
+
+function current_appname() {
+  local WID=`xdotool getwindowfocus`
+  xprop -id $WID | while read -r LINE ;do
+    if [[ "$LINE" =~ ^WM_CLASS.STRING.\ =\ \"(.*)\", ]];then
+      echo "${BASH_REMATCH[1]}"
+    fi
+  done
+}
+
+function current_apptitle() {
+  local WID=`xdotool getwindowfocus`
+  xprop -id $WID | while read -r LINE ;do
+    if [[ "$LINE" =~ ^WM_NAME.STRING.\ =\ \"(.*)\"$ ]];then
+      echo "${BASH_REMATCH[1]}"
+    fi
+  done
 }
 
 function locate_command() {

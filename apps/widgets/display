@@ -6,6 +6,10 @@ function make_display_menu() {
   for DD in `control display list_screens` ;do
     echo "AddToMenu DynamicDisplayMenu \"$DD\" Exec control display turn_screen $DD on"
   done
+
+  for DD in `control display list_screen_layouts` ;do
+    echo "AddToMenu DynamicDisplayMenu \"$DD\" Exec control display restore_screen_layout $DD"
+  done
 }
 
 

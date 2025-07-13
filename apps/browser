@@ -11,7 +11,11 @@ CHROME=`type -p google-chrome`
 read -t "0.1" WORD
 
 if [ -z "$WORD" ];then
-  exec $CHROME "$HOME_URL" 2>/dev/null >/dev/null &
+  if [ -z "$1" ];then
+    exec $CHROME "$HOME_URL" 2>/dev/null >/dev/null &
+  else
+    exec $CHROME "$1" 2>/dev/null >/dev/null &
+  fi
 else
   WORD=`encode_url "$WORD"`
   exec $CHROME "$SEARCH_URL$WORD" 2>/dev/null >/dev/null &

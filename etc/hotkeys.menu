@@ -1,8 +1,10 @@
-F1	xselection | manual
+F1	xselection | guess
+alt+w	control windowmanager close_window
+shift+alt+m	control windowmanager maximize_window
 alt+v	xsimulate click 2
 alt+c	xselection | xcopy
-XF86AudioRaiseVolume	volume up
-XF86AudioLowerVolume	volume down
-XF86AudioMute	volume mute
+XF86AudioRaiseVolume	control audio change_output default volume_up
+XF86AudioLowerVolume	control audio change_output default volume_down
+XF86AudioMute	control audio change_output default volume_mute
 XF86MonBrightnessUp	display up
 XF86MonBrightnessDown	display down

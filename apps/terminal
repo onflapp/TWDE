@@ -8,7 +8,15 @@ prepareconf "$TWDE_HOME/lib/xterm.xrm" \
 xrdb -merge "$CFG"
 
 if [ -n "$1" ];then
-  exec xterm -name TWDETerm -class TWDETerm -e "$@" &
+  if [ -f "$1" ];then
+    CMD="$1"
+    if ! [ -x "$CMD" ];then
+      CMD="sh $CMD"
+    fi
+    exec xterm -name TWDETerm -class TWDETerm -e "$CMD ; read DD" &
+  else
+    exec xterm -name TWDETerm -class TWDETerm -e "$@" &
+  fi
 else
   exec xterm -ls -name TWDETerm -class TWDETerm &
 fi

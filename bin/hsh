@@ -6,7 +6,7 @@ use Time::HiRes qw(usleep);
 use File::Path qw(make_path);
 use POSIX qw(strftime);
 
-$VERBOSE=1;
+$VERBOSE=0;
 $VERBOSE=1 if ($ENV{'DEBUG'});
 $HOME=$ENV{'HOME'};
 

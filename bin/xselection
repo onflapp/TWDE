@@ -1,11 +1,13 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 . $TWDE_HOME/lib/func.sh
 
 xclip=`locate_command xclip`
+
 T=/tmp/$$.selection.tmp
 
 $xclip -o -selection > $T
-#echo -n "" | $xclip -i
+#echo -n "x" | $xclip -i -selection primary
+
 cat $T
 rm $T

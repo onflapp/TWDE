@@ -1,16 +1,61 @@
 #!/usr/bin/env bash
 
-echo "configure keyboard"
+PID="/tmp/$UID-keyboard.pid"
+B=`realpath "$0"`
 
-. $TWDE_HOME/etc/keyboard.conf
+. $TWDE_HOME/lib/func.sh
 
-export SWAP_FN FN_MODE SWAP_ALT_CMD
-$TWDE_HOME/libexec/keyboard_helper >/dev/null
+function init_apple_kb() {
+  for DD in /sys/class/hidraw/* ;do
+    D=`cat $DD/device/uevent | regexp '^HID_NAME=(.*Apple.*Keyboard)$' '%s\n' '$1'`
+    if [ -n "$D" ];then
+      DEV="/dev/$(basename $DD)"
+      $TWDE_HOME/libexec/apple_disable_ctrl_delay $DEV
+    fi
+  done
+}
 
-if [ -f "$HOME/.Xmodmap" ];then
-  xmodmap $HOME/.Xmodmap
+function config() {
+  echo "configure keyboard"
+
+  . $TWDE_HOME/etc/keyboard.conf
+
+  init_apple_kb
+
+  export SWAP_FN FN_MODE SWAP_ALT_CMD
+  $TWDE_HOME/libexec/keyboard_helper >/dev/null
+
+  if [ -f "$HOME/.Xmodmap" ];then
+    xmodmap $HOME/.Xmodmap
+  fi
+
+  if [ -n "$REPEAT_DELAY" ] && [ -n "$REPEAT_RATE" ];then
+    xset r rate $REPEAT_DELAY $REPEAT_RATE
+  fi
+}
+
+function monitor() {
+  xprop -spy -root | while read -r line ;do
+    if [[ $line =~ ^_XKB_RULES_NAMES ]];then
+      sleep 2
+      config
+    fi
+  done
+}
+
+function start() {
+  config
+  monitor&
+  echo "$!" > $PID
+}
+
+function stop() {
+  pkill -P `cat $PID`
+}
+
+if [ "$1" = "start" ];then
+  start
 fi
-
-if [ -n "$REPEAT_DELAY" ] && [ -n "$REPEAT_RATE" ];then
-  xset r rate $REPEAT_DELAY $REPEAT_RATE
+if [ "$1" = "stop" ];then
+  stop
 fi

@@ -1,75 +1,28 @@
 #!/usr/bin/env bash
 
-STATUS="running"
-PIDFILE="/tmp/$UID-xk.pid"
+PID="/tmp/$UID-hotkeys.pid"
+CFG="$TWDE_HOME/var/xbindkeys"
 
-function restart_xk() {
-  STATUS="restarting"
-  kill $XK_PID
+. /home/oflorian/src/TWDE/lib/func.sh
+
+function config() {
+  echo "configure hotkeys"
+  $TWDE_HOME/libexec/menu2xbindkeys
 }
 
-function stop_xk() {
-  STATUS="stopped"
-  kill $XK_PID
+function start() {
+  config
+  xbindkeys -n -f "$CFG" &
+  echo "$!" > $PID
 }
 
-function cleanup() {
-  rm "$PIDFILE"
+function stop() {
+  kill `cat $PID`
 }
 
-function make_xk_config() {
-  while IFS= read -r LINE ;do
-    IFS=$'\t';V=(${LINE});IFS=
-    KEYS="${V[0]}"
-    EXEC="${V[1]}"
-    echo -e "\"$EXEC\"\n  $KEYS"
-  done < "$1" > "$2"
-}
-
-function process() {
-  trap restart_xk USR1
-  trap stop_xk INT TERM
-  trap cleanup EXIT
-
-  while [ "$STATUS" = "running" ];do
-    sleep 0.5
-    main_loop
-  done
-}
-
-function main_loop() {
-  echo "creating config"
-  CFG="$TWDE_HOME/etc/hotkeys.menu"
-  DEST="$TWDE_HOME/var/xbindkeys"
-
-  make_xk_config "$CFG" "$DEST"
-
-  xbindkeys -n -f "$DEST" &
-  XK_PID="$!"
-  echo "running xbindkeys $XK_PID"
-  wait "$XK_PID"
-  
-  if [ "$STATUS" = "restarting" ];then
-    echo "restarting"
-    STATUS="running"
-  elif [ $? -ne 0 ];then
-    exit
-  fi
-}
-
-if [ "$1" = "restart" ];then
-  PID=`cat $PIDFILE`
-  kill -USR1 "$PID"
-  exit 0
-elif [ "$1" = "stop" ];then
-  PID=`cat $PIDFILE`
-  kill "$PID" 2>/dev/null
-  exit 0
-elif [ -f "$PIDFILE" ];then
-  echo "running already"
-  echo "restart|stop"
-  exit 1
-else
-  process&
-  echo "$!" > "$PIDFILE"
+if [ "$1" = "start" ];then
+  start
+fi
+if [ "$1" = "stop" ];then
+  stop
 fi

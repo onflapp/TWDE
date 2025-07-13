@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 . "$TWDE_HOME/etc/theme.conf"
+. "$TWDE_HOME/lib/func.sh"
 
 function restore_screen() {
   autorandr -l twde
@@ -11,6 +12,10 @@ function save_screen() {
 }
 
 if [ "$1" = "start" ];then
+  xclip=`locate_command xclip`
+  echo "" | $xclip -i -selection clipboard
+  echo "" | $xclip -i -selection primary
+
   restore_screen
 fi
 if [ "$1" = "stop" ];then

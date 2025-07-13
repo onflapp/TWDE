@@ -1,6 +1,6 @@
 #!/bin/bash
 
-[ -z "$REQUEST" ] && exec hsh $0
+[ -z "$REQUEST" ] && exec $TWDE_HOME/bin/hsh $0
 
 . $TWDE_HOME/etc/keyboard.conf
 

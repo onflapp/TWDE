@@ -21,7 +21,7 @@ function main_loop() {
   fi
 
   make_cfg
-  fvwm3 -f "$CFG"
+  fvwm3 -v -f "$CFG"
 }
 
 CFG="$TWDE_HOME/var/fvwmrc"
