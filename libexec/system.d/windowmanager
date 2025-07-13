@@ -1,0 +1,80 @@
+#!/usr/bin/env bash
+
+. $TWDE_HOME/lib/func.sh
+
+function list_windows() {
+  echo ""
+}
+
+function close_window() {
+  FvwmCommand "Current Close"
+}
+
+function maximize_window() {
+  FvwmCommand "Current Maximize 0 100"
+}
+
+function get_window() {
+  if [ "$2" = "title" ];then
+    current_apptitle
+  fi
+  if [ "$2" = "name" ];then
+    current_appname
+  fi
+  if [ "$2" = "current_file" ];then
+    current_file_or_dir "f"
+  fi
+  if [ "$2" = "current_dir" ];then
+    current_file_or_dir "d"
+  fi
+}
+
+function current_file_or_dir() {
+  local T=`current_apptitle`
+  IFS_OLD="$IFS"
+  IFS=$'\t ()[]'
+
+  for DD in $T ;do
+    DD=`eval echo $DD`
+    DD=`realpath "$DD"`
+
+    if [ "$1" = "d" ];then
+      if [ -d "$DD" ];then
+        echo "$DD"
+        return
+      fi
+      if [ -f "$DD" ];then
+        echo `dirname "$DD"`
+        return
+      fi
+    fi
+
+    if [ "$1" = "f" ];then
+      if [ -f "$DD" ];then
+        echo "$DD"
+        return
+      fi
+    fi
+  done
+
+  IFS="$IFS_OLD"
+}
+
+function usage() {
+  echo "windowmanager"
+  echo "windowmanager list_windows [win]"
+  echo "windowmanager close_window [win]"
+  echo "windowmanager maximize_window"
+  echo "windowmanager get_window [win] title"
+  echo "windowmanager get_window [win] name"
+  echo "windowmanager get_window [win] current_file"
+  echo "windowmanager get_window [win] current_dir"
+
+  exit 1
+}
+
+if [ -z "$1" ];then
+  usage
+else
+  "$1" "$2" "$3" "$4"
+fi
