@@ -1,0 +1,29 @@
+#!/bin/perl
+
+$TWDE_HOME=$ENV{'TWDE_HOME'};
+$CFG="$TWDE_HOME/var/xbindkeys";
+%DONE={};
+
+sub process_file {
+  my ($f) = @_;
+  
+  open (IN, $f);
+  while (<IN>) {
+    chomp();
+    if (m/^(.*?)\t(.*?)$/) {
+      my $key = $1;
+      if ($DONE{$key} eq "") {
+        $DONE{$key} = $key;
+        print(OUT "\"$TWDE_HOME/libexec/hotkeys_exec $key\"\n  $key\n");
+      }
+    }
+  }
+}
+
+open(OUT, "> $CFG");
+
+while (my $file = glob("$TWDE_HOME/etc/hotkeys*.menu")) {
+  process_file($file);
+}
+
+close(OUT);

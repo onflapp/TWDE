@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+. $TWDE_HOME/lib/func.sh
+
+function exec_cmd() {
+  echo "[$@]"
+  eval $@
+}
+
+function exec_hotkey() {
+  if [ -f "$1" ];then
+    while IFS= read -r LINE ;do
+      IFS=$'\t';V=(${LINE});IFS=
+      KEYS="${V[0]}"
+      EXEC="${V[1]}"
+      if [ "$KEYS" = "$2" ];then
+        exec_cmd $EXEC &
+        exit 0
+      fi
+    done < "$1"
+  fi
+}
+
+APP=`current_appname`
+CFG="$TWDE_HOME/etc/hotkeys-$APP.menu"
+
+exec_hotkey "$CFG" "$1"
+
+CFG="$TWDE_HOME/etc/hotkeys.menu"
+exec_hotkey "$CFG" "$1"
