@@ -3,7 +3,8 @@
 . $TWDE_HOME/etc/browser.conf
 . $TWDE_HOME/lib/func.sh
 
-CHROME=`type -p google-chrome`
+CHROME=`type -p firefox`
+[ -z "$CHROME" ] && CHROME=`type -p google-chromium`
 [ -z "$CHROME" ] && CHROME=`type -p chromium`
 [ -z "$CHROME" ] && CHROME=`type -p chromium-browser`
 [ -z "$CHROME" ] && CHROME=`type -p chrome`

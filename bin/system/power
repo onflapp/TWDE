@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+function suspend() {
+  systemctl suspend
+}
+
+function off() {
+  /sbin/poweroff
+}
+
+function usage() {
+  echo "power"
+  echo "power suspend"
+  echo "power off"
+
+  exit 1
+}
+
+if [ -z "$1" ];then
+  usage
+else
+  "$1" "$2" "$3" "$4"
+fi

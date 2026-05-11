@@ -43,6 +43,7 @@ Color
     IconBorderColor "forestgreen"
     IconManagerBackground "$MENU_BACKGROUND_COLOR"
     IconManagerForeground "$MENU_FOREGROUND_COLOR"
+    IconManagerHighlight "$BORDER_COLOR"
 }
 
 #
@@ -52,14 +53,17 @@ MoveDelta 3
 Function "move-or-lower" { f.move f.deltastop f.lower }
 Function "move-or-raise" { f.move f.deltastop f.raise }
 Function "move-or-iconify" { f.move f.deltastop f.iconify }
-Function "focus-and-raise" { f.unfocus f.focus f.raise }
+Function "focus-and-raise" { f.focus f.raise }
+Function "raise-and-warp" { f.raise }
 Function "move-or-focus-and-raise" { f.unfocus f.focus f.raise f.exec "event activate" f.move f.deltastop }
+Function "reload-config" { f.exec "$TWDE_HOME/libexec/init.d/wm reload" f.restart }
+Function "power-off" { f.exec "echo '/sbin/poweroff' > $TWDE_RUN_ON_EXIT" f.quit }
 
 #
 # Set some useful bindings.  Sort of uwm-ish, sort of simple-button-ish
 #
 Button1 = : root : f.menu "main"
-Button3 = : root : f.menu "windowops"
+Button3 = : root : f.menu "TwmWindows"
 Button3 = : title : f.menu "windowops"
 
 Button1 = m : window|icon : f.function "move-or-lower"
@@ -73,27 +77,27 @@ Button2 = : icon : f.iconify
 Button1 = : iconmgr : f.function "focus-and-raise"
 Button2 = : iconmgr : f.iconify
 
+#WindowFunction { f.raise f.warpring "next" }
+
 #
 # And a menus with the usual things
 #
 menu "main"
 {
-		"Main Menu"		f.title
+		"Applications"		f.title
     `menu2twm $TWDE_HOME/etc/wm.menu`
-		""			f.nop
-		"Show Icon Manager"	f.showiconmgr
-		"Hide Icon Manager"	f.hideiconmgr
-		"Windows"			f.menu "TwmWindows"
-		""			f.nop
+		"Selection"			f.title
+    `menu2twm $TWDE_HOME/etc/selection.menu`
+		"Window Manager"			f.title
+		"Reload config"	  f.function "reload-config"
 		"Exit"			f.menu "Quit-Verify"
 }
 
 menu "Quit-Verify"
 {
-		"Quit Desktop?"	f.title
-		"Reload"	f.restart
-		"Restart"	f.exec "windowmanager restart"
-		"Quit"	f.quit
+		"Logout"	f.quit
+		"Sleep"	f.exec "power suspend"
+		"Power off"	f.function "power-off"
 }
 
 menu "windowops"

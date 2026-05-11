@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
-CFG="$TWDE_HOME/var/terminal.xrm"
-prepareconf "$TWDE_HOME/lib/xterm.xrm" \
+CFG="$TWDE_VAR/terminal.xrm"
+
+$TWDE_HOME/libexec/make_config "$TWDE_HOME/lib/xterm.xrm" \
   $TWDE_HOME/etc/theme.conf \
   $TWDE_HOME/etc/terminal.conf > "$CFG"
 

@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+function show_status() {
+  upower -d | while read -r line ;do
+    if [[ "$line" =~ state:\ +(.*)$ ]];then
+      stat=${BASH_REMATCH[1]}
+    fi
+    if [[ "$line" =~ percentage:\ +(.*)%$ ]];then
+      val=${BASH_REMATCH[1]}
+      echo "$stat: $val%"
+    fi
+  done
+}
+
+show_status

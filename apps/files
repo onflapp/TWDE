@@ -1,0 +1,12 @@
+#!/bin/bash
+
+if [ -d "$1" ];then
+  cd "$1"
+  exec terminal mc
+elif [ -f "$1" ];then
+  D=`dirname "$1"`
+  cd "$D"
+  exec terminal mc
+else
+  exec terminal mc
+fi

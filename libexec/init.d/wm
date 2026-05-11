@@ -5,29 +5,23 @@ if [ -z "$TWDE_HOME" ];then
   exit 1
 fi
 
-function make_cfg() {
-  prepareconf "$TWDE_HOME/lib/fvwmrc" \
+function init_config() {
+  echo "creating config"
+  $TWDE_HOME/libexec/make_config "$TWDE_HOME/lib/twmrc" \
     $TWDE_HOME/etc/theme.conf \
     $TWDE_HOME/etc/wm.conf > "$CFG"
 }
 
 function main_loop() {
-  echo "creating config"
-  export APPS="$TWDE_HOME/apps"
- 
-  if [ -f "$TWDE_HOME/etc/environment.conf" ];then
-    . $TWDE_HOME/etc/environment.conf
-    export TZ
-  fi
-
-  make_cfg
-  fvwm3 -v -f "$CFG"
+  init_config
+  twm -f "$CFG"
 }
 
-CFG="$TWDE_HOME/var/fvwmrc"
+TWDE_VAR="$TWDE_HOME/var"
+CFG="$TWDE_VAR/twmrc"
 
-if [ "$1" = "reconfigure" ];then
-  make_cfg
+if [ "x$1" = "xreload" ];then
+  init_config
 else
   main_loop
 fi

@@ -2,38 +2,9 @@
 
 $TWDE_HOME=$ENV{'TWDE_HOME'};
 $CURRENT_DIR="";
-
-sub expand_args {
-  my ($cmd, $args) = @_;
-
-  $cmd =~ s/%s/$args/g;
-  $cmd =~ s/%f/$args/g;
-
-  return $cmd;
-}
-
-sub match_action {
-  my ($cfg, $text) = @_;
-  
-  print("?$text $cfg\n");
-  open (IN, $cfg);
-  while (<IN>) {
-    chomp();
-    if (m/^(.*?)\t(.*?)$/) {
-      my $pat = $1;
-      my $act = $2;
-
-      if ($text =~ $pat) {
-        my $cmd = expand_args($act, $text);
-
-        system("$cmd");
-        return 1;
-      }
-    }
-  }
-
-  return 0;
-}
+@LINES=();
+@TYPES=();
+@FOUND=();
 
 sub init_context {
   open (IN, "$TWDE_HOME/libexec/system.d/windowmanager get_window x current_dir |");
@@ -44,55 +15,91 @@ sub init_context {
   close (IN);
 }
 
-sub guess_file {
-  my ($f) = @_;
-  my $cfg = "$TWDE_HOME/etc/guess-file.menu";
+sub match_single_path {
+  my ($line, $type) = @_;
 
-  init_context();
-  
-  if (-f "$f") {
-    return match_action($cfg, $f);
-  }
-  if (-f "$CURRENT_DIR/$f") {
-    return match_action($cfg, "$CURRENT_DIR/$f");
+  if (-f $line && $type eq "file") {
+    push(@FOUND, "$line");
+    return 1;
   }
 
-  $cfg = "$TWDE_HOME/etc/guess-dir.menu";
+  if (-d $line && $type eq "dir") {
+    push(@FOUND, "$line");
+    return 1;
+  }
 
-  if (-d $f) {
-    return match_action($cfg, $f);
-  }
-  if (-d "$CURRENT_DIR/$f") {
-    return match_action($cfg, "$CURRENT_DIR/$f");
-  }
-  
   return 0;
 }
 
 sub guess_url {
-  my ($u) = @_;
-  my $cfg = "$TWDE_HOME/etc/guess-url.menu";
+  my ($line, $type) = @_;
+  $line =~ s/^\s*//;
+  $line =~ s/\s*$//;
 
-  return match_action($cfg, $u);
+  my @a = split(' ', $line);
+  foreach(@a) {
+  }
 }
 
-sub guess_text {
-  my ($f) = @_;
-  my $cfg = "$TWDE_HOME/etc/guess.menu";
+sub guess_path {
+  my ($line, $type) = @_;
+  $line =~ s/^\s*//;
+  $line =~ s/\s*$//;
+
+  if (match_single_path($line, $type)) {
+    return;
+  }
+
+  my @a = split(' ', $line);
+  foreach(@a) {
+    if (match_single_path($line, $type)) {
+      return;
+    }
+  }
+}
+
+sub write_text {
+  my $tf = "/tmp/$$-guess.txt";
   
-  return 0;
+  open(OUT, "> $tf");
+  foreach(@LINES) {
+    print(OUT "$_\n");
+  }
+  close(OUT);
+  
+  push(@FOUND, $tf);
 }
 
-init_context();
+sub guess_type {
+  my ($type) = @_;
+  
+  foreach(@LINES) {
+    guess_path($_, $type) if ($type eq "file" || $type eq "dir");   
+  }
+
+  if ($type eq "text") {
+    @FOUND=() if ($#LINES > 0);
+    write_text();
+  }
+}
+
+#init_context();
+
+foreach(@ARGV) {
+  push(@TYPES, $_);
+}
 
 while(<STDIN>) {
   chomp();
-  my $text = $_;
+  $_ =~ s/\s*$//;
+  push(@LINES, $_);
+}
 
-  if (guess_file($text)) {
-  }
-  elsif (guess_url($text)) {
-  }
-  elsif (guess_text($text)) {
-  }
+foreach (@TYPES) {
+  guess_type($_);
+}
+
+foreach (@FOUND) {
+  print("$_\n");
+  exit 0;
 }

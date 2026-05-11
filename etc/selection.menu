@@ -1,0 +1,5 @@
+Open	files `xselection | guess file url`
+Edit	edit `xselection | guess file text`
+View	edit `xselection | guess file text`
+Reveal	files `xselection | guess dir`
+Execute	files `xselection | guess dir`

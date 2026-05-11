@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+
+HOST="$1"
+DIR="$2"
+MOUNT_BASE="/var/run/user/$UID/gvfs"
+
+function find_mount_path() {
+  local rx="server=$HOST.*share=$DIR"
+  ls -1d $MOUNT_BASE/smb-share:* 2>/dev/null | while read -r line ;do
+    if [[ "$line" =~ $rx ]];then
+      echo $line
+    fi
+  done
+
+}
+
+if [ -z "$DIR" ];then
+  echo "mount_smb [host] [dir]"
+  exit 1
+fi
+
+MOUNT_PATH=`find_mount_path`
+if [ -z "$MOUNT_PATH" ];then
+  gio mount smb://$HOST/$DIR || exit $?
+  echo "mounted"
+else
+  echo "mointed already"
+fi
+
+MOUNT_PATH=`find_mount_path`
+if [ -z "$MOUNT_PATH" ];then
+  echo "unable to mound $HOST $DIR"
+  exit 1
+fi
+
+echo "$MOUNT_PATH"
+read DD
+
+gio mount -u -f smb://$HOST/$DIR
+sleep 1
+
+MOUNT_PATH=`find_mount_path`
+if [ -n "$MOUNT_PATH" ];then
+  echo "unable to unmount $HOST $DIR"
+  exit 1
+else
+  echo "unmounted"
+fi
+
+exit 0

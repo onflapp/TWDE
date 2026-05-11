@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+function switch_to_console {
+  systemctl isolate multi-user.target
+}
+
+function off() {
+  systemctl isolate graphical.target
+}
+
+
+#Set to CLI Boot: sudo systemctl set-default multi-user.target
+
+function usage() {
+  echo "session"
+  echo "session switch_to_console"
+  echo "session switch_to_gui"
+
+  exit 1
+}
+
+if [ -z "$1" ];then
+  usage
+else
+  "$1" "$2" "$3" "$4"
+fi

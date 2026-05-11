@@ -1,0 +1,15 @@
+#!/bin/bash
+
+timedatectl
+echo "1) change timezone"
+read DD
+
+MYTZ=`timedatectl show -P Timezone`
+STATUS="$TZ"
+
+#RV=`timedatectl list-timezones | fzf`
+RV=`tzselect`
+
+if [ -n "$RV" ];then
+      echo timedatectl set-timezone "$RV"
+fi

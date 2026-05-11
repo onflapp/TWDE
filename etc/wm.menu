@@ -1,3 +1,5 @@
-XTerm	$APPS/terminal
-Manual	$TWDE_HOME/bin/xselection | $APPS/manual
-Web Browser	$TWDE_HOME/bin/xselection | $APPS/browser
+Terminal	terminal
+Manual	manual
+Web Browser	browser
+Text Editor	edit
+File Manager	files

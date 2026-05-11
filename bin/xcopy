@@ -3,8 +3,12 @@
 . $TWDE_HOME/lib/func.sh
 
 xclip=`locate_command xclip`
-T=/tmp/$$.copy.tmp
 
-cat > $T
-$xclip -i -selection clipboard $T
-rm $T
+if [ -f "$1" ];then
+  $xclip -i -selection clipboard "$1"
+else
+  T=/tmp/$$.copy.tmp
+  cat > $T
+  $xclip -i -selection clipboard $T
+  rm $T
+fi

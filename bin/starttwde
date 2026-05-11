@@ -1,22 +1,23 @@
 #!/usr/bin/env bash
 
 function init_home() {
-  mkdir -p "$TWDE_HOME/var" 2>/dev/null
+  if ! [ -d "$TWDE_VAR" ];then
+    mkdir -p "$TWDE_VAR" 2>/dev/null
+  fi
 }
 
 function init_exec() {
   $TWDE_HOME/libexec/init.d/$1 $2
 }
 
-function continue_init() {
-  env > /tmp/iiiii
-  echo "continue initialization in wm"
-  init_exec hotkeys start
+function run_on_exit() {
+  if [ -f "$TWDE_RUN_ON_EXIT" ];then
+    source "$TWDE_RUN_ON_EXIT"
+  fi
 }
 
 function process() {
   echo "starting"
-  init_home
 
   init_exec keyboard start
   init_exec mouse start
@@ -25,19 +26,16 @@ function process() {
   init_exec gestures start
 
   echo "about to launch windowmanager"
-  init_exec wm
+  init_exec wm start
   echo "windowmanager exited"
 
   echo "stopping"
   init_exec keyboard stop
   init_exec hotkeys stop
   init_exec display stop
-}
 
-if [ "x$1" == "x--continue-init" ];then
-  continue_init
-  exit
-fi
+  run_on_exit
+}
 
 if [ -z "$TWDE_HOME" ];then
   B=`realpath "$0"`
@@ -46,8 +44,10 @@ if [ -z "$TWDE_HOME" ];then
   export TWDE_HOME="$B"
 fi
 
-export TWDE_LOG="/tmp/$UID-desktop.log"
-export PATH="$TWDE_HOME/bin:$TWDE_HOME/apps:$TWDE_HOME/libexec:$PATH"
+export TWDE_VAR="$TWDE_HOME/var"
+export TWDE_RUN_ON_EXIT="$TWDE_HOME/var/$$.run_on_exit"
+export TWDE_LOG="$TWDE_VAR/desktop.log"
+export PATH="$TWDE_HOME/bin:$TWDE_HOME/apps:$TWDE_HOME/bin/system:$TWDE_HOME/bin/config:$PATH"
 
 if [ "x$1" == "x--safe-mode" ];then
   init
@@ -55,4 +55,5 @@ if [ "x$1" == "x--safe-mode" ];then
   exec xterm
 fi
 
+init_home
 process > $TWDE_LOG 2>&1

@@ -4,10 +4,21 @@
 
 xclip=`locate_command xclip`
 
-T=/tmp/$$.selection.tmp
+function read_selection() {
+  T=/tmp/$$.selection.tmp
 
-$xclip -o -selection > $T
-#echo -n "x" | $xclip -i -selection primary
+  $xclip -o -selection > $T
 
-cat $T
-rm $T
+  cat $T
+  rm $T
+}
+
+function write_selection() {
+  $xclip -i -selection primary "$1"
+}
+
+if [ -f "$1" ];then
+  write_selection "$1"
+else
+  read_selection
+fi

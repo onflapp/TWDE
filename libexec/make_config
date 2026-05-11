@@ -17,6 +17,7 @@ for CFG in $@ ;do
   fi
 done
 
+export PATH="$TWDE_HOME/libexec:$PATH"
 while IFS= read -r LINE ;do
   L="${LINE//\"/\\\"}"
   eval "R=\"$L\"" || (echo "$L" >/dev/stderr ;exit 1)

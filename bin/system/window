@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+. $TWDE_HOME/lib/func.sh
+
+function list_windows() {
+  for DD in `xdotool search --maxdepth 1 --onlyvisible --all --name '' `;do
+    xdotool getwindowgeometry $DD
+  done
+}
+
+list_windows

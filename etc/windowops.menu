@@ -1,2 +1,2 @@
 Copy	xselection | xcopy
-Paste Selection	simulate click 2
+Paste Selection	xsimulate click 2

@@ -32,6 +32,8 @@ function config() {
   if [ -n "$REPEAT_DELAY" ] && [ -n "$REPEAT_RATE" ];then
     xset r rate $REPEAT_DELAY $REPEAT_RATE
   fi
+
+  xset b off
 }
 
 function monitor() {
