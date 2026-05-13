@@ -9,6 +9,7 @@ use POSIX qw(strftime);
 $VERBOSE=0;
 $VERBOSE=1 if ($ENV{'DEBUG'});
 $HOME=$ENV{'HOME'};
+$TWDE_HOME=$ENV{'TWDE_HOME'};
 
 #### needed to clean dead child processes
 $SIG{CHLD} = 'IGNORE';
@@ -34,6 +35,9 @@ sub close_all {
 sub make_args {
   my $path = "";
   my $i = index($REQUEST, "?");
+
+  $ACTION = "";
+  $ACTION_VALUE = "";
  
   if ($i > 0) {
     $path = URLDecode(substr($REQUEST, 0, $i));
@@ -47,7 +51,17 @@ sub make_args {
       if ($i > 0) {
         $n = substr($v, 0, $i);
         $v = URLDecode(substr($v, $i + 1));
-        if ($n ne "") {
+        if ($n eq "exit") {
+          DEBUG("action: $v");
+          $ACTION = $n;
+          $ACTION_VALUE = $v;
+        }
+        if ($n eq "return") {
+          DEBUG("action: $v");
+          $ACTION = $n;
+          $ACTION_VALUE = $v;
+        }
+        elsif ($n ne "") {
           DEBUG("arg: $n=$v");
           $ENV{"REQUEST_$n"} = $v;
         }
@@ -156,16 +170,37 @@ sub HANDLE_REQUEST {
   my $txt = "";
   my $args = make_args();
 
-  open(XIN, "$MAIN_SCRIPT $args |");
+  if ($ACTION eq "exit") {
+    close_all();
+    exit 0;
+  }
+
+  if ($ACTION eq "return") {
+    close_all();
+    exit 0;
+  }
+
+  my $pid = open(XIN, "$MAIN_SCRIPT $args 2>&1 |");
   while(<XIN>) {
     $txt .= $_;
   }
   close(XIN);
 
   my $sz = length($txt);
-
-  HTTP_HEAD("text/html", $sz);
-  print($client $txt);
+  if ($sz > 0) {
+    if ($txt =~ /<html/) {
+      HTTP_HEAD("text/html", $sz);
+      print($client $txt);
+    }
+    else {
+      HTTP_HEAD("text/plain", $sz);
+      print($client $txt);
+    }
+  }
+  else {
+    close_all();
+    exit 1;
+  }
 }
 
 sub HTTP_NOT_FOUND {
@@ -205,7 +240,8 @@ sub HTTP_HEAD {
 sub launch_browser {
   DEBUG("my pid:$$, server pid:$SERVER_PID");
 
-  system("elinks -localhost 1 -auto-submit 1 http://localhost:$PORT/");
+  #system("elinks -config-dir $TWDE_HOME/lib -config-file elinks.conf -localhost 1 -auto-submit 1 http://localhost:$PORT/");
+  system("elinks -config-dir $TWDE_HOME/lib -config-file elinks.conf -localhost 1 http://localhost:$PORT/");
 }
 
 sub launch_server {
@@ -264,7 +300,7 @@ sub launch_server {
             HTTP_NOT_FOUND();
             last;
           }
-          elsif ($REQUEST_METHOD eq "GET" && $REQUEST eq "/quit") {
+          elsif ($REQUEST_METHOD eq "GET" && $REQUEST eq "/exit") {
             HANDLE_REQUEST();
 
             kill(15, $PID);

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 CFG="$TWDE_HOME/var/dialog.xrm"
-prepareconf "$TWDE_HOME/lib/dialog.xrm" \
+$TWDE_HOME/libexec/make_config "$TWDE_HOME/lib/dialog.xrm" \
   $TWDE_HOME/etc/theme.conf > "$CFG"
 
 xrdb -merge "$CFG"

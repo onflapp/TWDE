@@ -13,7 +13,13 @@ function init_exec() {
 function run_on_exit() {
   if [ -f "$TWDE_RUN_ON_EXIT" ];then
     source "$TWDE_RUN_ON_EXIT"
+    rm "$TWDE_RUN_ON_EXIT"
   fi
+}
+
+function start_wm() {
+  init_exec wm_fvwm start
+  #init_exec wm_twm start
 }
 
 function process() {
@@ -26,7 +32,7 @@ function process() {
   init_exec gestures start
 
   echo "about to launch windowmanager"
-  init_exec wm start
+  start_wm
   echo "windowmanager exited"
 
   echo "stopping"
@@ -56,4 +62,9 @@ if [ "x$1" == "x--safe-mode" ];then
 fi
 
 init_home
-process > $TWDE_LOG 2>&1
+
+if ! [ -t 1 ];then
+  process > $TWDE_LOG 2>&1
+else
+  process
+fi

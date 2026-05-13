@@ -2,44 +2,86 @@
 
 [ -z "$REQUEST" ] && exec $TWDE_HOME/bin/hsh $0
 
-. $TWDE_HOME/etc/keyboard.conf
 
 function list_timezones() {
-  echo "<select>"
+  echo '<select name="timezone">'
   for DD in `timedatectl list-timezones`;do
-    echo "<option>$DD</option>"
+    if [ "$DD" = "$TIMEZONE" ];then
+      echo "<option selected>$DD</option>"
+    else
+      echo "<option>$DD</option>"
+    fi
   done
   echo "</select>"
 }
 
 function list_locales() {
-  echo "<select>"
+  echo '<select name="locale">'
   for DD in `localectl list-locales`;do
-    echo "<option>$DD</option>"
+    if [ "$DD" = "$LOCALE" ];then
+      echo "<option selected>$DD</option>"
+    else
+      echo "<option>$DD</option>"
+    fi
   done
   echo "</select>"
 }
 
+function update_values() {
+  cat << EOF > $TWDE_HOME/etc/locale.conf
+TIMEZONE=$REQUEST_timezone
+LOCALE=$REQUEST_locale
+EOF
+
+}
+
+function display_values() {
+  . $TWDE_HOME/etc/locale.conf
+  if [ -z "$TIMEZONE" ];then
+    TIMEZONE=`timedatectl show -p Timezone --value`
+  fi
+  if [ -z "$LOCALE" ];then
+    LOCALE="$LANG"
+  fi
+
+  export TZ="$TIMEZONE"
+  export LANG="$LOCALE"
 
 cat << EOF
 <html>
-<head><title>test</title></head>
-<body>
-  <h1>Hello ${REQUEST_valA}</h1>
-  <form arction="/apply">
-    <h3>Time Zone: </h3>
-    `list_timezones`
+  <head><title>Locale Settings Panel</title></head>
+  <body>
+    <h1>Local Settings</h1>
+    <form>
+      <h3>Time Zone: </h3>
+      `list_timezones`
 
-    <h3>Locale: </h3>
-    `list_locales`
+      <h3>Locale: </h3>
+      `list_locales`
 
-    <hr>
+      <button name="action" value="install">add</button> you cann add new resources
 
-    <center>
-      <button>[ Cancel ]</button>
-      <button>[ Submit ]</button>
-    </center>
-  </form>
-</body>
+      <br>
+      <br>
+      Current time:
+      <pre>
+`date`
+      </pre>
+
+      <hr>
+      <center>
+        <button name="exit">[ Cancel ]</button>
+        <button name="action" value="apply">[ Apply ]</button>
+      </center>
+    </form>
+  </body>
 </html>
 EOF
+}
+
+if [ -n "$REQUEST_timezone" ];then
+  update_values
+  display_values
+else
+  display_values
+fi

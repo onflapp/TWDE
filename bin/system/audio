@@ -45,7 +45,26 @@ function show_output() {
   [ -z "$dev_name" ] && dev_name="0"
   [ "$dev_name" = "default" ] && dev_name="0"
 
-  if [ "$2" = "volume" ];then
+  if [ "$2" = "description" ];then
+    if [ "$1" = "default" ];then
+      dev_name=`pactl get-default-sink`
+    fi
+
+    pactl list sinks | while read -r line ;do
+      if [[ "$line" =~ Name:\ (.*)$ ]];then
+        val="${BASH_REMATCH[1]}"
+        if [ "$val" = "$dev_name" ];then
+          found="${BASH_REMATCH[1]}"
+        fi
+      fi
+      if [ -n "$found" ] && [[ "$line" =~ Description:\ (.*)$ ]];then
+        val="${BASH_REMATCH[1]}"
+        echo "$val"
+        exit 0
+      fi
+    done
+
+  elif [ "$2" = "volume" ];then
     pactl -- get-sink-mute "$dev_name" | while read -r line ;do
       if [[ "$line" = "Mute: yes" ]];then
         echo "-"
@@ -65,7 +84,7 @@ function show_output() {
 }
 
 function play_sample() {
-  aplay /usr/share/sounds/alsa/Front_Right.wav
+  pacat $TWDE_HOME/lib/ping.wav&
 }
 
 function usage() {
@@ -75,6 +94,7 @@ function usage() {
   echo "audio change_output [out] volume_up | volume_down | volume_mute"
   echo "audio make_output [out] default"
   echo "audio show_output [out] volume"
+  echo "audio show_output [out] description"
   echo "audio show_default_output"
   echo "audio play_sample"
 

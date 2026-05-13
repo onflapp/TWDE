@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+if [ -z "$TWDE_HOME" ];then
+  echo "TWDE_HOME not set"
+  exit 1
+fi
+
+function init_config() {
+  echo "creating config"
+  $TWDE_HOME/libexec/make_config "$TWDE_HOME/lib/fvwmrc" \
+    $TWDE_HOME/etc/theme.conf \
+    $TWDE_HOME/etc/wm.conf > "$CFG"
+}
+
+function main_loop() {
+  init_config
+  fvwm -f "$CFG"
+}
+
+TWDE_VAR="$TWDE_HOME/var"
+CFG="$TWDE_VAR/fvwmrc"
+
+if [ "x$1" = "xreload" ];then
+  init_config
+else
+  main_loop
+fi

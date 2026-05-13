@@ -2,52 +2,87 @@
 
 [ -z "$REQUEST" ] && exec $TWDE_HOME/bin/hsh $0
 
-. $TWDE_HOME/etc/keyboard.conf
-
 function list_models() {
-  echo "<select>"
+  echo '<select name="model">'
   for DD in `localectl list-x11-keymap-models`;do
-    echo "<option>$DD</option>"
+    if [ "$DD" = "$MODEL" ];then
+      echo "<option selected>$DD</option>"
+    else
+      echo "<option>$DD</option>"
+    fi
   done
   echo "</select>"
 }
 
 function list_layouts() {
-  echo "<select>"
-  for DD in `localectl list-x11-keymap-models`;do
-    echo "<option>$DD</option>"
+  echo '<select name="layout">'
+  for DD in `localectl list-x11-keymap-layouts`;do
+    if [ "$DD" = "$LAYOUT" ];then
+      echo "<option selected>$DD</option>"
+    else
+      echo "<option>$DD</option>"
+    fi
   done
   echo "</select>"
 }
 
+function update_values() {
+
+cat << EOF > $TWDE_HOME/etc/keyboard.conf
+SWAP_FN=1
+# 0 - disabled, 1 media keys, 2 function keys
+FN_MODE=2
+SWAP_ALT_CMD=1
+REPEAT_DELAY=$REQUEST_delay
+REPEAT_RATE=$REQUEST_rate
+MODEL=$REQUEST_model
+LAYOUT=$REQUEST_layout
+EOF
+
+  setxkbmap -layout $REQUEST_layout -model $REQUEST_model
+
+  if [ -n "$REQUEST_delay" ];then 
+    xset r rate "$REQUEST_delay" "$REQUEST_rate"
+  fi
+}
+
+function display_values() {
+  . $TWDE_HOME/etc/keyboard.conf
 
 cat << EOF
 <html>
-<head><title>test</title></head>
-<body>
-  <h1>Hello ${REQUEST_valA}</h1>
-  <form arction="/apply">
-    <h3>Repeat Delay: </h3>
-    <input name="valA">$REPEAT_DELAY</input>
+  <head><title>Keyboard Settings Panel</title></head>
+  <body>
+    <h1>Keyboard Settings</h1>
+    <form>
+      <h3>Repeat Delay: </h3>
+      <input name="delay" value="$REPEAT_DELAY"></input>
 
-    <h3>Repeat Rate: </h3>
-    <input name="valB">$REPEAT_RATE</input>
+      <h3>Repeat Rate: </h3>
+      <input name="rate" value="$REPEAT_RATE"></input>
 
-    <h3>Keyboard Model: </h3>
-    `list_models`
-    `list_layouts`
+      <h3>Keyboard Model: </h3>
+      
+      `list_models`
+      layout: `list_layouts`
 
-    <h3>Repeat Rate: </h3>
-    <input name="valC" type="checkbox">$REPEAT_RATE</input>
+      <h3>Test: </h3>
+      <input></input>
 
-    <hr>
-    <center>
-      <button>[ Cancel ]</button>
-      <button>[ Submit ]</button>
-    </center>
-  </form>
-</body>
+      <hr>
+      <center>
+        <button name="exit">[ Cancel ]</button>
+        <button name="action" value="apply">[ Apply ]</button>
+      </center>
+    </form>
+  </body>
 </html>
 EOF
+}
 
-# setxkbmap
+if [ -n "$REQUEST_delay" ];then
+  update_values
+  display_values
+else
+  display_values
+fi

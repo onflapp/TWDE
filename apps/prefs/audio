@@ -1,0 +1,88 @@
+#!/usr/bin/env bash
+
+[ -z "$REQUEST" ] && exec $TWDE_HOME/bin/hsh $0
+
+audio="$TWDE_HOME/bin/system/audio"
+
+function list_outputs() {
+  local def=`$audio show_default_output`
+
+  echo "<select name=\"output\">"
+  $audio list_outputs | while read -r DD ;do
+    local desc=`$audio show_output $DD description`
+
+    if [ "$DD" = "$def" ];then
+      echo "  <option value=\"$DD\" selected>$desc</option>"
+    else
+      echo "  <option value=\"$DD\">$desc</option>"
+    fi
+  done
+  echo "</select>"
+}
+
+function display_volume() {
+
+  if [ "$VOLUME" != "-" ];then
+    echo '<button name="action" value="volume_minus">[ - </button>'
+    echo "<input name=\"volume\" value=\"$VOLUME\" size=\"4\"></input>"
+    echo '<button name="action" value="volume_plus"> + ]</button>'
+    echo '<button name="action" value="volume_mute">[ mute ]</button>'
+  else
+    echo '<button name="action" value="volume_mute">[ unmute ]</button>'
+  fi
+}
+
+function display_values() {
+  if [ -z "$VOLUME" ];then
+    VOLUME=`audio show_output default volume`
+  fi
+
+cat << EOF
+<html>
+  <head><title>Audio Settings Panel</title></head>
+  <body>
+    <h1>Audio Settings</h1>
+    <form>
+      <h3>Default output:</h3>
+
+      `list_outputs`
+
+      <h3>Volume:</h3>
+
+      `display_volume`
+
+      <hr>
+      <center>
+        <button name="exit">[ Cancel ]</button>
+        <button name="action" value="apply">[ Apply ]</button>
+      </center>
+    </form>
+  </body>
+</html>
+EOF
+}
+
+if [ "$REQUEST_action" = "apply" ];then
+  $audio make_output "$REQUEST_output" default
+  $audio change_output default volume_to "$REQUEST_volume" >/dev/null
+  $audio play_sample
+
+elif [ "$REQUEST_action" = "volume_plus" ];then
+  VOLUME=`$audio change_output default volume_up`
+  $audio play_sample
+
+elif [ "$REQUEST_action" = "volume_minus" ];then
+  VOLUME=`$audio change_output default volume_down`
+  $audio play_sample
+
+elif [ "$REQUEST_action" = "volume_mute" ];then
+  VOLUME=`$audio change_output default volume_mute`
+  $audio play_sample
+
+elif [ -n "$REQUEST_volume" ];then
+  VOLUME=`$audio change_output default volume_to "$REQUEST_volume"`
+  $audio play_sample
+
+fi
+
+display_values

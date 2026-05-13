@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "WebAppKreator",
+  "version": "1.0",
+  "description": "WebAppKreator",
+  "permissions": ["storage", "activeTab", "scripting", "webRequest", "webNavigation", "nativeMessaging"],
+  "host_permissions": ["<all_urls>"],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ],
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "ping_pong@example.org",
+      "strict_min_version": "50.0"
+    }
+  }
+}

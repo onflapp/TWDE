@@ -1,0 +1,30 @@
+#!/bin/bash
+
+function list_items() {
+  while IFS= read -r LINE ;do
+    IFS=$'\t';V=(${LINE});IFS=
+    NAME="${V[0]}"
+    EXEC="${V[1]}"
+    echo "$NAME"
+  done < "$1"
+}
+
+function exec_item() {
+  while IFS= read -r LINE ;do
+    IFS=$'\t';V=(${LINE});IFS=
+    NAME="${V[0]}"
+    EXEC="${V[1]}"
+    if [ "$2" = "$NAME" ];then
+      echo "$EXEC"
+      exit
+    fi
+  done < "$1"
+}
+
+if [ -f "$1" ];then
+  LIST="$1"
+  RV=`list_items "$LIST" | fzf`
+  if [ -n "$RV" ];then
+    exec_item "$LIST" "$RV"
+  fi
+fi

@@ -1,0 +1,33 @@
+#!/bin/bash
+
+function activate_window() {
+  local WID=`xdotool search --onlyvisible --class "$1"`
+  if [ -n "$WID" ];then
+    xdotool windowactivate "$WID" || xdotool windowraise "$WID"
+    return 0
+  else
+    return 1
+  fi
+}
+
+function launch_webapp() {
+  local PROFILE_DIR="$HOME/.local/share/webapps"
+  local PROFILE_NAME="$PROFILE_DIR/$1"
+
+  if ! [ -d "$PROFILE_NAME" ];then
+    mkdir -p "$PROFILE_NAME"
+    cp -r $TWDE_HOME/lib/webapp/firefox/profile/* "$PROFILE_NAME/"
+  fi
+  if activate_window "$1" ;then
+    exit
+  fi
+
+  (firefox --class $1 --name $1 --profile "$PROFILE_NAME" "$2" >/dev/null 2>/dev/null) &
+}
+
+if [ -z "$2" ];then
+  echo "webapp name url"
+  exit 1
+else
+  launch_webapp "$1" "$2"
+fi

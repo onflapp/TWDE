@@ -1,9 +1,9 @@
 BugOpts ExplainWindowPlacement On
 
-DestroyFunc StartFunction
-AddToFunc   StartFunction
-+ I Module FvwmMFL
-+ I Schedule 1000 Exec exec $TWDE_HOME/bin/starttwde --continue-init
+#DestroyFunc StartFunction
+#AddToFunc   StartFunction
+#+ I Module FvwmMFL
+#+ I Schedule 1000 Exec exec $TWDE_HOME/bin/starttwde --continue-init
 
 DestroyFunc RandRFunc
 AddToFunc   RandRFunc
@@ -28,8 +28,13 @@ AddToFunc MoveToCurrent
 
 DestroyFunc ReconfigureFunction
 AddToFunc   ReconfigureFunction
-+ I Exec exec $TWDE_HOME/libexec/init.d/wm reconfigure
++ I Exec exec $TWDE_HOME/libexec/init.d/wm_fvwm reload
 + I Restart
+
+DestroyFunc PowerOffFunction
+AddToFunc   PowerOffFunction
++ I Exec exec "echo '/sbin/poweroff' > $TWDE_RUN_ON_EXIT"
++ I Quit
 
 # Function: IconManClick
 #
@@ -118,7 +123,7 @@ Style * WindowShadeScrolls, WindowShadeSteps 10
 IgnoreModifiers L25
 
 # Decor Styles
-Style * BorderWidth 6, HandleWidth 6, MWMButtons, MWMBorder, FirmBorder
+Style * BorderWidth $FRAME_BORDER, HandleWidth $FRAME_BORDER, MWMButtons, MWMBorder, FirmBorder
 Style * Colorset 1, HilightColorset 2
 Style * BorderColorset 3, HilightBorderColorset 4
 
@@ -175,23 +180,31 @@ Colorset 14 fg #555555, bg #003c3c, hi #aaaaaa, sh #999999, Plain, NoShape
 # 4: Menus
 ###########
 MenuStyle * MenuColorset 5, ActiveColorset 6, GreyedColorset 7, TitleColorset 8
-MenuStyle * Hilight3DOff, HilightBack, HilightTitleBack, SeparatorsLong
+MenuStyle * HilightBack, HilightTitleBack, SeparatorsLong
 MenuStyle * TrianglesSolid, TrianglesUseFore
+MenuStyle * BorderWidth 3
 MenuStyle * ItemFormat "%|  %l            %|"
-MenuStyle * Font "$MENU_FONT"
+MenuStyle * Font "$APP_FONT"
+
+DestroyMenu MenuQuit
+AddToMenu   MenuQuit
++ "Logout" Quit
++ "Sleep" Exec exec "power suspend"
++ "Power off" PowerOffFunction
 
 # Root Menu
 #
 # The root menu will PopUp with a click in the root
 # window or using alt-f1 (or menu).
 DestroyMenu MenuFvwmRoot
-AddToMenu   MenuFvwmRoot "Main Menu" Title
+AddToMenu   MenuFvwmRoot 
++ "Application" Title
 `menu2fvwm $TWDE_HOME/etc/wm.menu`
-+ "" Nop
-+ "Refresh" Refresh
-+ "Reconfigure" ReconfigureFunction
-+ "Restart" Restart
-+ "Quit" Quit
++ "Selection" Title
+`menu2fvwm $TWDE_HOME/etc/selection.menu`
++ "Window Manager" Title
++ "Reload config" ReconfigureFunction
++ "Quit" Popup MenuQuit
 
 DestroyFunc CreateMenuApp
 AddToFunc CreateMenuApp

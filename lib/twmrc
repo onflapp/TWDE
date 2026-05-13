@@ -11,7 +11,7 @@
 NoGrabServer
 RestartPreviousState
 DecorateTransients
-BorderWidth 2
+BorderWidth "$FRAME_BORDER"
 OpaqueMove
 RandomPlacement
 NoTitleHighlight
@@ -56,7 +56,7 @@ Function "move-or-iconify" { f.move f.deltastop f.iconify }
 Function "focus-and-raise" { f.focus f.raise }
 Function "raise-and-warp" { f.raise }
 Function "move-or-focus-and-raise" { f.unfocus f.focus f.raise f.exec "event activate" f.move f.deltastop }
-Function "reload-config" { f.exec "$TWDE_HOME/libexec/init.d/wm reload" f.restart }
+Function "reload-config" { f.exec "$TWDE_HOME/libexec/init.d/wm_twm reload" f.restart }
 Function "power-off" { f.exec "echo '/sbin/poweroff' > $TWDE_RUN_ON_EXIT" f.quit }
 
 #
