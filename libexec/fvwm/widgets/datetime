@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+
+PID="/tmp/$UID-widget-datetime.pid"
+B=`realpath "$0"`
+
+function init() {
+  cat << EOF
+EOF
+}
+
+function display() {
+  cat << EOF
+*RightPanel: (3x1, Id DateTimeInfo, Title "DateTime")
+EOF
+}
+
+function process() {
+  FvwmCommand "SendToModule RightPanel ChangeButton DateInfo Title \"$V\""
+}
+
+function start() {
+  echo "$B starting"
+  process&
+  echo "$!" > $PID
+}
+
+function stop() {
+  echo "$B stopping"
+  kill `cat $PID`
+}
+
+function process() {
+  while [ 1 ];do
+    V=`date`
+    FvwmCommand "SendToModule RightPanel ChangeButton DateTimeInfo Title \"$V\""
+    sleep 10
+  done
+}
+
+$1 $2 $3 $4

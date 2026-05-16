@@ -1,9 +1,7 @@
 #!/bin/bash
 
 function display() {
-  date +%H:%M
-  echo "------------------"
-  ncal
+  power battery_status
 }
 
 while [ 1 ];do

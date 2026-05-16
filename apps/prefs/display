@@ -2,6 +2,8 @@
 
 [ -z "$REQUEST" ] && exec $TWDE_HOME/bin/hsh $0
 
+disp=$TWDE_HOME/bin/system/display
+
 function get_val() {
   env | while read -r line ;do
     if [[ "$line" =~ ^(.*)=(.*)$ ]];then
@@ -15,11 +17,7 @@ function get_val() {
 }
 
 function get_brightness() {
-  brightnessctl -m | while read -r DD ;do
-    if [[ "$DD" =~ ,([0-9]+)% ]];then
-      echo "${BASH_REMATCH[1]}"
-    fi
-  done
+  $disp show_screen default brightness
 }
 
 function list_active_devs() {
@@ -123,7 +121,7 @@ EOF
 }
 
 function update_brightness() {
-  brightnessctl s "$REQUEST_brightness%" > /dev/null
+  $disp change_screen default brightness_to "$REQUEST_brightness" >/dev/null
 }
 
 function update_values() {
@@ -134,20 +132,24 @@ function update_values() {
 
     if [ -n "$mode" ];then
       if [ "$mode" = "off" ];then
-        xrandr --output "$DD" --off
+        $disp turn_screen "$DD" off
       else
-        xrandr --output "$DD" --mode "$mode"
+        $disp change_screen "$DD" resolution_to "$mode"
       fi
     fi
 
     if [ "$pos" = "right" ];then
-     xrandr --output "$DD" --right-of "$last_dev"
+      $disp place_screen "$DD" right_of "$last_dev"
+
     elif [ "$pos" = "left" ];then
-     xrandr --output "$DD" --left-of "$last_dev"
+      $disp place_screen "$DD" left_of "$last_dev"
+
     elif [ "$pos" = "above" ];then
-     xrandr --output "$DD" --above "$last_dev"
+      $disp place_screen "$DD" above "$last_dev"
+
     elif [ "$pos" = "below" ];then
-     xrandr --output "$DD" --below "$last_dev"
+      $disp place_screen "$DD" below "$last_dev"
+
     fi
 
     last_dev="$DD"
@@ -160,11 +162,11 @@ if [ "$REQUEST_action" = "apply" ];then
   display_values
 
 elif [ "$REQUEST_action" = "brightness_plus" ];then
-  brightnessctl s "10%+" > /dev/null
+  $disp change_screen default brightness_up >/dev/null
   display_values
 
 elif [ "$REQUEST_action" = "brightness_minus" ];then
-  brightnessctl s "10%-" > /dev/null
+  $disp change_screen default brightness_down >/dev/null
   display_values
 
 elif [ -n "$REQUEST_brightness" ];then

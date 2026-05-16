@@ -15,7 +15,7 @@ function exec_item() {
     NAME="${V[0]}"
     EXEC="${V[1]}"
     if [ "$2" = "$NAME" ];then
-      echo "$EXEC"
+      eval "$EXEC"
       exit
     fi
   done < "$1"

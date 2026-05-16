@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+
+[ -z "$REQUEST" ] && exec $TWDE_HOME/bin/hsh $0
+
+power="$TWDE_HOME/bin/system/power"
+
+function battery_status() {
+  $power battery_status
+}
+
+function list_profiles() {
+  local def=`$power show_current_profile`
+
+  echo "<select name=\"profile\">"
+  $power list_profiles | while read -r DD ;do
+    #local desc=`$power show_output $DD description`
+
+    if [ "$DD" = "$def" ];then
+      echo "  <option value=\"$DD\" selected>$DD</option>"
+    else
+      echo "  <option value=\"$DD\">$DD</option>"
+    fi
+  done
+  echo "</select>"
+}
+
+function display_values() {
+  if [ -z "$VOLUME" ];then
+    VOLUME=`audio show_output default volume`
+  fi
+
+cat << EOF
+<html>
+  <head><title>Power Settings Panel</title></head>
+  <body>
+    <h1>Power Settings</h1>
+    <form>
+      <h3>Current profile:</h3>
+
+      `list_profiles`
+
+      <h3>Battery status:</h3>
+
+      `battery_status`
+
+      <hr>
+      <center>
+        <button name="exit">[ Cancel ]</button>
+        <button name="action" value="apply">[ Apply ]</button>
+      </center>
+    </form>
+  </body>
+</html>
+EOF
+}
+
+if [ "$REQUEST_action" = "apply" ];then
+  $power change_current_profile_to "$REQUEST_profile"
+
+fi
+
+display_values

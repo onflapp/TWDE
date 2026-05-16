@@ -1,0 +1,52 @@
+#!/bin/bash
+
+source $TWDE_HOME/lib/libs.sh
+
+function generate_conf() {
+  if ! [ -d "$MAIL_BASE" ];then
+    mkdir -p "$MAIL_BASE"
+  fi
+
+  source "$MAIL_CONF"
+
+  cat <<EOF > "$MBSYNC_CONF"
+IMAPStore ${MAIL_ACCOUNT}-remote
+PipelineDepth 4
+Host ${IMAP_HOST}
+SSLType IMAPS
+User ${IMAP_USER}
+Pass "${IMAP_PASSWORD}"
+
+MaildirStore mail-local
+Path ${MAIL_BASE}/
+Inbox ${MAIL_BASE}/INBOX/
+Subfolders Verbatim
+
+Channel default
+Far :${MAIL_ACCOUNT}-remote:
+Near :mail-local:
+Create Both
+Expunge Both
+Patterns * ![Gmail]*
+SyncState *
+EOF
+
+}
+
+function sync_mail() {
+  mbsync -V -a -c "$MBSYNC_CONF"
+}
+
+MAIL_CONF="$1"
+
+if ! [ -f "$MAIL_CONF" ];then
+  echo "config $MAIL_CONF doesn't exit"
+  exit 1
+fi
+
+MAIL_ACCOUNT=`f_basename_noext "$MAIL_CONF"`
+MAIL_BASE="$TWDE_HOME/var/mail/$MAIL_ACCOUNT"
+MBSYNC_CONF="$MAIL_BASE/mbsync-$MAIL_ACCOUNT.conf"
+
+generate_conf
+sync_mail

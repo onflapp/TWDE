@@ -64,8 +64,10 @@ EOF
 
 if [ "$REQUEST_action" = "apply" ];then
   $audio make_output "$REQUEST_output" default
-  $audio change_output default volume_to "$REQUEST_volume" >/dev/null
-  $audio play_sample
+  if [ -n "$REQUEST_volume" ];then
+    $audio change_output default volume_to "$REQUEST_volume" >/dev/null
+    $audio play_sample
+  fi
 
 elif [ "$REQUEST_action" = "volume_plus" ];then
   VOLUME=`$audio change_output default volume_up`

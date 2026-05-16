@@ -5,40 +5,35 @@ B=`realpath "$0"`
 
 . $TWDE_HOME/lib/func.sh
 
-function init_apple_kb() {
-  for DD in /sys/class/hidraw/* ;do
-    D=`cat $DD/device/uevent | regexp '^HID_NAME=(.*Apple.*Keyboard)$' '%s\n' '$1'`
-    if [ -n "$D" ];then
-      DEV="/dev/$(basename $DD)"
-      $TWDE_HOME/libexec/apple_disable_ctrl_delay $DEV
-    fi
-  done
-}
-
 function config() {
-  echo "configure keyboard"
+  echo "configure keyboard settings"
 
   . $TWDE_HOME/etc/keyboard.conf
 
-  init_apple_kb
-
-  export SWAP_FN FN_MODE SWAP_ALT_CMD
-  $TWDE_HOME/libexec/keyboard_helper >/dev/null
-
-  if [ -f "$HOME/.Xmodmap" ];then
-    xmodmap $HOME/.Xmodmap
+  if [ -n "$REPEAT_DELAY" ] && [ -n "$REPEAT_RATE" ];then
+    echo "set delay [$REPEAT_DELAY] rate [$REPEAT_RATE]"
+    xset r rate $REPEAT_DELAY $REPEAT_RATE
   fi
 
-  if [ -n "$REPEAT_DELAY" ] && [ -n "$REPEAT_RATE" ];then
-    xset r rate $REPEAT_DELAY $REPEAT_RATE
+  if [ -n "$MODEL" ] && [ -n "$LAYOUT" ];then
+    echo "set layout [$LAYOUT] model [$MODEL]"
+
+    setxkbmap -layout "$LAYOUT" -model "$MODEL"
+  fi
+
+  if [ -f "$HOME/.Xmodmap" ];then
+    echo "map keys from Xmodmap"
+    xmodmap $HOME/.Xmodmap
   fi
 
   xset b off
 }
 
 function monitor() {
+  echo "start monitoring keyboard changes"
+
   xprop -spy -root | while read -r line ;do
-    if [[ $line =~ ^_XKB_RULES_NAMES ]];then
+    if [[ $line =~ ^_XKB_RULES_NAMES ]] ;then
       sleep 2
       config
     fi
@@ -57,7 +52,11 @@ function stop() {
 
 if [ "$1" = "start" ];then
   start
-fi
-if [ "$1" = "stop" ];then
+
+elif [ "$1" = "stop" ];then
   stop
+
+elif [ "$1" = "config" ];then
+  config
+
 fi

@@ -10,6 +10,36 @@ function init_exec() {
   $TWDE_HOME/libexec/init.d/$1 $2
 }
 
+function init_env() {
+  if [ -f "$TWDE_HOME/etc/locale.conf" ];then
+    echo "init locale"
+    . "$TWDE_HOME/etc/locale.conf"
+
+    if [ -n "$TIMEZONE" ];then
+      export TZ="$TIMEZONE"
+      echo "TZ=$TZ"
+    fi
+    if [ -n "$LOCALE" ];then
+      export LANG="$LOCALE"
+      echo "LANG=$LANG"
+    fi
+    if [ -n "$DATETIME" ];then
+      export LC_TIME="$DATETIME"
+      echo "LC_TIME=$LC_TIME"
+    fi
+    if [ -n "$NUMBER" ];then
+      export LC_NUMERIC="$NUMBER"
+      echo "LC_NUMERIC=$LC_NUMERIC"
+    fi
+
+  fi
+
+  if [ -f "$TWDE_HOME/etc/environment.conf" ];then
+    echo "init env"
+
+  fi
+}
+
 function run_on_exit() {
   if [ -f "$TWDE_RUN_ON_EXIT" ];then
     source "$TWDE_RUN_ON_EXIT"
@@ -25,11 +55,14 @@ function start_wm() {
 function process() {
   echo "starting"
 
+  init_env
+
+  init_exec audio start
   init_exec keyboard start
   init_exec mouse start
   init_exec display start
   init_exec desktop start
-  init_exec gestures start
+  #init_exec gestures start
 
   echo "about to launch windowmanager"
   start_wm
@@ -37,7 +70,7 @@ function process() {
 
   echo "stopping"
   init_exec keyboard stop
-  init_exec hotkeys stop
+  #init_exec hotkeys stop
   init_exec display stop
 
   run_on_exit

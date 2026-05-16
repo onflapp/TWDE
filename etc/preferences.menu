@@ -1,0 +1,6 @@
+Audio	show-dialog $TWDE_HOME/apps/prefs/audio
+Display	show-dialog $TWDE_HOME/apps/prefs/display
+Keyboard	show-dialog $TWDE_HOME/apps/prefs/keyboard
+Mouse	show-dialog $TWDE_HOME/apps/prefs/mouse
+Locale	show-dialog $TWDE_HOME/apps/prefs/locale
+Power	show-dialog $TWDE_HOME/apps/prefs/power

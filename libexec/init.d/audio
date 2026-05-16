@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+function init_audio() {
+  pactl upload-sample $TWDE_HOME/lib/ping.wav ping
+}
+
+if [ "$1" = "start" ];then
+  init_audio
+fi

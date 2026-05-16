@@ -2,6 +2,7 @@
 
 [ -z "$REQUEST" ] && exec $TWDE_HOME/bin/hsh $0
 
+LOCALE_LIST_CACHE=`localectl list-locales`
 
 function list_timezones() {
   echo '<select name="timezone">'
@@ -15,10 +16,18 @@ function list_timezones() {
   echo "</select>"
 }
 
+function gen_local_list() {
+  echo "$LOCALE_LIST_CACHE"
+}
+
 function list_locales() {
-  echo '<select name="locale">'
-  for DD in `localectl list-locales`;do
-    if [ "$DD" = "$LOCALE" ];then
+  local name="$1"
+  local val="$2"
+
+  echo "<select name=\"$name\">"
+  echo "<option value=\"\">default</option>"
+  for DD in `gen_local_list` ;do
+    if [ "$DD" = "$val" ];then
       echo "<option selected>$DD</option>"
     else
       echo "<option>$DD</option>"
@@ -29,8 +38,10 @@ function list_locales() {
 
 function update_values() {
   cat << EOF > $TWDE_HOME/etc/locale.conf
-TIMEZONE=$REQUEST_timezone
-LOCALE=$REQUEST_locale
+TIMEZONE="$REQUEST_timezone"
+LOCALE="$REQUEST_locale"
+DATETIME="$REQUEST_datetime"
+NUMBER="$REQUEST_number"
 EOF
 
 }
@@ -47,6 +58,14 @@ function display_values() {
   export TZ="$TIMEZONE"
   export LANG="$LOCALE"
 
+  if [ -n "$DATETIME" ];then
+    export LC_TIME="$DATETIME"
+  fi
+
+  if [ -n "$NUMBER" ];then
+    export LC_NUMERIC="$NUMBER"
+  fi
+
 cat << EOF
 <html>
   <head><title>Locale Settings Panel</title></head>
@@ -56,17 +75,18 @@ cat << EOF
       <h3>Time Zone: </h3>
       `list_timezones`
 
-      <h3>Locale: </h3>
-      `list_locales`
+      <h3>Default Locale: </h3>
+      `list_locales locale $LOCALE`
 
-      <button name="action" value="install">add</button> you cann add new resources
+      <button name="action" value="install">add</button> - install more locales
 
       <br>
-      <br>
-      Current time:
-      <pre>
-`date`
-      </pre>
+
+      <h3>Time and date format: </h3>
+      `list_locales datetime $DATETIME` example: `date`
+
+      <h3>Number format: </h3>
+      `list_locales number $NUMBER` example: `printf "%'f" "12345678.123"`
 
       <hr>
       <center>

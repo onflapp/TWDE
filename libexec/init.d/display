@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
-. "$TWDE_HOME/etc/theme.conf"
-. "$TWDE_HOME/lib/func.sh"
+PID="/tmp/$UID-display.pid"
 
 function restore_screen() {
   autorandr -l twde
@@ -11,13 +10,55 @@ function save_screen() {
   autorandr --force -s twde
 }
 
-if [ "$1" = "start" ];then
-  xclip=`locate_command xclip`
-  echo "" | $xclip -i -selection clipboard
-  echo "" | $xclip -i -selection primary
+function refresh_wm() {
+  echo "restart wm"
+  FvwmCommand Restart
+}
 
+function trigger_event() {
+  if [ -n "$TRIGGER_EVENT_PID" ];then
+    kill "$TRIGGER_EVENT_PID" 2>/dev/null
+  fi
+  sleep 0.5
+  
+  (sleep 1;refresh_wm) &
+  TRIGGER_EVENT_PID=$!
+}
+
+function monitor() {
+  echo "start monitoring display changes"
+
+  xev -root -event randr | while read -r line ;do
+    if [[ "$line" =~ ^subtype\ XRROutputChangeNotifyEvent ]];then
+      evt=$line
+
+    elif [ -n "$evt" ];then
+      if [[ "$line" =~ ^output\ (.*),\ crtc.*mode\ (.*)\  ]];then
+        out="${BASH_REMATCH[1]}"
+        mode="${BASH_REMATCH[2]}"
+        trigger_event "$out" "$mode"
+
+      elif [[ "$line" =~ ^output\ (.*),\ crtc.*mode\ None  ]];then
+        out="${BASH_REMATCH[1]}"
+        mode=""
+        trigger_event "$out" "$mode"
+
+      fi
+ 
+    elif [ "$line" = "" ];then
+      evt=""
+    fi
+  done
+}
+
+if [ "$1" = "start" ];then
   restore_screen
-fi
-if [ "$1" = "stop" ];then
+  sleep 1
+  monitor&
+  echo "$!" > $PID
+
+elif [ "$1" = "stop" ];then
+  pkill -P `cat $PID`
   save_screen
+
 fi

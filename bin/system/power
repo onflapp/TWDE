@@ -5,13 +5,58 @@ function suspend() {
 }
 
 function off() {
-  /sbin/poweroff
+  echo "/sbin/poweroff" > $TWDE_RUN_ON_EXIT
+  FvwmCommand Quit
+}
+
+function list_profiles() {
+  powerprofilesctl list | while read -r line ;do
+    if [[ "$line" =~ ^\*?\ ?(.*):$ ]];then
+      val="${BASH_REMATCH[1]}"
+      echo "$val"
+    fi
+  done
+}
+
+function show_current_profile() {
+  powerprofilesctl get
+}
+
+function change_current_profile_to() {
+  powerprofilesctl set "$1"
+}
+
+function battery_status() {
+  upower -d | while read -r line ;do
+    if [[ "$line" =~ Device:.* ]];then
+      stat=""
+      per=""
+      rech=""
+
+    elif [[ "$line" =~ rechargeable:\ +(.*)$ ]];then
+      rech=${BASH_REMATCH[1]}
+
+    elif [[ "$line" =~ state:\ +(.*)$ ]];then
+      stat=${BASH_REMATCH[1]}
+
+    elif [[ "$line" =~ percentage:\ +(.*)%$ ]];then
+      per=${BASH_REMATCH[1]}
+
+      if [ "$rech" = "yes" ];then
+        echo "$stat: $per%"
+      fi
+    fi
+  done
 }
 
 function usage() {
   echo "power"
   echo "power suspend"
   echo "power off"
+  echo "power battery_status"
+  echo "power list_profiles"
+  echo "power show_current_profile"
+  echo "power change_current_profile_to [profile]"
 
   exit 1
 }

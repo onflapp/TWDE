@@ -84,7 +84,7 @@ function show_output() {
 }
 
 function play_sample() {
-  pacat $TWDE_HOME/lib/ping.wav&
+  pactl play-sample ping
 }
 
 function usage() {

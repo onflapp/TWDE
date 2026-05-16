@@ -3,3 +3,4 @@ Edit	edit `xselection | guess file text`
 View	edit `xselection | guess file text`
 Reveal	files `xselection | guess dir`
 Execute	files `xselection | guess dir`
+Screenshot	files `capture-selection`

@@ -39,11 +39,7 @@ MODEL=$REQUEST_model
 LAYOUT=$REQUEST_layout
 EOF
 
-  setxkbmap -layout $REQUEST_layout -model $REQUEST_model
-
-  if [ -n "$REQUEST_delay" ];then 
-    xset r rate "$REQUEST_delay" "$REQUEST_rate"
-  fi
+  $TWDE_HOME/libexec/init.d/keyboard config > /dev/null
 }
 
 function display_values() {

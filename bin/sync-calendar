@@ -1,0 +1,64 @@
+#!/bin/bash
+
+source $TWDE_HOME/lib/libs.sh
+
+function generate_conf() {
+  if ! [ -d "$CAL_BASE" ];then
+    mkdir -p "$CAL_BASE/status"
+    mkdir -p "$CAL_BASE/items"
+  fi
+
+  source "$CAL_CONF"
+
+  cat <<EOF > "$VDIR_CONF"
+[general]
+status_path = "$CAL_BASE/status"
+
+[pair my_calendar]
+a = "calendar_local"
+b = "calendar_remote"
+collections = ["from a", "from b"]
+
+[storage calendar_local]
+type = "filesystem"
+path = "$CAL_BASE/items"
+fileext = "ics"
+
+[storage calendar_remote]
+type = "google_calendar"
+
+# https://console.developers.google.com/
+token_file = "$CAL_BASE/tokens"
+client_id = "$CALDAV_USER"
+client_secret = "$CALDAV_PASSWORD"
+EOF
+
+}
+
+function init_cal() {
+  vdirsyncer -c "$VDIR_CONF" "discover"
+}
+
+function sync_cal() {
+  vdirsyncer -c "$VDIR_CONF" "sync"
+}
+
+if [ -z "$1" ];then
+  echo "unknown account"
+  exit 1
+fi
+
+CAL_CONF="$1"
+
+if ! [ -f "$CAL_CONF" ];then
+  echo "config $CAL_CONF doesn't exit"
+  exit 1
+fi
+
+CAL_ACCOUNT=`f_basename_noext "$CAL_CONF"`
+CAL_BASE="$TWDE_HOME/var/calendars/$CAL_ACCOUNT"
+VDIR_CONF="$CAL_BASE/vdir-$CAL_ACCOUNT.conf"
+
+generate_conf
+init_cal
+sync_cal

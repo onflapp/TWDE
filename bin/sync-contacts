@@ -1,0 +1,64 @@
+#!/bin/bash
+
+source $TWDE_HOME/lib/libs.sh
+
+function generate_conf() {
+  if ! [ -d "$CON_BASE" ];then
+    mkdir -p "$CON_BASE/status"
+    mkdir -p "$CON_BASE/items"
+  fi
+
+  source "$CON_CONF"
+
+  cat <<EOF > "$VDIR_CONF"
+[general]
+status_path = "$CON_BASE/status"
+
+[pair my_contacts]
+a = "contacts_local"
+b = "contacts_remote"
+collections = ["from a", "from b"]
+
+[storage contacts_local]
+type = "filesystem"
+path = "$CON_BASE/items"
+fileext = "vcf"
+
+[storage contacts_remote]
+type = "google_contacts"
+
+# https://console.developers.google.com/
+token_file = "$CON_BASE/tokens"
+client_id = "$CARDDAV_USER"
+client_secret = "$CARDDAV_PASSWORD"
+EOF
+
+}
+
+function init_con() {
+  vdirsyncer -c "$VDIR_CONF" "discover"
+}
+
+function sync_con() {
+  vdirsyncer -c "$VDIR_CONF" "sync"
+}
+
+if [ -z "$1" ];then
+  echo "unknown account"
+  exit 1
+fi
+
+CON_CONF="$1"
+
+if ! [ -f "$CON_CONF" ];then
+  echo "config $CON_CONF doesn't exit"
+  exit 1
+fi
+
+CON_ACCOUNT=`f_basename_noext "$CON_CONF"`
+CON_BASE="$TWDE_HOME/var/contacts/$CON_ACCOUNT"
+VDIR_CONF="$CON_BASE/vdir-$CON_ACCOUNT.conf"
+
+generate_conf
+init_con
+sync_con

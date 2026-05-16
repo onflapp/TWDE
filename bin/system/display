@@ -39,12 +39,24 @@ function place_screen() {
     primary="$3"
     secondary="$1"
     xrandr --output "$primary" --auto --output "$secondary" --auto --right-of "$primary"
-  fi
-  if [ "$2" = "left_of" ];then
+
+  elif [ "$2" = "left_of" ];then
     primary="$3"
     secondary="$1"
     xrandr --output "$primary" --auto --output "$secondary" --auto --left-of "$primary"
+
+  elif [ "$2" = "above" ];then
+    primary="$3"
+    secondary="$1"
+    xrandr --output "$primary" --auto --output "$secondary" --auto --above "$primary"
+
+  elif [ "$2" = "below" ];then
+    primary="$3"
+    secondary="$1"
+    xrandr --output "$primary" --auto --output "$secondary" --auto --below "$primary"
+
   fi
+
   save_screen_layout
 }
 
@@ -101,7 +113,7 @@ function change_screen() {
 function usage() {
   echo "display"
   echo "display list_screens"
-  echo "display place_screen [screen1] right_of|left_of [screen2]"
+  echo "display place_screen [screen1] right_of|left_of|above|below [screen2]"
   echo "display turn_screen [screen] off|on"
   echo "display show_screen [screen] resolutions"
   echo "display show_screen [screen] brightness"

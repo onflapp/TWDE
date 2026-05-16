@@ -1,13 +1,12 @@
-BugOpts ExplainWindowPlacement On
+#BugOpts ExplainWindowPlacement On
 
-#DestroyFunc StartFunction
-#AddToFunc   StartFunction
-#+ I Module FvwmMFL
-#+ I Schedule 1000 Exec exec $TWDE_HOME/bin/starttwde --continue-init
+AddToFunc StartFunction
++ I Module FvwmCommandS
 
-DestroyFunc RandRFunc
-AddToFunc   RandRFunc
-+ I Exec exec messages "A screen changed"
+#DestroyFunc RandRFunc
+#AddToFunc   RandRFunc
+#+ I Exec exec messages "A screen changed"
+#+ I Restart
 
 # Mouse Bindings Functions
 DestroyFunc RaiseMoveX
@@ -30,11 +29,6 @@ DestroyFunc ReconfigureFunction
 AddToFunc   ReconfigureFunction
 + I Exec exec $TWDE_HOME/libexec/init.d/wm_fvwm reload
 + I Restart
-
-DestroyFunc PowerOffFunction
-AddToFunc   PowerOffFunction
-+ I Exec exec "echo '/sbin/poweroff' > $TWDE_RUN_ON_EXIT"
-+ I Quit
 
 # Function: IconManClick
 #
@@ -69,11 +63,11 @@ AddToFunc   ChangeDesk
 + I SendToModule FvwmButtons ChangeButton desk2 Colorset 10
 + I SendToModule FvwmButtons ChangeButton desk3 Colorset 10
 
-DesktopName 0 Main
-DesktopName 1 Desk1
-DesktopName 2 Desk2
-DesktopName 3 Desk3
-DesktopSize 2x2
+# DesktopName 0 Main
+# DesktopName 1 Desk1
+# DesktopName 2 Desk2
+# DesktopName 3 Desk3
+# DesktopSize 2x2
 
 # EdgeScroll will move the view port between the Pages when the mouse
 # moves to the edge of the screen. This set the amount of distance to
@@ -127,6 +121,11 @@ Style * BorderWidth $FRAME_BORDER, HandleWidth $FRAME_BORDER, MWMButtons, MWMBor
 Style * Colorset 1, HilightColorset 2
 Style * BorderColorset 3, HilightBorderColorset 4
 
+# TWDEDialog
+Style TWDEDialog BorderWidth $FRAME_BORDER, HandleWidth $FRAME_BORDER, MWMButtons, MWMBorder, FirmBorder
+Style TWDEDialog BorderColorset 8, HilightBorderColorset 8, !Button 1, !Button 6, !Button 4
+#Style TWDEDialog UseDecor TWDEDialogDecor
+
 # Disable Icons from appearing on desktop.
 # Comment this out or use Style * Icon to get the icons back.
 # Style * !Icon
@@ -135,23 +134,37 @@ Style * BorderColorset 3, HilightBorderColorset 4
 Style RightPanel !Title, !Borders, !Handles, Sticky, WindowListSkip, NeverFocus
 Style FvwmIdent WindowListSkip
 
-#######
-# 3: Colorsets
-#
-# Colorsets can be used to configure the color of the various
-# parts of fvwm such as window decor, menus, modules, etc.
-#
+###########
 # Colorset Convention
-#
+###########
+
 #   0 - Default
+Colorset 0  fg #ffffff, bg #003c3c, hi, sh, Plain, NoShape
+
 #   1 - Inactive Windows
+Colorset 1  fg green4, bg $DESKTOP_COLOR, hi, sh, Plain, NoShape
+
 #   2 - Active Window
+Colorset 2  fg green, bg black, hi, sh, Plain, NoShape
+
 #   3 - Inactive Windows Borders
+Colorset 3  fg green4, bg green4, hi green4, sh green4, Plain, NoShape
+
 #   4 - Active Windows Borders
+Colorset 4  fg black, bg green, hi green, sh green, Plain, NoShape
+
 #   5 - Menu - Inactive Item
+Colorset 5  fg green, bg black, hi, sh, Plain, NoShape
+
 #   6 - Menu - Active Item
+Colorset 6  fg black, bg green, hi, sh, Plain, NoShape
+
 #   7 - Menu - Grayed Item
+Colorset 7  fg grey30, bg #ffffff, hi, sh, Plain, NoShape
+
 #   8 - Menu - Title
+Colorset 8  fg #ffffff, bg #003c3c, hi, sh, Plain, NoShape
+
 #   9 - Reserved
 #  10+ Modules
 #      10 - Module Default
@@ -159,17 +172,7 @@ Style FvwmIdent WindowListSkip
 #      12 - Module ActiveButton (Mouse Hover)
 #      13 - FvwmPager Active Page
 #      14 - FvwmIconMan Iconified Button
-###########
 
-Colorset 0  fg #ffffff, bg #003c3c, hi, sh, Plain, NoShape
-Colorset 1  fg green4, bg $DESKTOP_COLOR, hi, sh, Plain, NoShape
-Colorset 2  fg green, bg black, hi, sh, Plain, NoShape
-Colorset 3  fg green4, bg green4, hi green4, sh green4, Plain, NoShape
-Colorset 4  fg black, bg green, hi green, sh green, Plain, NoShape
-Colorset 5  fg green, bg black, hi, sh, Plain, NoShape
-Colorset 6  fg black, bg green, hi, sh, Plain, NoShape
-Colorset 7  fg grey30, bg #ffffff, hi, sh, Plain, NoShape
-Colorset 8  fg #ffffff, bg #003c3c, hi, sh, Plain, NoShape
 Colorset 10 fg #ffffff, bg $DESKTOP_COLOR, hi #aaaaaa, sh #999999, Plain, NoShape
 Colorset 11 fg #ffffff, bg #1a6e99, hi #ffffff, sh #ffffff, Plain, NoShape
 Colorset 12 fg #2d2d2d, bg #ffffff, hi, sh, Plain, NoShape
@@ -190,7 +193,11 @@ DestroyMenu MenuQuit
 AddToMenu   MenuQuit
 + "Logout" Quit
 + "Sleep" Exec exec "power suspend"
-+ "Power off" PowerOffFunction
++ "Power off" Exec exec "power off"
+
+DestroyMenu MenuPreferences
+AddToMenu   MenuPreferences
+`menu2fvwm $TWDE_HOME/etc/preferences.menu`
 
 # Root Menu
 #
@@ -203,8 +210,10 @@ AddToMenu   MenuFvwmRoot
 + "Selection" Title
 `menu2fvwm $TWDE_HOME/etc/selection.menu`
 + "Window Manager" Title
++ "Preferences..." Popup MenuPreferences
 + "Reload config" ReconfigureFunction
-+ "Quit" Popup MenuQuit
++ "" Nop
++ "Quit..." Popup MenuQuit
 
 DestroyFunc CreateMenuApp
 AddToFunc CreateMenuApp
@@ -375,6 +384,12 @@ ButtonStyle 1 - MwmDecorMenu
 ButtonStyle 4 - MwmDecorMax
 ButtonStyle 6 - MwmDecorMenu
 
+AddToDecor TWDEDialogDecor
++ TitleStyle Centered Height 18 -- Raised
++ TitleStyle Active (Colorset 8) -- Raised
++ TitleStyle Inactive (Colorset 8) -- Flat
++ ButtonStyle All -- Flat
+
 ############
 # 7: Modules
 #############
@@ -387,13 +402,3 @@ DestroyModuleConfig FvwmIdent:*
 *FvwmIdent: Colorset 10
 *FvwmIdent: Font "$APP_FONT"
 
-# FvwmScript
-#
-# FvwmScript is a module that allows one to write custom desktop
-# widgets and various other tools. This config uses two FvwmScripts.
-#   - DateTime - uses the output of "date" to display the date/time
-#     on the RightPanel.
-#   - Quit - This is a popup that asks for quit confirmation before
-#     quitting fvwm.
-DestroyModuleConfig FvwmScript:*
-*FvwmScript: DefaultColorset 10
