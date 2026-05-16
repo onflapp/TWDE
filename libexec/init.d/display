@@ -11,9 +11,24 @@ function save_screen() {
 }
 
 function refresh_wm() {
+  turnoff_disconnected
+  sleep 1
+
+  $TWDE_HOME/libexec/restore_windows
+
   echo "restart wm"
   FvwmCommand Restart
 }
+
+function turnoff_disconnected() {
+  xrandr | while read -r line ;do
+    if [[ "$line" =~ ^(.*)\ disconnected ]];then
+      dev="${BASH_REMATCH[1]}"
+      xrandr --output $dev --off
+    fi
+  done
+}
+
 
 function trigger_event() {
   if [ -n "$TRIGGER_EVENT_PID" ];then

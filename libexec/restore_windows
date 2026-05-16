@@ -1,0 +1,64 @@
+#!/bin/perl
+
+@WINDOWS=();
+$DESKTOP_WIDTH=0;
+$DESKTOP_HEIGHT=0;
+
+sub list_all_windows {
+  open(IN, "/bin/xprop -root _NET_CLIENT_LIST |");
+  while(<IN>) {
+    chomp();
+    if ($_ =~ /^_NET_CLIENT_LIST.*# (.*)$/) {
+      @WINDOWS = split(", ", $1);
+    }
+  }
+  close(IN);
+}
+
+sub get_window_info {
+  my ($win) = @_;
+  my $win_x = 0;
+  my $win_y = 0;
+
+  open(IN, "xdotool getwindowgeometry --shell $win |");
+  while(<IN>) {
+    chomp();
+    print("$_\n");
+    if ($_ =~ /X=(\d+)$/) {
+      $win_x=$1;
+    }
+    if ($_ =~ /Y=(\d+)$/) {
+      $win_y=$1;
+    }
+
+  }
+  close(IN);
+
+  if ($win_x > $DESKTOP_WIDTH) {
+    system("xdotool windowmove $win 10, y");
+  }
+}
+
+sub get_root_info {
+  my ($win) = @_;
+
+  open(IN, "xwininfo -root |");
+  while(<IN>) {
+    chomp();
+    if ($_ =~ /Width: (\d+)$/) {
+      $DESKTOP_WIDTH=$1;
+    }
+    if ($_ =~ /Height: (\d+)$/) {
+      $DESKTOP_HEIGHT=$1;
+    }
+  }
+  close(IN);
+
+}
+
+get_root_info();
+list_all_windows();
+
+foreach(@WINDOWS) {
+  get_window_info($_);
+}

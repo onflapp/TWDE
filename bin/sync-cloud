@@ -1,0 +1,21 @@
+#!/bin/bash
+
+if [ -z "$1" ];then
+  echo "sync-cloud [name]"
+  exit 1
+fi
+
+NAME="$1"
+#TRY="--dry-run"
+TRY=""
+OUT="$HOME/Cloud/$NAME"
+mkdir -p "$OUT" 2>/dev/null
+
+L=`ls $HOME/.cache/rclone/bisync/*_${NAME}.*.lst 2>/dev/null`
+
+if [ -z "$L" ];then
+  rclone bisync --resync -v $TRY $OUT $NAME:
+else
+  rclone bisync -v --track-renames --drive-skip-gdocs $TRY $OUT $NAME:
+  #--filters-file /path/to/bysync-filters.txt --log-file /path/to//bisync.log
+fi
