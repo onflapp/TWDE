@@ -1,0 +1,70 @@
+#!/bin/bash
+
+if [ "$1" = "netconfig" ];then
+  clear
+  export NEWT_COLORS="root=white,black"
+  if [ "$2" = "edit" ];then
+    nmtui-edit
+  elif [ "$2" = "hostname" ];then
+    nmtui-hostname
+  elif [ "$2" = "connect" ];then
+    nmtui-connect
+  else
+    nmtui
+  fi
+
+  exit $?
+else
+  [ -z "$REQUEST" ] && exec $TWDE_HOME/bin/hsh $0
+fi
+
+function list_interfaces() {
+  ip a | while read -r line ;do
+    if [[ "$line" =~ ^inet\ 127.0.0.1 ]];then
+      echo $line
+    elif [[ "$line" =~ ^inet ]];then
+      echo "$line"
+    fi
+  done
+}
+
+function display_values() {
+  . $TWDE_HOME/etc/keyboard.conf
+
+cat << EOF
+<html>
+  <head><title>Network Setting Panel</title></head>
+  <body>
+    <h1>Network Settings</h1>
+    <form>
+
+<pre>
+`hostname`
+</pre>
+      <button name="exec" value="$0 netconfig hostname">[ Hostname ]</button>
+
+      <br>
+<pre>
+`list_interfaces`
+</pre>
+
+      <button name="exec" value="$0 netconfig edit">[ Interface ]</button>
+      <button name="exec" value="$0 netconfig connect">[ Activate Connection ]</button>
+
+      <hr>
+      <center>
+        <button name="exit">[ Cancel ]</button>
+        <button name="action" value="apply">[ Apply ]</button>
+      </center>
+    </form>
+  </body>
+</html>
+EOF
+}
+
+if [ "$REQUEST_action" = "apply" ];then
+  display_values
+else
+  display_values
+fi
+

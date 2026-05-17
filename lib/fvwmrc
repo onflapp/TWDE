@@ -142,7 +142,7 @@ Style FvwmIdent WindowListSkip
 Colorset 0  fg #ffffff, bg #003c3c, hi, sh, Plain, NoShape
 
 #   1 - Inactive Windows
-Colorset 1  fg green4, bg $DESKTOP_COLOR, hi, sh, Plain, NoShape
+Colorset 1  fg green4, bg black, hi, sh, Plain, NoShape
 
 #   2 - Active Window
 Colorset 2  fg green, bg black, hi, sh, Plain, NoShape

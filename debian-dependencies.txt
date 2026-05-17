@@ -1,6 +1,11 @@
-fvwm3
+fvwm
 xbindkeys
 xdotool
 xclip
 fzf
 brightnessctl
+avahi-utils
+the_silver_searcher
+gvfs-backends
+gvfs-fuse
+elinks

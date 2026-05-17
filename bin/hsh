@@ -10,6 +10,7 @@ $VERBOSE=0;
 $VERBOSE=1 if ($ENV{'DEBUG'});
 $HOME=$ENV{'HOME'};
 $TWDE_HOME=$ENV{'TWDE_HOME'};
+$COMMAND_FILE="/tmp/$$-hsh.cmd";
 
 #### needed to clean dead child processes
 $SIG{CHLD} = 'IGNORE';
@@ -57,6 +58,11 @@ sub make_args {
           $ACTION_VALUE = $v;
         }
         elsif ($n eq "return") {
+          DEBUG("action: $v");
+          $ACTION = $n;
+          $ACTION_VALUE = $v;
+        }
+        elsif ($n eq "exec") {
           DEBUG("action: $v");
           $ACTION = $n;
           $ACTION_VALUE = $v;
@@ -181,6 +187,15 @@ sub HANDLE_REQUEST {
     exit 0;
   }
 
+  if ($ACTION eq "exec") {
+    open(OUT, "> $COMMAND_FILE");
+    print(OUT "$ACTION_VALUE");
+    close(OUT);
+
+    close_all();
+    exit 0;
+  }
+
   DEBUG("script $script $args");
   my $pid = open(XIN, "$script $args 2>&1 |");
   while(<XIN>) {
@@ -242,8 +257,10 @@ sub HTTP_HEAD {
 sub launch_browser {
   DEBUG("my pid:$$, server pid:$SERVER_PID");
 
-  #system("elinks -config-dir $TWDE_HOME/lib -config-file elinks.conf -localhost 1 -auto-submit 1 http://localhost:$PORT/");
-  system("elinks -config-dir $TWDE_HOME/lib -config-file elinks.conf -localhost 1 http://localhost:$PORT/");
+  my $cmd = "elinks -config-dir $TWDE_HOME/lib -config-file elinks.conf -localhost 1 http://localhost:$PORT/";
+  DEBUG("cmd:$cmd");
+
+  system($cmd);
 }
 
 sub launch_server {
@@ -344,8 +361,28 @@ if ($MAIN_SCRIPT eq "") {
   exit 1;
 }
 
-launch_server();
-launch_browser();
+while (1) {
+  launch_server();
+  launch_browser();
 
+  if (-f "$COMMAND_FILE") {
+    DEBUG("command file: $COMMAND_FILE");
+    my $cmd = "";
+    open(IN, "< $COMMAND_FILE");
+    while(<IN>) {
+      chomp();
+      $cmd .= $_;
+    }
+    close(IN);
+    unlink($COMMAND_FILE);
+
+    system("$cmd");
+    next;
+  }
+  
+  last;
+}
+
+DEBUG("exit");
 kill(15, -$$);
 exit 0;
