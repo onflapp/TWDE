@@ -1,0 +1,61 @@
+#!/bin/perl
+
+use utf8;
+use Email::MIME;
+use Data::Dumper;
+use Date::Parse;
+
+binmode(STDOUT, ":utf8");
+
+$BASE=".";
+
+sub process_mail {
+  my ($f) = @_;
+  my $txt = '';
+  
+  open(MIN, $f);
+  while(<MIN>) {
+    $txt .= $_;
+  }
+  close(MIN);
+
+  my $mail = Email::MIME->new($txt);
+  my @headers = $mail->header_str_pairs;
+
+  my $sub = "";
+  my $tm = 0;
+
+  for (my $i = 0; $i < scalar @headers; $i += 2) {
+    my $key   = lc($headers[$i]);
+    my $value = $headers[$i+1];
+    if ($key eq "subject") {
+      $sub = $value;
+      $sub = "-" if ($sub eq "");
+    }
+    elsif ($key eq "date") {
+      $tm = str2time($value);
+    }
+  }
+
+  if ($sub ne "" && $tm > 0) {
+    print("$sub\t$f\n");
+  }
+  else {
+    print("UNKNWON\t$f\n");
+  }
+}
+
+sub process_all {
+  open(FIN, "find $BASE -type d -name new -o -name cur |");
+  while(<FIN>) {
+    chomp();
+    foreach (glob("$_/*")) {
+      if (-f $_) {
+        process_mail($_);
+      }
+    }
+  }
+  close(FIN);
+}
+
+process_all();

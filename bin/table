@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+
+
+if [ -z "$REQUEST" ];then
+  export SOURCE_FILE="$1"
+  exec $TWDE_HOME/bin/hsh $0
+fi
+
+function process_lines() {
+  local IFS_OLD="$IFS"
+
+  while IFS= read -r LINE ;do
+    IFS=$'\t';V=(${LINE});IFS=
+
+    name="${V[0]}"
+    value="${V[1]}"
+
+    echo "<tr><td>$name</td>"
+    echo "<td><a href=\"$value\">aa</a></td></tr>"
+
+  done < "$SOURCE_FILE"
+
+  IFS="$IFS_OLD"
+}
+
+echo "<html><body>"
+echo "xxx:$SOURCE_FILE"
+echo "<table>"
+echo "<tr><th>name</th><th>file</th></tr>"
+
+process_lines
+
+echo "</table>"
+echo "</body></html>"
