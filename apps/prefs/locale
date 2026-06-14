@@ -47,7 +47,10 @@ EOF
 }
 
 function display_values() {
-  . $TWDE_HOME/etc/locale.conf
+  if [ -f "$TWDE_HOME/etc/locale.conf" ];then
+    source $TWDE_HOME/etc/locale.conf
+  fi
+
   if [ -z "$TIMEZONE" ];then
     TIMEZONE=`timedatectl show -p Timezone --value`
   fi
