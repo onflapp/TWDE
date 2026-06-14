@@ -6,6 +6,16 @@ if [ -z "$REQUEST" ];then
   exec $TWDE_HOME/bin/hsh $0
 fi
 
+if [ -n "$REQUEST_open" ];then
+  T=`datatype view "$REQUEST_open"`
+  if [ -f "$T" ];then
+    #show-dialog elinks "$T" &
+    show-web "http://localhost:2222$T"
+  else
+    echo "$T"
+  fi
+fi
+
 function process_lines() {
   local IFS_OLD="$IFS"
 
@@ -16,7 +26,7 @@ function process_lines() {
     value="${V[1]}"
 
     echo "<tr><td>$name</td>"
-    echo "<td><a href=\"$value\">aa</a></td></tr>"
+    echo "<td><a href=\"?open=$value\">o</a></td></tr>"
 
   done < "$SOURCE_FILE"
 
@@ -24,7 +34,6 @@ function process_lines() {
 }
 
 echo "<html><body>"
-echo "xxx:$SOURCE_FILE"
 echo "<table>"
 echo "<tr><th>name</th><th>file</th></tr>"
 

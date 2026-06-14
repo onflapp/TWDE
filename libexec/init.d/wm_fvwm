@@ -20,8 +20,16 @@ function main_loop() {
 TWDE_VAR="$TWDE_HOME/var"
 CFG="$TWDE_VAR/fvwmrc"
 
-if [ "x$1" = "xreload" ];then
+if [ "$1" = "restart" ];then
   init_config
-else
+  FvwmCommand Restart
+
+elif [ "$1" = "reload" ];then
+  init_config
+
+elif [ "$1" = "start" ];then
   main_loop
+
+elif [ "$1" = "stop" ];then
+  FvwmCommand Quit
 fi

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-. "$TWDE_HOME/lib/func.sh"
+source "$TWDE_HOME/lib/func.sh"
 
 function init_desktop() {
   . "$TWDE_HOME/etc/theme.conf"

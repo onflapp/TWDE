@@ -1,0 +1,38 @@
+#!/bin/bash
+
+[ -z "$REQUEST" ] && exec $TWDE_HOME/bin/hsh $0
+
+function list_panels() {
+  for DD in $TWDE_HOME/apps/prefs/* ;do
+    local name=`basename "$DD"`
+    echo "<p><button name=\"exec\" value=\"$DD\">[ $name ]</button>"
+  done
+}
+
+function display_menu() {
+
+cat << EOF
+<html>
+  <head><title>System Preferences</title></head>
+  <body>
+    <h1>System Prefereces</h1>
+    <form>
+`list_panels`
+
+      <hr>
+      <center>
+        <button name="exit">[ Cancel ]</button>
+      </center>
+    </form>
+  </body>
+</html>
+EOF
+}
+
+if [ -n "$REQUEST_exec" ];then
+  export REQUEST=""
+  terminal $REQUEST_exec
+else
+  display_menu
+fi
+

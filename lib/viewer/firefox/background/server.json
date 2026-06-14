@@ -1,0 +1,7 @@
+{
+  "name": "removeviewer_server",
+  "description": "native messaging server for RemoteViewer",
+  "path": "/home/oflorian/TWDE/lib/viewer/firefox/background/server.pl",
+  "type": "stdio",
+  "allowed_extensions": [ "remoteviewer@onflapp.org" ]
+}

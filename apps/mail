@@ -1,0 +1,6 @@
+#!/bin/bash
+
+ACCOUNT="oflorian-yahoo"
+$TWDE_HOME/bin/sync-mail /home/oflorian/TWDE/config/$ACCOUNT.conf
+/home/oflorian/TWDE/libexec/make_mail_index /home/oflorian/TWDE/var/mail/$ACCOUNT | sort -n -r > /tmp/x.tb
+table /tmp/x.tb

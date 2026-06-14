@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+
+[ -z "$REQUEST" ] && exec $TWDE_HOME/bin/hsh $0
+
+bt="$TWDE_HOME/bin/system/bluetooth"
+
+function list_connected() {
+  echo "<select name=\"device\">"
+  $bt show_connected_devices | while read -r line ;do
+    if [[ "$line" =~ ^(.*)\	(.*)$ ]];then
+      dev="${BASH_REMATCH[1]}"
+      name="${BASH_REMATCH[2]}"
+      echo "  <option value=\"$dev\" selected>$name</option>"
+    fi
+  done
+  echo "</select>"
+}
+
+function list_available() {
+  echo "<select name=\"device\">"
+  $bt scan_for_available_devices | while read -r line ;do
+    if [[ "$line" =~ ^(.*)\	(.*)$ ]];then
+      dev="${BASH_REMATCH[1]}"
+      name="${BASH_REMATCH[2]}"
+      echo "  <option value=\"$dev\" selected>$name</option>"
+    fi
+  done
+  echo "</select>"
+}
+
+function display_values() {
+cat << EOF
+<html>
+  <head><title>Bluetooth Settings Panel</title></head>
+  <body>
+    <h1>Bluetooth Settings</h1>
+    <form>
+      <h3>Connected Devices:</h3>
+
+      `list_connected`
+
+      <button name="action" value="disconnect">[ disconnect ]</button>
+
+      <h3>Available Devices:</h3>
+
+      `list_available`
+      
+      <button name="action" value="refresh">[ refresh ]</button>
+      <button name="action" value="connect">[ connect ]</button>
+
+      <hr>
+      <center>
+        <button name="exit">[ Cancel ]</button>
+        <button name="action" value="apply">[ Apply ]</button>
+      </center>
+    </form>
+  </body>
+</html>
+EOF
+}
+
+if [ "$REQUEST_action" = "connect" ];then
+  $bt connect_to_device $REQUEST_device
+
+elif [ "$REQUEST_action" = "disconnect" ];then
+  $bt disconnect_device $REQUEST_device
+
+fi
+
+display_values

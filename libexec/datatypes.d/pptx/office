@@ -1,0 +1,9 @@
+#!/bin/bash
+
+LO_EXEC="/Applications/LibreOffice.app/Contents/MacOS/soffice"
+SOURCE="$1"
+DEST="$2"
+OT="soffice"
+
+$LO_EXEC --headless -env:UserInstallation=file:///tmp/$OT --convert-to pdf "$SOURCE" --outdir "$DEST"
+#$LO_EXEC --headless --cat "$SOURCE"

@@ -1,0 +1,236 @@
+#!/usr/bin/env bash
+
+function _change_prop() {
+  xinput set-prop "$ID" --type=int --format=8 "$1" $2 $3
+}
+
+function tap_finger_to_click() {
+  _change_prop "libinput Tapping Enabled" "1"
+}
+
+function press_touchpad_to_click() {
+  _change_prop "libinput Tapping Enabled" "0"
+}
+
+function map_touchpad_area_to_buttons() {
+  _change_prop "libinput Click Method Enabled" 1 0
+}
+
+function map_fingers_to_buttons() {
+  _change_prop "libinput Click Method Enabled" 0 1
+}
+
+function change_scroll_direction_to() {
+  if [ "$1" = "reversed" ];then
+    _change_prop "libinput Natural Scrolling Enabled" 1
+  else
+    _change_prop "libinput Natural Scrolling Enabled" 0
+  fi
+}
+
+function change_speed_to() {
+  if [ -n "$1" ];then
+    if [ "$1" -ge -10 ] && [ "$1" -le 10 ];then
+      local val=`perl -e "print ($1 / 10)"`
+      xinput set-prop "$ID" "libinput Accel Speed" "$val"
+    fi
+  fi
+}
+
+function enable_middle_button() {
+  xinput set-button-map "$ID" 1 2 3
+}
+
+function disable_middle_button() {
+  source <(get_touchpad_properties "$ID")
+  if [ "$SOFT_BUTTONS_MODE" = "1" ];then
+    xinput set-button-map "$ID" 1 1 3
+  else
+    xinput set-button-map "$ID" 1 2 3
+  fi
+}
+
+function enable_two_finger_scroll() {
+  xinput set-prop "$ID" "libinput Scroll Method Enabled" 1 0 0
+}
+
+function disable_two_finger_scroll() {
+  xinput set-prop "$ID" "libinput Scroll Method Enabled" 0 0 0
+}
+
+function enable_edge_scroll() {
+  xinput set-prop "$ID" "libinput Scroll Method Enabled" 0 1 0
+}
+
+function disable_edge_scroll() {
+  xinput set-prop "$ID" "libinput Scroll Method Enabled" 0 0 0
+}
+
+function get_touchpad_properties() {
+  echo "DEVICE_ID=$1"
+  xinput list-props "$1" | while read -r line ;do
+    if [[ $line =~ ^Device\ \'(.*)\' ]];then
+      name=${BASH_REMATCH[1]}
+      echo "DEVICE_NAME=\"$name\""
+    fi
+    if [[ $line =~ .*Natural\ Scrolling\ Enabled\ \(.*:.*([0-1]) ]];then
+      val=${BASH_REMATCH[1]}
+      echo "NATURAL_SCROLLING=$val"
+    fi
+    if [[ $line =~ .*Scroll\ Method\ Enabled\ \(.*:.*([0-1]),\ ([0-1]),\ ([0-1]) ]];then
+      vala=${BASH_REMATCH[1]}
+      valb=${BASH_REMATCH[2]}
+      valc=${BASH_REMATCH[3]}
+
+      if [ "$vala" = "1" ];then
+        echo "TWO_FINGER_SCROLL=1"
+      fi
+      if [ "$valb" = "1" ];then
+        echo "EDGE_SCROLL=1"
+      fi
+
+    fi
+    if [[ $line =~ .*Tapping\ Drag\ Enabled\ \(.*:.*([0-1]) ]];then
+      val=${BASH_REMATCH[1]}
+      echo "DRAG_MODE=$val"
+    fi
+    if [[ $line =~ .*Tapping\ Enabled\ \(.*:.*([0-1]) ]];then
+      val=${BASH_REMATCH[1]}
+      echo "TAP_MODE=$val"
+    fi
+    if [[ $line =~ .*Click\ Method\ Enabled\ \(.*:.*([0-1]),\ ([0-1]) ]];then
+      vala=${BASH_REMATCH[1]}
+      valb=${BASH_REMATCH[2]}
+      if [ "$vala" = "1" ];then
+        echo "SOFT_BUTTONS_MODE=1"
+      fi
+    fi
+    if [[ $line =~ .*Accel\ Speed\ \(.*:.*([0-9]\.[0-9]+) ]];then
+      val=${BASH_REMATCH[1]}
+      val=`perl -e "print ($val * 10)"`
+      echo "SPEED_VALUE=$val"
+    fi
+    if [[ $line =~ .*Accel\ Speed\ \(.*:.*(\-[0-9]\.[0-9]+) ]];then
+      val=${BASH_REMATCH[1]}
+      val=`perl -e "print ($val * 10)"`
+      echo "SPEED_VALUE=$val"
+    fi
+
+  done
+
+  local buttons=`xinput get-button-map "$1"`
+
+  if [[ "$buttons" =~ 1\ 1\ 3\ .* ]];then
+    echo "DISABLE_MIDDLE_BUTTON=1"
+  fi
+}
+
+function print_config() {
+  if [ -n "$ID" ];then
+    source <( get_touchpad_properties "$ID" )
+    echo "NATURAL_SCROLLING=$NATURAL_SCROLLING"
+    echo "SOFT_BUTTONS_MODE=$SOFT_BUTTONS_MODE"
+    echo "DISABLE_MIDDLE_BUTTON=$DISABLE_MIDDLE_BUTTON"
+    echo "TAP_MODE=$TAP_MODE"
+
+    if [ -n "$TWO_FINGER_SCROLL" ];then
+      echo "TWO_FINGER_SCROLL=$TWO_FINGER_SCROLL"
+    fi
+
+    if [ -n "$EDGE_SCROLL" ];then
+      echo "EDGE_SCROLL=$EDGE_SCROLL"
+    fi
+
+    if [ -n "$SPEED_VALUE" ];then
+      echo "SPEED_VALUE=$SPEED_VALUE"
+    fi
+
+  fi
+}
+
+function read_config() {
+  [ -z "$ID" ] && exit
+
+  source /dev/stdin
+
+  if [ "$TAP_MODE" = "1" ];then
+    tap_finger_to_click
+  else
+    press_touchpad_to_click
+  fi
+  if [ "$SOFT_BUTTONS_MODE" = "1" ];then
+    map_touchpad_area_to_buttons
+  else
+    map_fingers_to_buttons
+  fi
+  if [ "$DISABLE_MIDDLE_BUTTON" = "1" ];then
+    disable_middle_button
+  else
+    enable_middle_button
+  fi
+  if [ "$NATURAL_SCROLLING" = "1" ];then
+    change_scroll_direction_to "reversed"
+  else
+    change_scroll_direction_to "default"
+  fi
+
+  if [ "$TWO_FINGER_SCROLL" = "1" ];then
+    enable_two_finger_scroll
+  elif [ "$EDGE_SCROLL" = "1" ];then
+    enable_edge_scroll
+  else
+    disable_two_finger_scroll
+  fi
+
+  if [ -n "$SPEED_VALUE" ];then
+    change_speed_to "$SPEED_VALUE"
+  fi
+}
+
+function find_touchpad_id() {
+  for DD in `list_all_ids` ;do
+    TAP_MODE=""
+    source <(get_touchpad_properties "$DD")
+
+    if [ -n "$TAP_MODE" ];then
+      echo "$DEVICE_ID"
+      return
+    fi
+  done
+}
+
+function list_all_ids() {
+  xinput list | while read -r line ;do
+    if [[ $line =~ .*id=([0-9]+).*slave\ *pointer ]];then
+      id=${BASH_REMATCH[1]}
+      if ! [[ $line =~ Virtual ]];then
+        echo "$id"
+      fi
+    fi
+  done
+}
+
+function usage() {
+  echo "touchpad"
+  echo "touchpad tap_finger_to_click"
+  echo "touchpad press_touchpad_to_click"
+  echo "touchpad map_touchpad_area_to_buttons"
+  echo "touchpad map_fingers_to_buttons"
+  echo "touchpad enable_middle_button"
+  echo "touchpad disable_middle_button"
+  echo "touchpad change_scroll_direction_to [reversed|default]"
+  echo "touchpad enable_two_finger_scroll"
+  echo "touchpad disable_two_finger_scroll"
+  echo "touchpad enable_edge_scroll"
+  echo "touchpad disable_edge_scroll"
+  echo "touchpad change_speed_to [val]"
+
+  exit 1
+}
+
+if [ -z "$1" ];then
+  usage
+else
+  export ID=`find_touchpad_id`
+  "$1" "$2" "$3" "$4"
+fi

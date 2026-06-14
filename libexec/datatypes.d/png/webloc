@@ -1,0 +1,6 @@
+#!/bin/bash
+
+SOURCE="$1"
+DEST="$2"
+
+plutil -extract URL raw "$SOURCE" > "$DEST/content.txt"

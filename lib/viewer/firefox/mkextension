@@ -1,0 +1,3 @@
+#!/bin/bash
+
+zip -r ext.xpi * -x .git -x .gitignore

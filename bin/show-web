@@ -1,0 +1,16 @@
+#!/bin/bash
+
+function firefox_running() {
+  local pid=`pgrep firefox`
+  if [ -z "$pid" ];then
+    return 1
+  else
+    return 0
+  fi
+}
+
+if firefox_running ;then
+  echo "$1" > /tmp/ctrl
+else
+  firefox "$1" >/dev/null 2>/dev/null &
+fi

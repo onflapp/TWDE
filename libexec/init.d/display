@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
 PID="/tmp/$UID-display.pid"
+CONFIG_TS="0"
+
+source $TWDE_HOME/lib/func.sh
 
 function restore_screen() {
   autorandr -l twde
@@ -11,13 +14,14 @@ function save_screen() {
 }
 
 function refresh_wm() {
+  echo "turn disconnected screens off"
   turnoff_disconnected
-  sleep 1
 
+  echo "restore all windows"
   $TWDE_HOME/libexec/restore_windows
 
   echo "restart wm"
-  FvwmCommand Restart
+  $TWDE_HOME/libexec/wm_fvwm restart
 }
 
 function turnoff_disconnected() {
@@ -29,15 +33,19 @@ function turnoff_disconnected() {
   done
 }
 
-
 function trigger_event() {
-  if [ -n "$TRIGGER_EVENT_PID" ];then
-    kill "$TRIGGER_EVENT_PID" 2>/dev/null
+  sleep 1
+
+  local ts=`epochtime`
+  local td=$(( "$ts" - "$CONFIG_TS" ))
+
+  CONFIG_TS="$ts"
+  if [ "$td" -lt 3 ];then
+    echo "postpone the change"
+    return
   fi
-  sleep 0.5
-  
-  (sleep 1;refresh_wm) &
-  TRIGGER_EVENT_PID=$!
+
+  refresh_wm
 }
 
 function monitor() {

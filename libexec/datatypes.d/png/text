@@ -1,0 +1,5 @@
+#!/bin/bash
+
+DEST="$2"
+SRC="$1"
+tesseract "$SRC" "$DEST/content"

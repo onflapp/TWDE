@@ -1,0 +1,45 @@
+#!/bin/bash
+
+EXEC_PATH=`realpath "$0"`
+EXEC_DIR=`dirname "$EXEC_PATH"`
+
+source $EXEC_DIR/libs.sh
+
+RECOLL_EXEC="recollq"
+RECOLL_EXEC="/Users/oflorian/Applications/recoll.app/Contents/MacOS/recollq"
+RECOLL_BASE="/tmp/recall"
+
+QUERY="$1"
+
+function parse_lines() {
+  local rx_f="^([a-zA-Z]+\/[-.a-zA-Z]+)	\[file:\/\/(.*)\]	\[(.*)\]"
+  local abstract=""
+  local mine=""
+  local url=""
+
+  while IFS= read -r line; do
+    if [[ "$line" =~ $rx_f ]];then
+      mime=${BASH_REMATCH[1]}
+      file=${BASH_REMATCH[2]}
+
+    elif [[ "$line" = "ABSTRACT" ]];then
+      abstract="$line"
+
+    elif [[ "$line" = "/ABSTRACT" ]];then
+      echo "$file"
+      echo "	$abstract"
+      abstract=""
+
+    elif [ -n "$abstract" ];then
+      abstract="$abstract $line"
+
+    fi
+  done
+}
+
+if [ -z "$QUERY" ];then
+  echo "invalid query"
+  exit 1
+fi
+
+$RECOLL_EXEC -a -C -c $RECOLL_BASE -A "$QUERY" 2> /dev/null | parse_lines

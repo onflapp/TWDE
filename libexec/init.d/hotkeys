@@ -3,7 +3,7 @@
 PID="/tmp/$UID-hotkeys.pid"
 CFG="$TWDE_HOME/var/xbindkeys"
 
-. $TWDE_HOME/lib/func.sh
+source $TWDE_HOME/lib/func.sh
 
 function config() {
   echo "configure hotkeys"

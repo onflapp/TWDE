@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "RemoteViewer",
+  "version": "1.0",
+  "description": "RemoteViewer",
+  "permissions": ["storage", "tabs", "scripting", "webRequest", "webNavigation", "nativeMessaging"],
+  "host_permissions": ["<all_urls>"],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ],
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "remoteviewer@onflapp.org",
+      "strict_min_version": "50.0"
+    }
+  }
+}

@@ -1,0 +1,47 @@
+#!/bin/perl
+
+use utf8;
+use Text::vFile::asData;
+use Text::vCard;
+use Data::Dumper;
+
+binmode(STDOUT, ":utf8");
+
+$BASE=".";
+
+sub process_card {
+  my ($f) = @_;
+  my @lines = ();
+
+  open(CIN, '<:encoding(UTF-8)', "$f");
+  while(<CIN>) {
+    chomp();
+    push(@lines, $_);
+  }
+  close(CIN);
+
+  my $data = Text::vFile::asData->new->parse_lines(@lines);
+
+
+  my $item = $data->{objects}[0];
+  my $props = $item->{properties};
+
+  my $card = Text::vCard->new({ 'asData_node' => $props });
+  my $fullname = $card->fullname();
+  my $note = $card->get_simple_type('note');
+
+  open(COUT, '>:encoding(UTF-8)', "$DATATYPE_CACHE/card.html");
+
+  print(COUT "<html><body>\n");
+  print(COUT "full name: $fullname<br>");
+  print(COUT "</body></html>\n");
+
+  close(COUT);
+
+  print("$DATATYPE_CACHE/card.html");
+}
+
+$DATATYPE_CACHE=$ENV{'DATATYPE_CACHE'};
+$FILE=$ARGV[0];
+
+process_card($FILE);

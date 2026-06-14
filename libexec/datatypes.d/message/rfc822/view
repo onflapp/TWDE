@@ -1,0 +1,25 @@
+#!/bin/bash
+
+mu extract --overwrite --save-all --target-dir "$DATATYPE_CACHE" "$1"
+mu extract "$1" > "$DATATYPE_CACHE/parts"
+
+cd "$DATATYPE_CACHE"
+
+while read -r line ;do
+  if [[ "$line" =~ ^([0-9])\ .*text/html.*inline ]];then
+    part=${BASH_REMATCH[1]}
+    mv "part-$part" inline.html
+
+  elif [[ "$line" =~ ^([0-9])\ .*text/plain.*inline ]];then
+    part=${BASH_REMATCH[1]}
+    mv "part-$part" inline.txt
+
+  fi
+
+done < "$DATATYPE_CACHE/parts"
+
+if [ -f "$DATATYPE_CACHE/inline.html" ];then
+  echo "$DATATYPE_CACHE/inline.html"
+elif [ -f "$DATATYPE_CACHE/inline.txt" ];then
+  echo "$DATATYPE_CACHE/inline.txt"
+fi

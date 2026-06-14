@@ -1,0 +1,7 @@
+#!/bin/bash
+
+if ! [ -f "$DATATYPE_CACHE/content.txt" ];then
+  mu view "$1" > "$DATATYPE_CACHE/content.txt"
+fi
+
+echo "$DATATYPE_CACHE/content.txt"

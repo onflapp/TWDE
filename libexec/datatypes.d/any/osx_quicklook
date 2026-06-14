@@ -1,0 +1,10 @@
+#!/bin/bash
+
+SOURCE="$1"
+
+NAME=`basename "$1"`
+DEST="/tmp/ooo/$NAME"
+
+mkdir -p "$DEST"
+
+qlmanage -p "$1" -o "$DEST"

@@ -2,8 +2,18 @@
 
 [ -z "$REQUEST" ] && exec $TWDE_HOME/bin/hsh $0
 
+CFG_FILE="$TWDE_HOME/etc/mouse.conf"
+mouse="$TWDE_HOME/bin/system/mouse"
+
+function save_values() {
+  cat << EOF > $CFG_FILE
+SPEED_VALUE=$REQUEST_speed
+EOF
+}
+
+
 function display_values() {
-  . $TWDE_HOME/etc/keyboard.conf
+  source <( $mouse save_config )
 
 cat << EOF
 <html>
@@ -11,14 +21,11 @@ cat << EOF
   <body>
     <h1>Mouse Settings</h1>
     <form>
-      <h3>Repeat Delay: </h3>
-      <input name="delay" value="$REPEAT_DELAY"></input>
+      <h3>Speed: </h3>
 
-      <h3>Repeat Rate: </h3>
-      <input name="rate" value="$REPEAT_RATE"></input>
-
-      <h3>Repeat Rate: </h3>
-      <input name="valC" type="checkbox">$REPEAT_RATE</input>
+      <button name="action" value="speed_minus">[ slower </button>
+      <input name="speed" value="$SPEED_VALUE" size="4"></input>
+      <button name="action" value="speed_plus"> faster ]</button>
 
       <hr>
       <center>
@@ -32,8 +39,21 @@ EOF
 }
 
 if [ "$REQUEST_action" = "apply" ];then
+  save_values
   display_values
+
+elif [ "$REQUEST_action" = "speed_plus" ];then
+  SPEED=$(( $REQUEST_speed + 1 ))
+  $mouse change_speed_to "$SPEED"
+  display_values
+
+elif [ "$REQUEST_action" = "speed_minus" ];then
+  SPEED=$(( $REQUEST_speed - 1 ))
+  $mouse change_speed_to "$SPEED"
+  display_values
+
 else
   display_values
+
 fi
 

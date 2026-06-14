@@ -1,0 +1,20 @@
+#!/usr/bin/perl
+
+use Encode qw(decode encode);
+
+$file=$ARGV[0];
+
+open(IN, "-|", "mdimport", "-t", "-d3", $file);
+while(<IN>) {
+  chomp();
+  if ($_ =~ /kMDItemTextContent = "(.*?)";$/) {
+    $t = $1;
+    $t =~ s/\\n/\n/g;
+    $t =~ s/\\"/"/g;
+    #$t =~ s/\\U([0-9a-fA-F]{2,4})/decode("UTF-8",hex($1))/eg;
+    $t =~ s/\\U([0-9a-fA-F]{2,4})//eg;
+
+    print($t);
+  }
+}
+close(IN);

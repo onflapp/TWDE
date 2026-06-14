@@ -1,18 +1,60 @@
 #!/usr/bin/env bash
 
-function show_devices() {
-  bluetoothctl devices | while read -r line ;do
-    if [[ "$line" =~ ^Device\ ([0-9A-Z:]+) ]];then
+DEVICE_LIST="/tmp/$UID-bluetooth.devices"
+DEVICE_LOCK="/tmp/$UID-bluetooth.devices.lock"
+
+function scan_in_background() {
+  turn "on"
+  bluetoothctl --timeout 5 scan on >/dev/null 2>/dev/null 
+  list_devices > "$DEVICE_LIST"
+  rm "$DEVICE_LOCK"
+}
+
+function turn() {
+  STATUS=`bluetoothctl power "$1"`
+}
+
+function scan_for_available_devices() {
+  if [ -f "$DEVICE_LIST" ];then
+    cat "$DEVICE_LIST"
+  fi
+
+  if ! [ -f "$DEVICE_LOCK" ];then
+    touch "$DEVICE_LOCK"
+    scan_in_background &
+  fi
+}
+
+function show_connected_devices() {
+  list_devices "Connected"
+}
+
+function list_devices() {
+  bluetoothctl devices $1 | while read -r line ;do
+    if [[ "$line" =~ ^Device\ ([0-9A-Z:]+)\ (.*)$ ]];then
       dev=${BASH_REMATCH[1]}
-      bluetoothctl info $dev
+      name=${BASH_REMATCH[2]}
+      echo -e "$dev\t$name"
+      #bluetoothctl info $dev
     fi
   done
 }
 
+function connect_to_device() {
+  bluetoothctl --timeout 5 connect "$1"
+}
+
+function disconnect_device() {
+  bluetoothctl --timeout 5 disconnect "$1"
+}
+
 function usage() {
-  echo "power"
-  echo "power show_battery_info"
-  echo "power suspend"
+  echo "bluetooth"
+  echo "bluetooth show_connected_devices"
+  echo "bluetooth scan_for_available_devices"
+  echo "bluetooth connect_to_device [dev]"
+  echo "bluetooth disconnect_device [dev]"
+  echo "bluetooth turn [on|off]"
 
   exit 1
 }

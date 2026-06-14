@@ -4,10 +4,16 @@ use utf8;
 use Email::MIME;
 use Data::Dumper;
 use Date::Parse;
+use Cwd 'abs_path';
 
 binmode(STDOUT, ":utf8");
 
-$BASE=".";
+$BASE=$ARGV[0];
+
+if (! -d $BASE) {
+  print(STDERR "make_mail_index [dir]\n");
+  exit 1;
+}
 
 sub process_mail {
   my ($f) = @_;
@@ -37,11 +43,12 @@ sub process_mail {
     }
   }
 
+  $f = abs_path($f);
   if ($sub ne "" && $tm > 0) {
-    print("$sub\t$f\n");
+    print("$tm $sub\t$f\n");
   }
   else {
-    print("UNKNWON\t$f\n");
+    print("0 UNKNWON\t$f\n");
   }
 }
 

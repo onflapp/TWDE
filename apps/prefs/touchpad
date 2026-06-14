@@ -1,0 +1,98 @@
+#!/bin/bash
+
+[ -z "$REQUEST" ] && exec $TWDE_HOME/bin/hsh $0
+
+CFG_FILE="$TWDE_HOME/etc/touchpad.conf"
+touchpad="$TWDE_HOME/bin/system/touchpad"
+
+function save_values() {
+
+  cat << EOF > $CFG_FILE
+TAP_MODE=$REQUEST_tap_mode
+DRAG_MODE=$REQUEST_drag_mode
+NATURAL_SCROLLING=$REQUEST_natural_scrolling
+SOFT_BUTTONS_MODE=$REQUEST_soft_buttons_mode
+DISABLE_MIDDLE_BUTTON=$REQUEST_disable_middle_button
+EOF
+
+  if [ "$REQUEST_scroll_mode" = "TWO_FINGER_SCROLL" ];then
+    echo "TWO_FINGER_SCROLL=1" >> $CFG_FILE
+  elif [ "$REQUEST_scroll_mode" = "EDGE_SCROLL" ];then
+    echo "EDGE_SCROLL=1" >> $CFG_FILE
+  fi
+
+  $touchpad read_config < $CFG_FILE
+}
+
+function display_values() {
+  source <( $touchpad print_config )
+
+  if [ "$NATURAL_SCROLLING" = "1" ];then
+    NS_ON="checked"
+  fi
+  if [ "$TAP_MODE" = "1" ];then
+    TM_ON="checked"
+  fi
+  if [ "$SOFT_BUTTONS_MODE" = "1" ];then
+    SB_ON="checked"
+  else
+    SB_OFF="checked"
+  fi
+  if [ "$DISABLE_MIDDLE_BUTTON" = "1" ];then
+    MD_ON="checked"
+  fi
+  if [ "$TWO_FINGER_SCROLL" = "1" ];then
+    SF_ON="checked"
+  elif [ "$EDGE_SCROLL" = "1" ];then
+    SE_ON="checked"
+  else
+    SD_ON="checked"
+  fi
+
+cat << EOF
+<html>
+  <head><title>Touchpad Setting Panel</title></head>
+  <body>
+    <h1>Touchpad Settings</h1>
+    <form>
+
+      <h3>Settings: </h3>
+      tap to click: <input name="tap_mode" type="checkbox" value="1" $TM_ON></input>
+
+      <h3>Buttons: </h3>
+      number of fingers <input name="soft_buttons_mode" type="radio" value="0" $SB_OFF></input>
+      use bottom area to map buttons <input name="soft_buttons_mode" type="radio" value="1" $SB_ON></input>
+
+<br>
+<br>
+
+      disable middle button: <input name="disable_middle_button" type="checkbox" value="1" $MD_ON></input>
+
+      <h3>Scroll: </h3>
+
+      use two fingers: <input name="scroll_mode" type="radio" value="TWO_FINGER_SCROLL" $SF_ON></input>
+      right edge of the touch pad <input name="scroll_mode" type="radio" value="EDGE_SCROLL" $SE_ON></input>
+      do not scroll <input name="scroll_mode" type="radio" value="" $SD_ON></input>
+      <br>
+
+      reverse scroll: <input name="natural_scrolling" type="checkbox" value="1" $NS_ON></input><br>
+
+      <hr>
+      <center>
+        <button name="exit">[ Cancel ]</button>
+        <button name="action" value="apply">[ Apply ]</button>
+      </center>
+    </form>
+  </body>
+</html>
+EOF
+}
+
+if [ "$REQUEST_action" = "apply" ];then
+  save_values
+  display_values
+
+else
+  display_values
+fi
+

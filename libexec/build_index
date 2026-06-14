@@ -1,0 +1,35 @@
+#!/bin/bash
+
+EXEC_PATH=`realpath "$0"`
+EXEC_DIR=`dirname "$EXEC_PATH"`
+
+source $EXEC_DIR/libs.sh
+
+RECOLL_EXEC="recollindex"
+RECOLL_EXEC="/Users/oflorian/Applications/recoll.app/Contents/MacOS/recollindex"
+RECOLL_BASE="/tmp/recall"
+RECOLL_CONF="$RECOLL_BASE/recall.conf"
+
+DIR="$1"
+
+function generate_conf() {
+  if ! [ -d $"RECOLL_BASE" ];then
+    mkdir -p "$RECOLL_BASE"
+  fi
+
+  echo "loglevel = 2" > $RECOLL_CONF
+  echo "underscoreasletter = true" >> $RECOLL_CONF
+}
+
+generate_conf
+
+### start indexing
+
+if ! [ -d "$DIR" ];then
+  echo "invalid dir"
+  exit 1
+fi
+
+f_filelist "$DIR" | $RECOLL_EXEC -c "$RECOLL_BASE" -if
+#'*.pdf:*.html:*.txt' 
+# use -e to erase the index first

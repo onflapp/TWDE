@@ -2,6 +2,7 @@ Audio	show-dialog $TWDE_HOME/apps/prefs/audio
 Display	show-dialog $TWDE_HOME/apps/prefs/display
 Keyboard	show-dialog $TWDE_HOME/apps/prefs/keyboard
 Mouse	show-dialog $TWDE_HOME/apps/prefs/mouse
+Touchpad	show-dialog $TWDE_HOME/apps/prefs/touchpad
 Network	show-dialog $TWDE_HOME/apps/prefs/network
 Locale	show-dialog $TWDE_HOME/apps/prefs/locale
 Power	show-dialog $TWDE_HOME/apps/prefs/power

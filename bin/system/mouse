@@ -1,0 +1,135 @@
+#!/usr/bin/env bash
+
+function _change_prop() {
+  xinput set-prop "$ID" --type=int --format=8 "$1" $2 $3
+}
+
+function change_speed_to() {
+  if [ -n "$1" ];then
+    if [ "$1" -ge -10 ] && [ "$1" -le 10 ];then
+      local val=`perl -e "print ($1 / 10)"`
+      xinput set-prop "$ID" "libinput Accel Speed" "$val"
+    fi
+  fi
+}
+
+function use_with_left_hand() {
+  _change_prop "libinput Left Handed Enabled" "1"
+}
+
+function use_with_right_hand() {
+  _change_prop "libinput Left Handed Enabled" "0"
+}
+
+function change_scroll_direction_to() {
+  if [ "$1" = "reversed" ];then
+    _change_prop "libinput Natural Scrolling Enabled" 1
+  else
+    _change_prop "libinput Natural Scrolling Enabled" 0
+  fi
+}
+
+
+function get_mouse_properties() {
+  echo "DEVICE_ID=$1"
+  xinput list-props "$1" | while read -r line ;do
+    if [[ $line =~ ^Device\ \'(.*)\' ]];then
+      name=${BASH_REMATCH[1]}
+      echo "DEVICE_NAME=\"$name\""
+    fi
+    if [[ $line =~ .*Natural\ Scrolling\ Enabled\ \(.*:.*([0-1]) ]];then
+      val=${BASH_REMATCH[1]}
+      echo "NATURAL_SCROLLING=$val"
+    fi
+    if [[ $line =~ .*Left\ Handed\ Enabled\ \(.*:.*([0-1]) ]];then
+      val=${BASH_REMATCH[1]}
+      echo "LEFT_HAND=$val"
+    fi
+    if [[ $line =~ .*Tapping\ Drag\ Enabled\ \(.*:.*([0-1]) ]];then
+      echo "IS_TOUCHPAD=1"
+    fi
+    if [[ $line =~ .*Tapping\ Enabled\ \(.*:.*([0-1]) ]];then
+      echo "IS_TOUCHPAD=1"
+    fi
+    if [[ $line =~ .*Click\ Method\ Enabled\ \(.*:.*([0-1]),\ ([0-1]) ]];then
+      echo "IS_TOUCHPAD=1"
+    fi
+    if [[ $line =~ .*Accel\ Speed\ \(.*:.*([0-9]\.[0-9]+) ]];then
+      val=${BASH_REMATCH[1]}
+      val=`perl -e "print ($val * 10)"`
+      echo "SPEED_VALUE=$val"
+    fi
+    if [[ $line =~ .*Accel\ Speed\ \(.*:.*(\-[0-9]\.[0-9]+) ]];then
+      val=${BASH_REMATCH[1]}
+      val=`perl -e "print ($val * 10)"`
+      echo "SPEED_VALUE=$val"
+    fi
+
+  done
+}
+function read_config() {
+  [ -z "$ID" ] && exit
+
+  source /dev/stdin
+
+  if [ "$NATURAL_SCROLLING" = "1" ];then
+    change_scroll_direction_to "reversed"
+  else
+    change_scroll_direction_to "default"
+  fi
+
+  change_speed_to "$SPEED_VALUE"
+}
+
+function print_config() {
+  if [ -n "$ID" ];then
+    source <( get_mouse_properties "$ID" )
+    echo "NATURAL_SCROLLING=$NATURAL_SCROLLING"
+    echo "LEFT_HAND=$LEFT_HAND"
+
+    if [ -n "$SPEED_VALUE" ];then
+      echo "SPEED_VALUE=$SPEED_VALUE"
+    fi
+  fi
+}
+
+function find_mouse_id() {
+  for DD in `list_all_ids` ;do
+    IS_TOUCHPAD=""
+    SPEED_VALUE=""
+    source <(get_mouse_properties "$DD")
+
+    if [ "$IS_TOUCHPAD" != "1" ] && [ -n "$SPEED_VALUE" ];then
+      echo "$DEVICE_ID"
+      return
+    fi
+  done
+}
+
+function list_all_ids() {
+  xinput list | while read -r line ;do
+    if [[ $line =~ .*id=([0-9]+).*slave\ *pointer ]];then
+      id=${BASH_REMATCH[1]}
+      if ! [[ $line =~ Virtual ]];then
+        echo "$id"
+      fi
+    fi
+  done
+}
+
+function usage() {
+  echo "mouse"
+  echo "mouse change_scroll_direction_to [reversed|default]"
+  echo "mouse use_with_left_hand"
+  echo "mouse use_with_right_hand"
+  echo "mouse change_speed_to [val]"
+
+  exit 1
+}
+
+if [ -z "$1" ];then
+  usage
+else
+  export ID=`find_mouse_id`
+  "$1" "$2" "$3" "$4"
+fi
