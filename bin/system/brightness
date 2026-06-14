@@ -1,2 +1,11 @@
 #!/usr/bin/env bash
 
+display="$TWDE_HOME/bin/system/display"
+
+if [ "$1" = "up" ];then
+  $display change_screen default brightness_up
+elif [ "$1" = "down" ];then
+  $display change_screen default brightness_down
+else
+  $display show_screen default brightness
+fi

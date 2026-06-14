@@ -1,3 +1,4 @@
 #!/bin/sh
 
-exec power battery_status
+power="$TWDE_HOME/bin/system/power"
+$power battery_status

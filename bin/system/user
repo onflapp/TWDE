@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+
+function show_groups() {
+  groups $USER | while read -r line ;do
+    if [[ "$line" =~ ^(.*):(.*)$ ]];then
+      groups=${BASH_REMATCH[2]}
+      for DD in $groups ;do
+        if [ "$DD" != "$USER" ];then
+          echo "$DD"
+        fi
+      done
+    fi
+  done
+}
+
+function show_shell() {
+  cat /etc/passwd | while read -r line ;do
+    if [[ "$line" =~ ^$USER:.*:(.*)$ ]];then
+      shell=${BASH_REMATCH[1]}
+      echo "$shell"
+    fi
+  done
+}
+
+function change_shell_to() {
+  if [ -z "$1" ];then
+    usage
+  fi
+}
+
+function show_all_groups() {
+  cat /etc/group | while read -r line ;do
+    if [[ "$line" =~ ^([a-z]+):(.*) ]];then
+      name=${BASH_REMATCH[1]}
+      rest=${BASH_REMATCH[2]}
+      if ! [[ "$rest" =~ :$USER ]] && [ "$name" != "$USER" ];then
+        echo "$name"
+      fi
+    fi
+  done
+}
+
+function add_to_group() {
+  if [ -z "$1" ];then
+    usage
+  fi
+
+  usermod -aG "$1" "$USER"
+}
+
+function remove_from_group() {
+  if [ -z "$1" ];then
+    usage
+  fi
+
+  usermod -rG "$1" "$USER"
+}
+
+function usage() {
+  echo "user"
+  echo "user show_groups"
+  echo "user show_all_groups"
+  echo "user add_to_group [group]"
+  echo "user remove_from_group [group]"
+  echo "user show_shell"
+  echo "user change_shell_to [shell]"
+
+  exit 1
+}
+
+if [ -z "$1" ];then
+  usage
+else
+  "$1" "$2" "$3" "$4"
+fi

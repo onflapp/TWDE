@@ -20,4 +20,15 @@ function scan_hosts() {
   done
 }
 
-scan_hosts
+function usage() {
+  echo "display"
+  echo "display scan_hosts"
+
+  exit 1
+}
+
+if [ -z "$1" ];then
+  usage
+else
+  "$1" "$2" "$3" "$4"
+fi

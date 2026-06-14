@@ -1,2 +1,16 @@
 #!/usr/bin/env bash
 
+audio="$TWDE_HOME/bin/system/audio"
+
+if [ "$1" = "up" ];then
+  $audio change_output default volume_up
+  $audio play_sample
+elif [ "$1" = "down" ];then
+  $audio change_output default volume_down
+  $audio play_sample
+elif [ "$1" = "mute" ];then
+  $audio change_output default volume_mute
+  $audio play_sample
+else
+  $audio show_output default volume
+fi
