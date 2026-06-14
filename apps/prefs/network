@@ -29,7 +29,6 @@ function list_interfaces() {
 }
 
 function display_values() {
-  . $TWDE_HOME/etc/keyboard.conf
 
 cat << EOF
 <html>

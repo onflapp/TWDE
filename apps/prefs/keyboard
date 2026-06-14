@@ -14,6 +14,20 @@ function list_models() {
   echo "</select>"
 }
 
+function current_config() {
+  echo "REPEAT_DELAY=600"
+  echo "REPEAT_RATE=25"
+
+  localectl -l | while read -r line ;do
+    if [[ "$line" =~ ^X11\ Layout:\ (.*)$ ]];then
+      echo "LAYOUT=${BASH_REMATCH[1]}"
+    fi
+    if [[ "$line" =~ ^X11\ Model:\ (.*)$ ]];then
+      echo "MODEL=${BASH_REMATCH[1]}"
+    fi
+  done
+}
+
 function list_layouts() {
   echo '<select name="layout">'
   for DD in `localectl list-x11-keymap-layouts`;do
@@ -43,7 +57,11 @@ EOF
 }
 
 function display_values() {
-  . $TWDE_HOME/etc/keyboard.conf
+  if [ -f "$TWDE_HOME/etc/keyboard.conf" ];then
+    source $TWDE_HOME/etc/keyboard.conf
+  else
+    source <(current_config)
+  fi
 
 cat << EOF
 <html>

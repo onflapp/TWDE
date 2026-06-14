@@ -20,6 +20,18 @@ function scan_hosts() {
   done
 }
 
+function manage_network_configuration() {
+  f="/etc/network/interfaces"
+  cp "$f" "$f.bak"
+
+  cat << EOF > $f
+# managed by network-manager
+auto lo
+iface lo inet loopback
+EOF
+
+}
+
 function usage() {
   echo "display"
   echo "display scan_hosts"
