@@ -1,0 +1,123 @@
+#!/usr/bin/env bash
+
+function usage() {
+  echo "storage"
+  echo "storage list_mountable_devices"
+  echo "storage list_mounted_paths"
+  echo "storage unmount_path [path]"
+  echo "storage mount_device [dev]"
+  echo "storage eject_path [path]"
+  echo "storage eject_all_paths"
+
+  exit 1
+}
+
+function unmount_path() {
+  dev=`device_for_path "$1"`
+  if [ -n "$dev" ];then
+    udisksctl unmount -b "$dev"
+  else
+    echo "unknwon dev"
+    exit 1
+  fi
+}
+
+function eject_path() {
+  dev=`device_for_path "$1"`
+  if [ -n "$dev" ];then
+    udisksctl unmount -b "$dev"
+  else
+    echo "unknwon dev"
+    exit 1
+  fi
+}
+
+function mount_device() {
+  if [ -n "$1" ];then
+    udisksctl mount -b "$1"
+  else
+    echo "unknwon dev"
+    exit 1
+  fi
+}
+
+function device_for_path() {
+  local path="$1"
+  local IFS_OLD="$IFS"
+  IFS=$'\n'
+  for line in `udisksctl dump`; do
+    if [[ "$line" =~ ^\ *Device:\ *(.*) ]];then
+      DEVICE=${BASH_REMATCH[1]}
+      MOUNT=""
+    fi
+    if [[ "$line" =~ ^\ *MountPoints:\ *(.*) ]];then
+      MOUNT=${BASH_REMATCH[1]}
+      if [ -n "$DEVICE" ] && [ "$MOUNT" = "$path" ];then
+        echo "$DEVICE"
+      fi
+    fi
+  done
+  IFS="$IFS_OLD"
+}
+
+function eject_all_paths() {
+  local IFS_OLD="$IFS"
+  IFS=$'\n'
+  for line in `udisksctl dump`; do
+    if [[ "$line" =~ ^\ *Device:\ *(.*) ]];then
+      DEVICE=${BASH_REMATCH[1]}
+      MOUNT=""
+    fi
+    if [[ "$line" =~ ^\ *Ejectable:\ *true ]];then
+      if [ -n "$DEVICE" ] && [ -n "$MOUNT" ];then
+        eject_path "$MOUNT"
+      fi
+    fi
+    if [[ "$line" =~ ^\ *MountPoints:\ *(.*) ]];then
+      MOUNT=${BASH_REMATCH[1]}
+    fi
+  done
+  IFS="$IFS_OLD"
+}
+
+function list_mounted_paths() {
+  local IFS_OLD="$IFS"
+  IFS=$'\n'
+  for line in `udisksctl dump`; do
+    if [[ "$line" =~ ^\ *Device:\ *(.*) ]];then
+      DEVICE=${BASH_REMATCH[1]}
+      MOUNT=""
+    fi
+    if [[ "$line" =~ ^\ *MountPoints:\ *(.*) ]];then
+      MOUNT=${BASH_REMATCH[1]}
+      if [ -n "$DEVICE" ] && [ -n "$MOUNT" ];then
+        echo "$MOUNT"
+      fi
+    fi
+  done
+  IFS="$IFS_OLD"
+}
+
+function list_mountable_devices() {
+  local IFS_OLD="$IFS"
+  IFS=$'\n'
+  for line in `udisksctl dump`; do
+    if [[ "$line" =~ ^\ *Device:\ *(.*) ]];then
+      DEVICE=${BASH_REMATCH[1]}
+      MOUNT=""
+    fi
+    if [[ "$line" =~ ^\ *MountPoints:\ *(.*) ]];then
+      MOUNT=${BASH_REMATCH[1]}
+      if [ -n "$DEVICE" ] && [ -z "$MOUNT" ];then
+        echo "$DEVICE $MOUNT"
+      fi
+    fi
+  done
+  IFS="$IFS_OLD"
+}
+
+if [ -z "$1" ];then
+  usage
+else
+  "$1" "$2" "$3" "$4"
+fi

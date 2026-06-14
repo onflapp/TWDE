@@ -45,7 +45,7 @@ function add_to_group() {
     usage
   fi
 
-  usermod -aG "$1" "$USER"
+  sudo /sbin/usermod -aG "$1" "$USER"
 }
 
 function remove_from_group() {
@@ -53,7 +53,7 @@ function remove_from_group() {
     usage
   fi
 
-  usermod -rG "$1" "$USER"
+  sudo /sbin/usermod -rG "$1" "$USER"
 }
 
 function usage() {

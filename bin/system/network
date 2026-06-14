@@ -16,7 +16,6 @@ function scan_hosts() {
       addrs=${BASH_REMATCH[1]}
     fi
 
-
   done
 }
 
@@ -24,12 +23,28 @@ function manage_network_configuration() {
   f="/etc/network/interfaces"
   cp "$f" "$f.bak"
 
+  systemctl stop networking
+  systemctl disable networking
+
   cat << EOF > $f
 # managed by network-manager
 auto lo
 iface lo inet loopback
 EOF
 
+  f="/etc/NetworkManager/NetworkManager.conf"
+  cp "$f" "$f.bak"
+
+  cat << EOF > $f
+[main]
+plugins=ifupdown,keyfile
+
+[ifupdown]
+managed=true
+EOF
+
+  systemctl enable NetworkManager
+  systemctl start NetworkManager
 }
 
 function usage() {

@@ -3,7 +3,7 @@
 source "$TWDE_HOME/lib/func.sh"
 
 function init_desktop() {
-  . "$TWDE_HOME/etc/theme.conf"
+  source "$TWDE_HOME/etc/theme.conf"
 
   if [ -n "$DESKTOP_COLOR" ];then
     xsetroot -solid "$DESKTOP_COLOR"

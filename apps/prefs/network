@@ -14,6 +14,14 @@ if [ "$1" = "netconfig" ];then
   fi
 
   exit $?
+
+elif [ "$1" = "netinit" ];then
+  clear
+  echo "you are about to switch to NetworkManager"
+  read DD
+
+  sudo $TWDE_HOME/bin/system/network manage_network_configuration 
+  read DD
 else
   [ -z "$REQUEST" ] && exec $TWDE_HOME/bin/hsh $0
 fi
@@ -41,6 +49,7 @@ cat << EOF
 `hostname`
 </pre>
       <button name="exec" value="$0 netconfig hostname">[ Hostname ]</button>
+      <button name="exec" value="$0 netinit">[ Manage Network ]</button>
 
       <br>
 <pre>

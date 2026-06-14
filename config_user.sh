@@ -1,3 +1,3 @@
 #!/bin/bash
 
-sudo usermod -aG video,audio,bluetooth,sudo $USER
+sudo usermod -aG video,audio,bluetooth,sudo,plugdev $USER

@@ -59,7 +59,7 @@ function process() {
 
   init_exec audio start
   init_exec keyboard start
-  init_exec mouse start
+  #init_exec mouse start
   init_exec display start
   init_exec desktop start
   #init_exec gestures start
