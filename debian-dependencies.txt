@@ -9,6 +9,7 @@ xorg
 autorandr
 x11-xserver-utils
 x11-utils
+x11-apps
 xinput
 fzf
 pulseaudio-utils
@@ -17,6 +18,7 @@ avahi-utils
 the_silver_searcher
 gvfs-backends
 gvfs-fuse
+libglib2.0-bin
 elinks
 upower
 power-profiles-deamon

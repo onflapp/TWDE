@@ -1,13 +1,15 @@
 #!/usr/bin/env bash
 
-function scan_hosts() {
+function _scan_network() {
   avahi-browse --all --ignore-local --resolve -t | while read -r line ;do
     if [[ "$line" =~ ^=(.*)\ \ \ *(.*)\ +local$ ]];then
       name=${BASH_REMATCH[2]}
     fi
     if [[ "$line" =~ ^port\ =\ \[(.*)\]$  ]];then
       port=${BASH_REMATCH[1]}
-      echo "$host $addrs $port"
+      if [ "$port" != "0" ];then
+        echo "$host $addrs $port"
+      fi
     fi
     if [[ "$line" =~ ^hostname\ =\ \[(.*)\]$  ]];then
       host=${BASH_REMATCH[1]}
@@ -17,6 +19,10 @@ function scan_hosts() {
     fi
 
   done
+}
+
+function scan_hosts() {
+  _scan_network | sort -u
 }
 
 function manage_network_configuration() {

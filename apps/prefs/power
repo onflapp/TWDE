@@ -25,9 +25,6 @@ function list_profiles() {
 }
 
 function display_values() {
-  if [ -z "$VOLUME" ];then
-    VOLUME=`audio show_output default volume`
-  fi
 
 cat << EOF
 <html>

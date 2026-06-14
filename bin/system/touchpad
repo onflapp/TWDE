@@ -151,6 +151,14 @@ function print_config() {
 function read_config() {
   [ -z "$ID" ] && exit
 
+  unset TAP_HOME
+  unset SOFT_BUTTONS_MODE
+  unset DISABLE_MIDDLE_BUTTON
+  unset NATURAL_SCROLLING
+  unset TWO_FINGER_SCROLL
+  unset EDGE_SCROLL
+  unset SPEED_VALUE
+
   source /dev/stdin
 
   if [ "$TAP_MODE" = "1" ];then
@@ -162,11 +170,6 @@ function read_config() {
     map_touchpad_area_to_buttons
   else
     map_fingers_to_buttons
-  fi
-  if [ "$DISABLE_MIDDLE_BUTTON" = "1" ];then
-    disable_middle_button
-  else
-    enable_middle_button
   fi
   if [ "$NATURAL_SCROLLING" = "1" ];then
     change_scroll_direction_to "reversed"
@@ -181,9 +184,14 @@ function read_config() {
   else
     disable_two_finger_scroll
   fi
-
   if [ -n "$SPEED_VALUE" ];then
     change_speed_to "$SPEED_VALUE"
+  fi
+
+  if [ "$DISABLE_MIDDLE_BUTTON" = "1" ];then
+    disable_middle_button
+  else
+    enable_middle_button
   fi
 }
 

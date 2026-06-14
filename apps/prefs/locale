@@ -1,6 +1,13 @@
 #!/bin/bash
 
-[ -z "$REQUEST" ] && exec $TWDE_HOME/bin/hsh $0
+if [ "$1" = "install_locales" ];then
+  clear
+  sudo dpkg-reconfigure locales
+
+  exit $?
+else
+  [ -z "$REQUEST" ] && exec $TWDE_HOME/bin/hsh $0
+fi
 
 LOCALE_LIST_CACHE=`localectl list-locales`
 
@@ -81,7 +88,7 @@ cat << EOF
       <h3>Default Locale: </h3>
       `list_locales locale $LOCALE`
 
-      <button name="action" value="install">add</button> - install more locales
+      <button name="exec" value="$0 install_locales">add</button> - install more locales
 
       <br>
 
