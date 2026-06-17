@@ -10,4 +10,5 @@ if [ -n "$GEOMETRY" ];then
   LOC="-geometry $GEOMETRY"
 fi
 
+export WIDGET_MODE="1"
 exec xterm $LOC -name TWDEWidget -class TWDEWidget -e "$@" &

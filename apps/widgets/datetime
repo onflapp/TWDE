@@ -1,13 +1,21 @@
 #!/bin/bash
 
+if [ -z "$WIDGET_MODE" ];then
+  export GEOMETRY="22x11"
+  exec $TWDE_HOME/bin/show-widget "$0"
+fi
+
+source $TWDE_HOME/lib/func.sh
+
 function display() {
-  date +%H:%M
-  echo "------------------"
-  ncal
+  date +%x\ \ \ \ \ \ \ %H:%M
+  echo "--------------------"
+  cal
 }
 
+cursor_off
 while [ 1 ];do
-  display
+  S=`display`
+  echo -e "\e[H\e[2J\e[3J$S"
   sleep 15
-  clear
 done

@@ -2,9 +2,16 @@
 
 [ -z "$REQUEST" ] && exec $TWDE_HOME/bin/hsh $0
 
+CFG_FILE="$TWDE_HOME/etc/keyboard.conf"
+keyboard="$TWDE_HOME/bin/system/keyboard"
+
+function display_keyboard() {
+  setxkbmap -print | xkbcomp - - | xkbprint -label symbols -color - - 
+}
+
 function list_models() {
   echo '<select name="model">'
-  for DD in `localectl list-x11-keymap-models`;do
+  for DD in `$keyboard list_all_models`;do
     if [ "$DD" = "$MODEL" ];then
       echo "<option selected>$DD</option>"
     else
@@ -14,23 +21,9 @@ function list_models() {
   echo "</select>"
 }
 
-function current_config() {
-  echo "REPEAT_DELAY=600"
-  echo "REPEAT_RATE=25"
-
-  localectl -l | while read -r line ;do
-    if [[ "$line" =~ ^X11\ Layout:\ (.*)$ ]];then
-      echo "LAYOUT=${BASH_REMATCH[1]}"
-    fi
-    if [[ "$line" =~ ^X11\ Model:\ (.*)$ ]];then
-      echo "MODEL=${BASH_REMATCH[1]}"
-    fi
-  done
-}
-
 function list_layouts() {
   echo '<select name="layout">'
-  for DD in `localectl list-x11-keymap-layouts`;do
+  for DD in `$keyboard list_all_layouts`;do
     if [ "$DD" = "$LAYOUT" ];then
       echo "<option selected>$DD</option>"
     else
@@ -40,28 +33,62 @@ function list_layouts() {
   echo "</select>"
 }
 
-function update_values() {
+function xmodmap_value() {
+  if [ -f "$HOME/.Xmodmap" ];then
+    cat "$HOME/.Xmodmap"
+  fi
+}
 
-cat << EOF > $TWDE_HOME/etc/keyboard.conf
-SWAP_FN=1
-# 0 - disabled, 1 media keys, 2 function keys
-FN_MODE=2
-SWAP_ALT_CMD=1
+function save_xmodmap() {
+  echo "$REQUEST_xmodmap" > "$HOME/.Xmodmap"
+
+  $keyboard read_config < $CFG_FILE
+}
+
+function edit_xmodmap() {
+
+cat << EOF
+<html>
+  <head><title>Keyboard Settings Panel | xmodmap</title></head>
+  <body>
+    <h1>Xmodmap File</h1>
+    <form>
+      <textarea name="xmodmap" rows="4" cols="60">`xmodmap_value`</textarea>
+
+      <hr>
+      <center>
+        <button name="action" value="back">[ Cancel ]</button>
+        <button name="action" value="save_xmodmap">[ Apply ]</button>
+      </center>
+    </form>
+  </body>
+</html>
+EOF
+}
+
+function save_values() {
+
+cat << EOF > $CFG_FILE
 REPEAT_DELAY=$REQUEST_delay
 REPEAT_RATE=$REQUEST_rate
 MODEL=$REQUEST_model
 LAYOUT=$REQUEST_layout
+CAPSLOCK_TO=$REQUEST_capslock
+SWAP_ALT_META=$REQUEST_swap_alt_meta
 EOF
 
-  $TWDE_HOME/libexec/init.d/keyboard config > /dev/null
+  $keyboard read_config < $CFG_FILE
 }
 
 function display_values() {
-  if [ -f "$TWDE_HOME/etc/keyboard.conf" ];then
-    source $TWDE_HOME/etc/keyboard.conf
-  else
-    source <(current_config)
-  fi
+  source $CFG_FILE
+  source <( $keyboard print_config )
+
+  [ "$CAPSLOCK_TO" = "esc"  ] && CE="selected"
+  [ "$CAPSLOCK_TO" = "ctrl" ] && CC="selected"
+  [ "$CAPSLOCK_TO" = "none" ] && CN="selected"
+
+  [ "$SWAP_ALT_META" = "1" ] && AM="checked"
 
 cat << EOF
 <html>
@@ -80,6 +107,22 @@ cat << EOF
       `list_models`
       layout: `list_layouts`
 
+      <h3>Options: </h3>
+
+      Remap Caps-Lock to:
+      <select name="capslock">
+        <option value="">Caps-Lock</option>
+        <option value="esc" $CE>Escape</option>
+        <option value="ctrl" $CC>Control</option>
+        <option value="none" $CN>None</option>
+      </select>
+
+      <br>
+      Switch Alt and Win modifiers: <input name="swap_alt_meta" type="checkbox" value="1" $AM></input>
+
+      <br>
+      <button name="action" value="edit_xmodmap">[ edit custom Xmodmap... ]</button>
+
       <h3>Test: </h3>
       <input></input>
 
@@ -94,9 +137,18 @@ cat << EOF
 EOF
 }
 
-if [ -n "$REQUEST_delay" ];then
-  update_values
+
+if [ "$REQUEST_action" = "apply" ];then
+  save_values
   display_values
+
+elif [ "$REQUEST_action" = "edit_xmodmap" ];then
+  edit_xmodmap
+
+elif [ "$REQUEST_action" = "save_xmodmap" ];then
+  save_xmodmap
+  display_values
+
 else
   display_values
 fi

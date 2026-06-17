@@ -20,6 +20,10 @@ function get_brightness() {
   $disp show_screen default brightness
 }
 
+function get_gamma() {
+  $disp show_screen default gamma
+}
+
 function list_active_devs() {
   xrandr | while read -r DD ;do
     if [[ "$DD" =~ ^(.*)\ connected\  ]];then
@@ -94,6 +98,10 @@ function display_values() {
   BRIGHTNESS=`get_brightness`
   [ -z "$BRIGHTNESS" ] && BRIGHTNESS="100"
 
+  GAMMA=`get_gamma`
+  [ -z "$GAMMA" ] && GAMMA="1.0"
+
+
 cat << EOF
 <html>
   <head><title>Display Settings Panel</title></head>
@@ -103,11 +111,17 @@ cat << EOF
 
       `list_displays`
 
-      <h3>Brighness:</h3>
+      <h3>Brightness:</h3>
 
       <button name="action" value="brightness_minus">[ - </button>
       <input name="brightness" value="$BRIGHTNESS" size="4"></input>
       <button name="action" value="brightness_plus"> + ]</button>
+
+      <h3>Gamma:</h3>
+
+      <button name="action" value="gamma_minus">[ - </button>
+      <input name="gamma" value="$GAMMA" size="4"></input>
+      <button name="action" value="gamma_plus"> + ]</button>
 
       <hr>
       <center>
@@ -121,7 +135,15 @@ EOF
 }
 
 function update_brightness() {
-  $disp change_screen default brightness_to "$REQUEST_brightness" >/dev/null
+  if [ -n "$REQUEST_brightness" ];then
+    $disp change_screen default brightness_to "$REQUEST_brightness" >/dev/null
+  fi
+}
+
+function update_gamma() {
+  if [ -n "$REQUEST_gamma" ];then
+    $disp change_screen default gamma_to "$REQUEST_gamma" >/dev/null
+  fi
 }
 
 function update_values() {
@@ -168,12 +190,9 @@ elif [ "$REQUEST_action" = "brightness_plus" ];then
 elif [ "$REQUEST_action" = "brightness_minus" ];then
   $disp change_screen default brightness_down >/dev/null
   display_values
-
-elif [ -n "$REQUEST_brightness" ];then
-  update_brightness
-  display_values
-
 else
+  update_brightness
+  update_gamma
   display_values
 
 fi

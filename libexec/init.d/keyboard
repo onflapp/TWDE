@@ -23,25 +23,6 @@ function config() {
 
   echo "configure keyboard settings"
 
-  source "$CONFIG_FILE"
-
-  if [ -n "$REPEAT_DELAY" ] && [ -n "$REPEAT_RATE" ];then
-    echo "set delay [$REPEAT_DELAY] rate [$REPEAT_RATE]"
-    xset r rate $REPEAT_DELAY $REPEAT_RATE
-  fi
-
-  if [ -n "$MODEL" ] && [ -n "$LAYOUT" ];then
-    echo "set layout [$LAYOUT] model [$MODEL]"
-
-    setxkbmap -layout "$LAYOUT" -model "$MODEL"
-  fi
-
-  if [ -f "$HOME/.Xmodmap" ];then
-    echo "map keys from Xmodmap"
-    xmodmap $HOME/.Xmodmap
-  fi
-
-  xset b off
 }
 
 function monitor() {

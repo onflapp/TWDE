@@ -192,8 +192,8 @@ MenuStyle * Font "$APP_FONT"
 DestroyMenu MenuQuit
 AddToMenu   MenuQuit
 + "Logout" Quit
-+ "Sleep" Exec exec "power suspend"
-+ "Power off" Exec exec "power off"
++ "Sleep" Exec exec "$TWDE_HOME/bin/system/power" suspend
++ "Power off" Exec exec "$TWDE_HOME/bin/system/power" off
 
 DestroyMenu MenuPreferences
 AddToMenu   MenuPreferences

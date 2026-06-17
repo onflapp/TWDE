@@ -1,0 +1,84 @@
+#!/usr/bin/env bash
+
+function list_all_models() {
+  localectl list-x11-keymap-models
+}
+
+function list_all_layouts() {
+  localectl list-x11-keymap-layouts
+}
+
+function change_layout_to() {
+  setxkbmap -layout "$1"
+}
+
+function change_model_to() {
+  setxkbmap -model "$1"
+}
+
+function print_config() {
+  localectl -l | while read -r line ;do
+    if [[ "$line" =~ ^X11\ Layout:\ (.*)$ ]];then
+      echo "LAYOUT=${BASH_REMATCH[1]}"
+    fi
+    if [[ "$line" =~ ^X11\ Model:\ (.*)$ ]];then
+      echo "MODEL=${BASH_REMATCH[1]}"
+    fi
+  done
+
+  xset q | while read -r line ;do
+    if [[ "$line" =~ ^\ *auto\ repeat\ delay:\ *([0-9]+)\ *repeat\ rate:\ *([0-9]+)$ ]];then
+      echo "REPEAT_DELAY=${BASH_REMATCH[1]}"
+      echo "REPEAT_RATE=${BASH_REMATCH[2]}"
+    fi
+  done
+}
+
+function read_config() {
+  source /dev/stdin
+
+  xset b off
+
+  OPTS=""
+  [ -n "$MODEL" ] && OPTS="$OPTS -model $MODEL "
+  [ -n "$LAYOUT" ] && OPTS="$OPTS -layout $LAYOUT "
+
+  if [ -n "$OPTS" ];then
+    setxkbmap $OPTS
+  fi
+
+  OPTS=""
+  [ "$CAPSLOCK_TO" = "none" ] && OPTS="$OPTS -option caps:none"
+  [ "$CAPSLOCK_TO" = "esc"  ] && OPTS="$OPTS -option caps:escape"
+  [ "$CAPSLOCK_TO" = "ctrl" ] && OPTS="$OPTS -option ctrl:nocaps"
+  [ "$SWAP_ALT_META" = "1"  ] && OPTS="$OPTS -option altwin:swap_lalt_lwin"
+
+  if [ -n "$OPTS" ];then
+    setxkbmap -option "" $OPTS
+  fi
+
+  if [ -n "$REPEAT_DELAY" ] && [ -n "$REPEAT_RATE" ];then
+    xset r rate $REPEAT_DELAY $REPEAT_RATE
+  fi
+
+
+  if [ -f "$HOME/.Xmodmap" ];then
+    xmodmap $HOME/.Xmodmap
+  fi
+}
+
+function usage() {
+  echo "keyboard"
+  echo "keyboard list_all_models"
+  echo "keyboard list_all_layouts"
+  echo "keyboard change_layout_to [layout]"
+  echo "keyboard change_model_to [model]"
+
+  exit 1
+}
+
+if [ -z "$1" ];then
+  usage
+else
+  "$1" "$2" "$3" "$4"
+fi

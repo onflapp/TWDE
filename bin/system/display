@@ -32,6 +32,9 @@ function show_screen() {
   if [ "$2" = "brightness" ];then
     brightnessctl | regexp 'Current brightness.*\((\d\d*)%\)' '%s' '$1'
   fi
+  if [ "$2" = "gamma" ];then
+    xgamma 2>&1 | regexp 'Red\ *(\d\.\d)' '%s' '$1\n'
+  fi
 }
 
 function place_screen() {
@@ -101,6 +104,9 @@ function change_screen() {
     #xbacklight -set $3
     #xrandr --output "$1" --brightness $3
   fi
+  if [ "$2" = "gamma_to" ];then
+    xgamma -gamma "$3" 2>/dev/null
+  fi
   if [ "$2" = "brightness_up" ];then
     brightnessctl s "+10%" | regexp 'Current brightness.*\((\d\d*)%\)' '%s' '$1'
   fi
@@ -117,10 +123,12 @@ function usage() {
   echo "display turn_screen [screen] off|on"
   echo "display show_screen [screen] resolutions"
   echo "display show_screen [screen] brightness"
+  echo "display show_screen [screen] gamma"
   echo "display change_screen [screen] resolution_to [val]"
   echo "display change_screen [screen] scale_to [val]"
   echo "display change_screen [screen] brightness_to [val]"
   echo "display change_screen [screen] brightness_up | brightness_down"
+  echo "display change_screen [screen] gamma_to [val]"
   echo "display save_screen_layout"
   echo "display restore_screen_layout"
 

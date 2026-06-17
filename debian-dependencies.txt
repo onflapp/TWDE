@@ -25,3 +25,4 @@ power-profiles-deamon
 network-manager
 udisks2
 pipewire-pulse
+cups

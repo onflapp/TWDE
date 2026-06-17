@@ -1,0 +1,41 @@
+#!/bin/bash
+
+if [ -z "$WIDGET_MODE" ];then
+  export GEOMETRY="22x3"
+  exec $TWDE_HOME/bin/show-widget "$0"
+fi
+
+source $TWDE_HOME/lib/func.sh
+
+audio="$TWDE_HOME/bin/system/audio"
+
+function display() {
+  VOLUME=`$audio show_output default volume`
+  echo "volume: $VOLUME"
+  echo "[ -       |       + ]"
+}
+
+cursor_off
+mouse_on
+
+while [ 1 ];do
+  S=`display`
+  echo -e "\e[H\e[2J\e[3J$S"
+ 
+  read_char
+  if [ "$MOUSE_EVENT" = "button_down" ];then
+    read_char
+    if [ "$MOUSE_ROW" -eq 1 ];then
+      $audio change_output default volume_mute >/dev/null
+      $audio play_sample
+
+    elif [ "$MOUSE_COLUMN" -lt 10 ];then
+      $audio change_output default volume_down >/dev/null
+      $audio play_sample
+
+    elif [ "$MOUSE_COLUMN" -gt 12 ];then
+      $audio change_output default volume_up >/dev/null
+      $audio play_sample
+    fi
+  fi
+done

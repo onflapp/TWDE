@@ -84,9 +84,7 @@ function mouse_off() {
 function read_char() {
   read -sn 1 CHAR
   CHAR_CODE=`printf "%d" \'$CHAR `
-  MOUSE_COLUMN=""
-  MOUSE_ROW=""
-  MOUSE_TYPE=""
+  MOUSE_EVENT=""
 
   if [ "$CHAR_CODE" -eq 27 ];then
     read -sn 1 CH
@@ -97,19 +95,25 @@ function read_char() {
         CH=`printf "%d" \'$CH `
         if [ $CH -eq 0 ];then
           MOUSE_EVENT="button_down"
+
+          read -sn 1 CH
+          CH=`printf "%d" \'$CH `
+          MOUSE_COLUMN=$(( CH - 32 ))
+
+          read -sn 1 CH
+          CH=`printf "%d" \'$CH `
+          MOUSE_ROW=$(( CH - 32 ))
+
+        elif [ $CH -eq 35 ];then
+          MOUSE_EVENT="button_up"
         elif [ $CH -eq 97 ];then
           MOUSE_EVENT="scroll_down"
         elif [ $CH -eq 96 ];then
           MOUSE_EVENT="scroll_up"
+	else
+          MOUSE_ROW=""
+          MOUSE_COLUMN=""
         fi
-
-        read -sn 1 CH
-        CH=`printf "%d" \'$CH `
-        MOUSE_COLUMN=$(( CH - 32 ))
-
-        read -sn 1 CH
-        CH=`printf "%d" \'$CH `
-        MOUSE_ROW=$(( CH - 32 ))
 
       fi
     fi
