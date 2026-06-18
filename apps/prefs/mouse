@@ -28,8 +28,8 @@ cat << EOF
       <button name="action" value="speed_plus"> faster ]</button>
 
       <hr>
-      <center>e
-        <button name="exit">[ Cancel ]</button>
+      <center>
+        <button name="exit">[ Close ]</button>
         <button name="action" value="apply">[ Apply ]</button>
       </center>
     </form>

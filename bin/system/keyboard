@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+. $TWDE_HOME/lib/func.sh
+
 function list_all_models() {
   localectl list-x11-keymap-models
 }
@@ -14,6 +16,24 @@ function change_layout_to() {
 
 function change_model_to() {
   setxkbmap -model "$1"
+}
+
+function change_backlight() {
+  if [ "$1" = "brightness_to" ];then
+    brightnessctl -d "*kbd_backlight" s "$3%" >/dev/null
+  fi
+  if [ "$1" = "brightness_up" ];then
+    brightnessctl -d "*kbd_backlight" s "+10%" | regexp 'Current brightness.*\((\d\d*)%\)' '%s' '$1'
+  fi
+  if [ "$1" = "brightness_down" ];then
+    brightnessctl -d "*kbd_backlight" s "10%-" | regexp 'Current brightness.*\((\d\d*)%\)' '%s' '$1'
+  fi
+}
+
+function show_backlight() {
+  if [ "$1" = "brightness" ];then
+    brightnessctl -d "*kbd_backlight" | regexp 'Current brightness.*\((\d\d*)%\)' '%s' '$1'
+  fi
 }
 
 function print_config() {
@@ -73,6 +93,9 @@ function usage() {
   echo "keyboard list_all_layouts"
   echo "keyboard change_layout_to [layout]"
   echo "keyboard change_model_to [model]"
+  echo "keyboard change_backlight brightness_up | brightness_down"
+  echo "keyboard change_backlight brightness_to"
+  echo "keyboard show_backlight brightness"
 
   exit 1
 }

@@ -126,7 +126,7 @@ cat << EOF
       <hr>
       <center>
         <button name="action" value="edit_xmodmap">[ Edit Xmodmap... ]</button>
-        <button name="exit">[ Cancel ]</button>
+        <button name="exit">[ Close ]</button>
         <button name="action" value="apply">[ Apply ]</button>
       </center>
     </form>

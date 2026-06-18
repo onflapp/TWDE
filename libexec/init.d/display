@@ -9,6 +9,8 @@ disp="$TWDE_HOME/bin/system/display"
 source $TWDE_HOME/lib/func.sh
 
 function config() {
+  rm $TWDE_HOME/var/display.info 2>/dev/null
+
   if [ -f "$CONFIG_FILE" ];then
     $disp read_config < "$CONFIG_FILE"
   fi
@@ -23,6 +25,7 @@ function save_screen() {
 }
 
 function refresh_wm() {
+
   echo "turn disconnected screens off"
   turnoff_disconnected
 
@@ -30,14 +33,14 @@ function refresh_wm() {
   $TWDE_HOME/libexec/restore_windows
 
   echo "restart wm"
-  $TWDE_HOME/libexec/wm_fvwm restart
+  $TWDE_HOME/libexec/init.d/wm_fvwm restart
 }
 
 function turnoff_disconnected() {
   xrandr | while read -r line ;do
     if [[ "$line" =~ ^(.*)\ disconnected ]];then
       dev="${BASH_REMATCH[1]}"
-      xrandr --output $dev --off
+      echo xrandr --output $dev --off
     fi
   done
 }
@@ -84,7 +87,7 @@ function monitor() {
 }
 
 if [ "$1" = "start" ];then
-  restore_screen
+  #restore_screen
   config
   #sleep 1
   #monitor&
@@ -92,6 +95,10 @@ if [ "$1" = "start" ];then
 
 elif [ "$1" = "stop" ];then
   pkill -P `cat $PID`
-  save_screen
+  #save_screen
+
+elif [ "$1" = "config" ];then
+  config
+  refresh_wm
 
 fi

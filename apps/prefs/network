@@ -61,7 +61,7 @@ cat << EOF
 
       <hr>
       <center>
-        <button name="exit">[ Cancel ]</button>
+        <button name="exit">[ Close ]</button>
         <button name="action" value="apply">[ Apply ]</button>
       </center>
     </form>
