@@ -2,8 +2,17 @@
 
 PID="/tmp/$UID-display.pid"
 CONFIG_TS="0"
+CONFIG_FILE="$TWDE_HOME/etc/display.conf"
+
+disp="$TWDE_HOME/bin/system/display"
 
 source $TWDE_HOME/lib/func.sh
+
+function config() {
+  if [ -f "$CONFIG_FILE" ];then
+    $disp read_config < "$CONFIG_FILE"
+  fi
+}
 
 function restore_screen() {
   autorandr -l twde
@@ -76,9 +85,10 @@ function monitor() {
 
 if [ "$1" = "start" ];then
   restore_screen
-  sleep 1
-  monitor&
-  echo "$!" > $PID
+  config
+  #sleep 1
+  #monitor&
+  #echo "$!" > $PID
 
 elif [ "$1" = "stop" ];then
   pkill -P `cat $PID`

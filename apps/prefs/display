@@ -5,6 +5,7 @@
 disp=$TWDE_HOME/bin/system/display
 
 INFO_CACHE="$TWDE_VAR/display.info"
+CFG_FILE="$TWDE_HOME/etc/display.conf"
 
 function get_display_info() {
   if [ -f "$INFO_CACHE" ];then
@@ -121,8 +122,6 @@ cat << EOF
 
       `list_displays`
 
-      <button name="action" value="refresh">[ Refresh ]</button>
-
       <h3>Brightness:</h3>
 
       <button name="action" value="brightness_minus">[ - </button>
@@ -135,6 +134,7 @@ cat << EOF
 
       <hr>
       <center>
+        <button name="action" value="refresh">[ Refresh ]</button>
         <button name="exit">[ Cancel ]</button>
         <button name="action" value="apply">[ Apply ]</button>
       </center>
@@ -154,6 +154,14 @@ function update_gamma() {
   if [ -n "$REQUEST_gamma" ];then
     $disp change_screen default gamma_to "$REQUEST_gamma" >/dev/null
   fi
+}
+
+function save_values() {
+  cat << EOF > $CFG_FILE
+GAMMA=$REQUEST_gamma
+BRIGHTNESS=$REQUEST_brightness
+EOF
+
 }
 
 function update_values() {
@@ -189,6 +197,7 @@ function update_values() {
 }
 
 if [ "$REQUEST_action" = "apply" ];then
+  save_values
   update_values
   update_brightness
   display_values

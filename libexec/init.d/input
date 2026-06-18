@@ -1,9 +1,15 @@
 #!/usr/bin/env bash
 
+keyboard=$TWDE_HOME/bin/system/keyboard
+touchpad=$TWDE_HOME/bin/system/touchpad
+mouse=$TWDE_HOME/bin/system/mouse
+
 PID="/tmp/$UID-input.pid"
 CONFIG_TS="0"
+
 CFG_KEYBOARD="$TWDE_HOME/etc/keyboard.conf"
-CFG_KEYBOARD="$TWDE_HOME/etc/keyboard.conf"
+CFG_TOUCHPAD="$TWDE_HOME/etc/touchpad.conf"
+CFG_MOUSE="$TWDE_HOME/etc/mouse.conf"
 
 source $TWDE_HOME/lib/func.sh
 
@@ -17,12 +23,20 @@ function config() {
     return
   fi
 
-  if ! [ -f "$CONFIG_FILE" ];then
-    echo "no config $CONFIG_FILE found"
-    return
+  if [ -f "$CFG_KEYBOARD" ];then
+    echo "configure keyboard settings"
+    $keyboard read_config < "$CFG_KEYBOARD"
   fi
 
-  echo "configure keyboard settings"
+  if [ -f "$CFG_TOUCHPAD" ];then
+    echo "configure touchpad settings"
+    $touchpad read_config < "$CFG_TOUCHPAD"
+  fi
+
+  if [ -f "$CFG_MOUSE" ];then
+    echo "configure mouse settings"
+    $mouse read_config < "$CFG_MOUSE"
+  fi
 
 }
 
@@ -37,23 +51,21 @@ function monitor() {
   done
 }
 
-function start() {
+function start_input() {
   config
-  monitor&
   echo "$!" > $PID
 }
 
-function stop() {
+function stop_input() {
   pkill -P `cat $PID`
 }
 
 if [ "$1" = "start" ];then
-  start
+  start_input
 
 elif [ "$1" = "stop" ];then
-  stop
+  stop_input
 
 elif [ "$1" = "config" ];then
   config
-
 fi

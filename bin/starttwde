@@ -58,19 +58,19 @@ function process() {
   init_env
 
   init_exec audio start
-  #init_exec mouse start
+  init_exec input start
   init_exec display start
   init_exec desktop start
-  #init_exec gestures start
 
   echo "about to launch windowmanager"
   start_wm
   echo "windowmanager exited"
 
   echo "stopping"
-  init_exec keyboard stop
-  #init_exec hotkeys stop
+  init_exec desktop stop
+  init_exec audio stop
   init_exec display stop
+  init_exec input stop
 
   run_on_exit
 }

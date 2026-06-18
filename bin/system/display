@@ -115,6 +115,17 @@ function change_screen() {
   fi
 }
 
+function read_config() {
+  source /dev/stdin
+
+  if [ -n "$BRIGHTNESS" ];then
+    change_screen default brightness_to $BRIGHTNESS
+  fi 
+	
+  if [ -n "$GAMMA" ];then
+    change_screen default gamma_to $GAMMA
+  fi
+}
 
 function usage() {
   echo "display"
