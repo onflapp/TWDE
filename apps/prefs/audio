@@ -34,7 +34,7 @@ function display_volume() {
 
 function display_values() {
   if [ -z "$VOLUME" ];then
-    VOLUME=`audio show_output default volume`
+    VOLUME=`$audio show_output default volume`
   fi
 
 cat << EOF

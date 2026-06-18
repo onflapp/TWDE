@@ -96,16 +96,14 @@ cat << EOF
   <body>
     <h1>Keyboard Settings</h1>
     <form>
-      <h3>Repeat Delay: </h3>
-      <input name="delay" value="$REPEAT_DELAY"></input>
-
-      <h3>Repeat Rate: </h3>
-      <input name="rate" value="$REPEAT_RATE"></input>
-
       <h3>Keyboard Model: </h3>
       
       `list_models`
       layout: `list_layouts`
+
+      <h3>Keyboard Sensitivity: </h3>
+      Repeat delay: <input name="delay" size="4" value="$REPEAT_DELAY"></input>
+      Repeat rate: <input name="rate" size="4" value="$REPEAT_RATE"></input>
 
       <h3>Options: </h3>
 

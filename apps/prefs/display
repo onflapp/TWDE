@@ -4,6 +4,16 @@
 
 disp=$TWDE_HOME/bin/system/display
 
+INFO_CACHE="$TWDE_VAR/display.info"
+
+function get_display_info() {
+  if [ -f "$INFO_CACHE" ];then
+    cat "$INFO_CACHE"
+  else
+    xrandr > "$INFO_CACHE"
+  fi
+}
+
 function get_val() {
   env | while read -r line ;do
     if [[ "$line" =~ ^(.*)=(.*)$ ]];then
@@ -25,7 +35,7 @@ function get_gamma() {
 }
 
 function list_active_devs() {
-  xrandr | while read -r DD ;do
+  get_display_info | while read -r DD ;do
     if [[ "$DD" =~ ^(.*)\ connected\  ]];then
       last_dev="${BASH_REMATCH[1]}"
 
@@ -39,7 +49,7 @@ function list_active_devs() {
 }
 
 function list_devs() {
-  xrandr | while read -r DD ;do
+  get_display_info | while read -r DD ;do
     if [[ "$DD" =~ ^(.*)\ connected\  ]];then
       dev="${BASH_REMATCH[1]}"
 
@@ -53,7 +63,7 @@ function list_displays() {
     ACTIVE_DEVS="$ACTIVE_DEVS $DD"
   done
 
-  xrandr | while read -r DD ;do
+  get_display_info | while read -r DD ;do
     if [[ "$DD" =~ ^(.*)\ connected\  ]];then
       dev="${BASH_REMATCH[1]}"
       res="${BASH_REMATCH[2]}"
@@ -111,6 +121,8 @@ cat << EOF
 
       `list_displays`
 
+      <button name="action" value="refresh">[ Refresh ]</button>
+
       <h3>Brightness:</h3>
 
       <button name="action" value="brightness_minus">[ - </button>
@@ -119,9 +131,7 @@ cat << EOF
 
       <h3>Gamma:</h3>
 
-      <button name="action" value="gamma_minus">[ - </button>
       <input name="gamma" value="$GAMMA" size="4"></input>
-      <button name="action" value="gamma_plus"> + ]</button>
 
       <hr>
       <center>
@@ -191,6 +201,10 @@ elif [ "$REQUEST_action" = "brightness_minus" ];then
   $disp change_screen default brightness_down >/dev/null
   display_values
 else
+
+  if [ "$REQUEST_action" = "refresh" ];then
+    rm "$INFO_CACHE" 2>/dev/null
+  fi
   update_brightness
   update_gamma
   display_values
