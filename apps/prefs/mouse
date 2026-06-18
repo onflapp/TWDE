@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 [ -z "$REQUEST" ] && exec $TWDE_HOME/bin/hsh $0
 
@@ -13,7 +13,7 @@ EOF
 
 
 function display_values() {
-  source <( $mouse save_config )
+  source <( $mouse print_config )
 
 cat << EOF
 <html>
@@ -28,7 +28,7 @@ cat << EOF
       <button name="action" value="speed_plus"> faster ]</button>
 
       <hr>
-      <center>
+      <center>e
         <button name="exit">[ Cancel ]</button>
         <button name="action" value="apply">[ Apply ]</button>
       </center>

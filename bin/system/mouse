@@ -6,8 +6,8 @@ function _change_prop() {
 
 function change_speed_to() {
   if [ -n "$1" ];then
-    if [ "$1" -ge -10 ] && [ "$1" -le 10 ];then
-      local val=`perl -e "print ($1 / 10)"`
+    if [ "$1" -ge 0 ] && [ "$1" -le 20 ];then
+      local val=`perl -e "print (($1 / 10) - 1)"`
       xinput set-prop "$ID" "libinput Accel Speed" "$val"
     fi
   fi
@@ -56,17 +56,18 @@ function get_mouse_properties() {
     fi
     if [[ $line =~ .*Accel\ Speed\ \(.*:.*([0-9]\.[0-9]+) ]];then
       val=${BASH_REMATCH[1]}
-      val=`perl -e "print ($val * 10)"`
+      val=`perl -e "print (10 + ($val * 10))"`
       echo "SPEED_VALUE=$val"
     fi
     if [[ $line =~ .*Accel\ Speed\ \(.*:.*(\-[0-9]\.[0-9]+) ]];then
       val=${BASH_REMATCH[1]}
-      val=`perl -e "print ($val * 10)"`
+      val=`perl -e "print (10 + ($val * 10))"`
       echo "SPEED_VALUE=$val"
     fi
 
   done
 }
+
 function read_config() {
   [ -z "$ID" ] && exit
 

@@ -5,8 +5,12 @@ function suspend() {
 }
 
 function off() {
-  echo "/sbin/poweroff" > $TWDE_RUN_ON_EXIT
-  FvwmCommand Quit
+  if [ -n "$TWDE_RUN_ON_EXIT" ];then
+    echo "/sbin/poweroff" > $TWDE_RUN_ON_EXIT
+    FvwmCommand Quit
+  else
+    /sbin/poweroff
+  fi
 }
 
 function list_profiles() {

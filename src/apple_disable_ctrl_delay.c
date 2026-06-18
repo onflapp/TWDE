@@ -8,24 +8,61 @@ gcc -o /usr/local/bin/apple-disable-ctrl-delay ./apple-disable-ctrl-delay.c
 #include <fcntl.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <stdlib.h>
 #include <string.h>
+#include <dirent.h>
 
 int main(int argc, char **argv) {
-  if (argc != 2 || strcmp(argv[1], "-h") == 0) {
-    printf("Pass a hidraw device as the first and only parameter!\n");
-    printf("You may find the right device with:\n");
-    printf("  dmesg | grep Apple | grep Keyboard | grep input0 | tail -1 | "
+  char *devpath = getenv("DEVPATH");
+  char *devname = getenv("DEVNAME");
+  char *device = NULL;
+
+  if (devname) {
+    device = devname;
+    fprintf(stderr, "use device: %s\n", device);
+  }
+  else if (devpath) {
+    char dbuf[1024];
+    snprintf(dbuf, sizeof(dbuf), "/sys%s/hidraw", devpath);
+
+    DIR *d;
+    struct dirent *dir;
+    d = opendir(dbuf);
+    if (d) {
+      while((dir = readdir(d)) != NULL) {
+        snprintf(dbuf, sizeof(dbuf), "/dev/%s", dir->d_name);
+        device = dbuf;
+      }
+      closedir(d);
+    }
+
+    if (device) {
+      fprintf(stderr, "use device: %s\n", device);
+    }
+    else {
+      fprintf(stderr, "unable to find hidraw in %s\n", dbuf);
+      return 10;
+    }
+  }
+  else if (argc != 2 || strcmp(argv[1], "-h") == 0) {
+    fprintf(stderr, "Pass a hidraw device as the first and only parameter!\n");
+    fprintf(stderr, "You may find the right device with:\n");
+    fprintf(stderr, "  dmesg | grep Apple | grep Keyboard | grep input0 | tail -1 | "
            "sed -e 's/.hidraw\\([[:digit:]]\\+\\)./\\/dev\\/hidraw\\1/'\n");
     return 1;
   }
+  else {
+    device = argv[1];
+  }
+
   int fd, i, res, desc_size = 0;
   char buf[256];
   struct hidraw_devinfo info;
-  char *device = argv[1];
+  
   fd = open(device, O_RDWR | O_NONBLOCK);
   if (fd < 0) {
     perror("Unable to open device");
-    return 1;
+    return 20;
   }
   memset(&info, 0, sizeof(info));
   memset(buf, 0, sizeof(buf));
@@ -35,9 +72,9 @@ int main(int argc, char **argv) {
     perror("HIDIOCGRDESCSIZE");
   }
   if (desc_size != 75) {
-    printf("Error: unexpected descriptor size %d; you've probably got "
+    fprintf(stderr, "Error: unexpected descriptor size %d; you've probably got "
            "the wrong hidraw device!\n", desc_size);
-    return 1;
+    return 30;
   }
   // Get Raw Info
   res = ioctl(fd, HIDIOCGRAWINFO, &info);
@@ -45,12 +82,12 @@ int main(int argc, char **argv) {
     perror("HIDIOCGRAWINFO");
   } else {
     if (info.vendor != 0x05ac) {
-      printf("Error: Wrong vendor ID, make sure you got the right "
+      fprintf(stderr, "Error: Wrong vendor ID, make sure you got the right "
              "hidraw device!\n");
-      return 1;
+      return 40;
     }
     if (info.product != 0x0250) {
-      printf("Warning: Unknown product ID 0x%x!\n", info.product);
+      fprintf(stderr, "Warning: Unknown product ID 0x%x!\n", info.product);
     }
   }
   // Get Feature
@@ -59,7 +96,7 @@ int main(int argc, char **argv) {
   if (res < 0) {
     perror("HIDIOCGFEATURE");
   } else {
-    printf("HID Feature Report (before change):\n\t");
+    fprintf(stderr, "HID Feature Report (before change):\n\t");
     for (i = 0; i < res; i++) printf("%hhx ", buf[i]);
     puts("\n");
   }
@@ -72,7 +109,7 @@ int main(int argc, char **argv) {
   if (res < 0) {
     perror("HIDIOCSFEATURE");
   } else {
-    printf("Caps lock delay disabled.\n");
+    fprintf(stderr, "Caps lock delay disabled.\n");
   }
   // Get Feature
   buf[0] = 0x09;  // Report Number
@@ -80,7 +117,7 @@ int main(int argc, char **argv) {
   if (res < 0) {
     perror("HIDIOCGFEATURE");
   } else {
-    printf("HID Feature Report (after change):\n\t");
+    fprintf(stderr, "HID Feature Report (after change):\n\t");
     for (i = 0; i < res; i++) printf("%hhx ", buf[i]);
     puts("\n");
   }
