@@ -119,13 +119,13 @@ cat << EOF
       Switch Alt and Win modifiers: <input name="swap_alt_meta" type="checkbox" value="1" $AM></input>
 
       <br>
-      <button name="action" value="edit_xmodmap">[ edit custom Xmodmap... ]</button>
 
       <h3>Test: </h3>
       <input></input>
 
       <hr>
       <center>
+        <button name="action" value="edit_xmodmap">[ Edit Xmodmap... ]</button>
         <button name="exit">[ Cancel ]</button>
         <button name="action" value="apply">[ Apply ]</button>
       </center>
@@ -148,6 +148,5 @@ elif [ "$REQUEST_action" = "save_xmodmap" ];then
   display_values
 
 else
-  save_values
   display_values
 fi
