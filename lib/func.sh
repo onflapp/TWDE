@@ -12,6 +12,14 @@ function epochtime() {
   date +%s
 }
 
+function file_mtime() {
+  if [ -e "$1" ];then
+    date -r "$1" +%s
+  else
+    echo "0"
+  fi
+}
+
 function current_appname() {
   local WID=`xdotool getwindowfocus`
   xprop -id $WID | while read -r LINE ;do

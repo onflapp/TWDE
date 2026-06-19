@@ -5,7 +5,7 @@ touchpad=$TWDE_HOME/bin/system/touchpad
 mouse=$TWDE_HOME/bin/system/mouse
 
 PID="/tmp/$UID-input.pid"
-CONFIG_TS="0"
+CONFIG_STATUS="$TWDE_VAR/input.configured"
 
 CFG_KEYBOARD="$TWDE_HOME/etc/keyboard.conf"
 CFG_TOUCHPAD="$TWDE_HOME/etc/touchpad.conf"
@@ -14,14 +14,17 @@ CFG_MOUSE="$TWDE_HOME/etc/mouse.conf"
 source $TWDE_HOME/lib/func.sh
 
 function config() {
-  local ts=`epochtime`
-  local td=$(( "$ts" - "$CONFIG_TS" ))
+  local ft=`file_mtime "$CONFIG_STATUS"`
+  local et=`epochtime`
+  local dt=$(( "$et" - "$ft" ))
 
-  CONFIG_TS="$ts"
-  if [ "$td" -lt 3 ];then
-    echo "postpone the change"
+  if [ "$dt" -le 3 ];then
+    echo "configure already, postpone"
+    touch "$CONFIG_STATUS"
     return
   fi
+
+  sleep 1
 
   if [ -f "$CFG_KEYBOARD" ];then
     echo "configure keyboard settings"
@@ -38,14 +41,14 @@ function config() {
     $mouse read_config < "$CFG_MOUSE"
   fi
 
+  touch "$CONFIG_STATUS"
 }
 
 function monitor() {
-  echo "start monitoring keyboard changes"
+  echo "start monitoring input device changes"
 
   xprop -spy -root | while read -r line ;do
     if [[ $line =~ ^_XKB_RULES_NAMES ]] ;then
-      sleep 1
       config
     fi
   done
@@ -53,6 +56,7 @@ function monitor() {
 
 function start_input() {
   config
+  monitor&
   echo "$!" > $PID
 }
 

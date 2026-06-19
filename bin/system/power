@@ -4,6 +4,10 @@ function suspend() {
   systemctl suspend
 }
 
+function restart() {
+  /sbin/reboot
+}
+
 function off() {
   if [ -n "$TWDE_RUN_ON_EXIT" ];then
     echo "/sbin/poweroff" > $TWDE_RUN_ON_EXIT
@@ -57,6 +61,7 @@ function usage() {
   echo "power"
   echo "power suspend"
   echo "power off"
+  echo "power restart"
   echo "power battery_status"
   echo "power list_profiles"
   echo "power show_current_profile"

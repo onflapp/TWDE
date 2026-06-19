@@ -194,6 +194,7 @@ AddToMenu   MenuQuit
 + "Logout" Quit
 + "Sleep" Exec exec "$TWDE_HOME/bin/system/power" suspend
 + "Power off" Exec exec "$TWDE_HOME/bin/system/power" off
++ "Restart" Exec exec "$TWDE_HOME/bin/system/power" restart
 
 DestroyMenu MenuPreferences
 AddToMenu   MenuPreferences
