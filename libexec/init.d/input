@@ -72,4 +72,5 @@ elif [ "$1" = "stop" ];then
 
 elif [ "$1" = "config" ];then
   config
+
 fi
