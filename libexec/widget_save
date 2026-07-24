@@ -1,18 +1,8 @@
 #!/usr/bin/env perl
 
 $TWDE_HOME = $ENV{'TWDE_HOME'};
-$CFG_BASE = "$TWDE_HOME/var";
-
-sub saveconfig {
-	my ($cmd, $geo) = @_;
-	my @a = split(' ', $cmd);
-	my $name = $a[0];
-
-	open(OUT, "> $CFG_BASE/$name.cfg");
-	print(OUT "GEOMETRY=\"$geo\"\n");
-	print(OUT "COMMAND=\"$cmd\"\n");
-	close(OUT);
-}
+$TWDE_VAR = $ENV{'TWDE_VAR'};
+$CFG_FILE = "$TWDE_VAR/widgets.saved";
 
 sub wininfo {
 	my ($WINID) = @_;
@@ -32,7 +22,10 @@ sub list_widgets {
 	my $WINID="";
 	my $COMMAND="";
 	my $CLASS="";
+
 	open(IN, "xlsclients -l |");
+	open(OUT, "> $CFG_FILE");
+
 	while(<IN>) {
 		chomp();
 		if (m/^Window (.*?):$/) {
@@ -43,17 +36,18 @@ sub list_widgets {
 		}
 		elsif (m/^  Instance\/Class:  (.*?)$/) {
 			$CLASS=$1;
-			if ($CLASS eq "TWDEWidget/TWDEWidget" && $COMMAND =~ m/\-e (.*?)$/) {
+			if ($CLASS eq "TWDEWidget/TWDEWidget" && $COMMAND =~ m/\-e.*'(.*?)'$/) {
 				$CMD=$1;
 				$GEO=wininfo($WINID);
 
-				print("$GEO $CMD\n");
-				saveconfig($CMD, $GEO);
+				print(OUT "$CMD\t$GEO\n");
 			}
 		}
 
 	}
+
 	close(IN);
+	close(OUT);
 }
 
 list_widgets();

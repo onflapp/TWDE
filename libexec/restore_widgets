@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+CFG_FILE="$TWDE_VAR/widgets.saved"
+
+cat "$CFG_FILE" | while read -r line ;do
+	if [[ "$line" =~ ^(.*)\	(.*)$ ]];then
+  	COMMAND="${BASH_REMATCH[1]}"
+  	GEOMETRY="${BASH_REMATCH[2]}"
+
+		if [ -n "$COMMAND" ] && [ -n "$GEOMETRY" ];then
+			export GEOMETRY
+			sleep 0.1
+			$TWDE_HOME/bin/show-widget $COMMAND &
+		fi
+	fi
+done

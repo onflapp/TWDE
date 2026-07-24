@@ -7,8 +7,20 @@ $TWDE_HOME/libexec/make_config "$TWDE_HOME/lib/widget.xrm" \
 xrdb -merge "$CFG"
 
 if [ -n "$GEOMETRY" ];then
-  LOC="-geometry $GEOMETRY"
+  POS="-geometry $GEOMETRY"
 fi
 
+WPATH=`realpath "$1"`
+if ! [ -x "$WPATH" ];then
+  WPATH=`type -p "$1"`
+fi
+
+if ! [ -x "$WPATH" ];then
+  echo "$WPATH is not executable"
+  exit 1
+fi
+
+shift
+
 export WIDGET_MODE="1"
-exec xterm $LOC -name TWDEWidget -class TWDEWidget -e "$@" &
+exec xterm $POS -name TWDEWidget -class TWDEWidget -e "$WPATH $@" &

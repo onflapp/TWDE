@@ -122,9 +122,18 @@ Style * Colorset 1, HilightColorset 2
 Style * BorderColorset 3, HilightBorderColorset 4
 
 # TWDEDialog
-Style TWDEDialog BorderWidth $FRAME_BORDER, HandleWidth $FRAME_BORDER, MWMButtons, MWMBorder, FirmBorder
+Style TWDEDialog BorderWidth 10, HandleWidth 10, MWMButtons, MWMBorder, FirmBorder, WindowListSkip, StaysOnTop
 Style TWDEDialog BorderColorset 8, HilightBorderColorset 8, !Button 1, !Button 6, !Button 4
+Style TWDEDialog PositionPlacement UnderMouse
 #Style TWDEDialog UseDecor TWDEDialogDecor
+
+# TWDEWidget
+Style TWDEWidget BorderWidth 2, HandleWidth 2, MWMButtons, MWMBorder, NoTitle, StaysOnBottom, WindowListSkip, ClickToFocus
+Style TWDEWidget BorderColorset 30, HilightBorderColorset 4
+Style TWDEWidget PositionPlacement Manual
+
+Colorset 30 fg $DESKTOP_COLOR , bg $DESKTOP_COLOR, hi $DESKTOP_COLOR, sh $DESKTOP_COLOR, Plain, NoShape
+
 
 # Disable Icons from appearing on desktop.
 # Comment this out or use Style * Icon to get the icons back.
@@ -185,7 +194,7 @@ Colorset 14 fg #555555, bg #003c3c, hi #aaaaaa, sh #999999, Plain, NoShape
 MenuStyle * MenuColorset 5, ActiveColorset 6, GreyedColorset 7, TitleColorset 8
 MenuStyle * HilightBack, HilightTitleBack, SeparatorsLong
 MenuStyle * TrianglesSolid, TrianglesUseFore
-MenuStyle * BorderWidth 3
+MenuStyle * BorderWidth 2
 MenuStyle * ItemFormat "%|  %l            %|"
 MenuStyle * Font "$APP_FONT"
 

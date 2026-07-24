@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ -z "$WIDGET_MODE" ];then
-  export GEOMETRY="22x3"
+  export GEOMETRY="22x5"
   exec $TWDE_HOME/bin/show-widget "$0"
 fi
 
@@ -11,8 +11,9 @@ audio="$TWDE_HOME/bin/system/audio"
 
 function display() {
   VOLUME=`$audio show_output default volume`
-  echo "volume: $VOLUME"
-  echo "[ -       |       + ]"
+  echo "    volume: $VOLUME"
+  echo "---------------------"
+  echo "     -    |     +    "
 }
 
 cursor_off

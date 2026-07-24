@@ -6,4 +6,4 @@ TWDEWidget*metaSendsEscape: true
 TWDEWidget*allowWindowOps: true
 TWDEWidget*background: $DESKTOP_COLOR
 TWDEWidget*foreground: forestgreen
-TWDEWidget*pointerShape: sb_left_arrow
+TWDEWidget*pointerShape: diamond_cross

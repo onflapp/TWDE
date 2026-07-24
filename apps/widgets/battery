@@ -8,8 +8,14 @@ fi
 source $TWDE_HOME/lib/func.sh
 
 function display() {
-  $TWDE_HOME/bin/system/power battery_status
-  $TWDE_HOME/bin/system/power show_current_profile
+  source <($TWDE_HOME/bin/system/power print_config)
+  
+  if [ "$CURRENT_VALUE" -le 20 ];then
+    echo -e "\e[31mbattery: $CURRENT_VALUE%\e[0m"
+  else
+    echo "battery: $CURRENT_VALUE"
+  fi
+  echo " profle: $CURRENT_PROFILE"
 }
 
 cursor_off

@@ -34,7 +34,7 @@ function change_current_profile_to() {
   powerprofilesctl set "$1"
 }
 
-function battery_status() {
+function print_config() {
   upower -d | while read -r line ;do
     if [[ "$line" =~ Device:.* ]];then
       stat=""
@@ -51,10 +51,16 @@ function battery_status() {
       per=${BASH_REMATCH[1]}
 
       if [ "$rech" = "yes" ];then
-        echo "$stat: $per%"
+        echo "CURRENT_VALUE=$per"
       fi
     fi
   done
+  echo "CURRENT_PROFILE=`powerprofilesctl get`"
+}
+
+function battery_status() {
+  source <(print_config)
+  echo "$CURRENT_VALUE%"
 }
 
 function usage() {
